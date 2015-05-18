@@ -3,7 +3,7 @@ $transaction = $this->getData('transaction');
 $transactionsIn = $this->getData('transactionsIn');
 $transactionsOut = $this->getData('transactionsOut');
 $totalOut = 0;
-foreach ($transactionOuts as $t) {
+foreach ($transactionsOut as $t) {
 	$totalOut += $t['value'];
 }
 
