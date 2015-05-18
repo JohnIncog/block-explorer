@@ -1,0 +1,22 @@
+{
+    "name": "unicoin/pp1",
+    "description": "Paycoin project 1",
+    "authors": [
+        {
+            "name": "Unicoin",
+            "email": "unicoin@paycoinsites.com"
+        }
+    ],
+    "require": {
+        "symfony/http-foundation": "2.6.7",
+		"symfony/routing": "2.6.7",
+		"symfony/config": "2.6.7"
+		
+    },
+	"autoload": {
+        "psr-4": {
+            "PP\\": "lib/",
+            "controllers\\": "controllers/"
+        }
+    }
+}

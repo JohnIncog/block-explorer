@@ -1,0 +1,30 @@
+body {
+	padding-top: 50px;
+	font-family: 'Open Sans', sans-serif;
+}
+.my-template {
+	padding: 40px 15px;
+	text-align: center;
+}
+.latestTransactions {
+	text-align: left;
+}
+
+.blockTable {
+	text-align: left;
+}
+.blockTransactions {
+	text-align: left;
+	margin-top: 15px;
+
+}
+.raw {
+	text-align: left;
+	margin-top: 15px;
+}
+.addr {
+	width: 120px;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
