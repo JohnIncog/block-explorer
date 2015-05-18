@@ -14,6 +14,29 @@ class Explorer extends Controller {
 
 	}
 
+	public function search() {
+
+		$q = $this->bootstrap->httpRequest->get('q');
+
+		$this->setData('q', $q);
+
+		$this->render('header');
+		$this->render('search');
+		$this->render('footer');
+	}
+
+	public function wallet() {
+
+		$wallet = $this->bootstrap->route['wallet'];
+
+		$this->setData('wallet', $wallet);
+
+		$this->render('header');
+		$this->render('wallet');
+		$this->render('footer');
+	}
+
+
 	public function block() {
 
 		$hash = $this->bootstrap->route['hash'];

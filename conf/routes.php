@@ -8,6 +8,8 @@ $routeCollection = new Routing\RouteCollection();
 $routeCollection->add('index', new Routing\Route('/', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('block', new Routing\Route('/block/{hash}', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('transaction', new Routing\Route('/transaction/{txid}', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('search', new Routing\Route('/search/{q}', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('wallet', new Routing\Route('/wallet/{wallet}', array("class" => "\\controllers\\Explorer")));
 
 
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Home")));
