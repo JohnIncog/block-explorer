@@ -9,6 +9,8 @@
 namespace PP;
 
 
+use Symfony\Component\Config\Definition\Exception\Exception;
+
 class Mysql {
 
 	protected $mysql;
@@ -27,7 +29,9 @@ class Mysql {
 
 		$result = $this->mysql->query($sql);
 		$rows = array();
-
+		if (!empty($this->mysql->error)) {
+			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		}
 		if ($result->num_rows > 0) {
 			while ($row = $result->fetch_assoc()) {
 				$rows[] = $row;
@@ -63,7 +67,6 @@ class Mysql {
 
 	public function insert($table, array $insert, $ignore = false) {
 
-		$mysql = mysqli_connect('127.0.0.1', 'root', '', 'pp');
 
 		$sql = "INSERT ";
 		if ($ignore) {
@@ -79,23 +82,21 @@ class Mysql {
 		$sql = substr($sql, 0, -2);
 		$sql .= ") VALUES (";
 		foreach ($insert as $value) {
-			if (is_null($value)) {
-				$sql .= "NULL, ";
-			} elseif (is_int($value)) {
-				$sql .= "$value, ";
-			} else {
-				$sql .= "'" . mysqli_real_escape_string($mysql, $value) . "', ";
-			}
+			$sql .= $this->escape($value) .', ';
 		}
 		$sql = substr($sql, 0, -2);
 		$sql .= ")";
-		$mysql->query($sql);
+		$this->mysql->query($sql);
+		if (!empty($this->mysql->error)) {
+			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		}
+
 
 	}
 
-	public function insertMultiple($table, array $fields, array $values, $ignore = false) {
+	public function insertMultiple($table, array $values, $ignore = false) {
 
-		$totalRecords = count($values);
+		$fields = array_keys(current($values));
 
 		$sql = "INSERT ";
 		if ($ignore) {
@@ -125,6 +126,9 @@ class Mysql {
 		}
 		$sql = substr($sql, 0, -2);
 		$this->mysql->query($sql);
+		if (!empty($this->mysql->error)) {
+			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		}
 //		if ($this->mysql->affected_rows != $totalRecords) {
 //			var_dump($sql);
 //		}

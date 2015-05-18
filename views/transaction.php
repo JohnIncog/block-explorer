@@ -1,5 +1,6 @@
 <?php
 $transaction = $this->getData('transaction');
+$transactionsIn = $this->getData('transactionsIn');
 $transactionsOut = $this->getData('transactionsOut');
 $totalOut = 0;
 foreach ($transactionsOut as $t) {

@@ -46,11 +46,17 @@ class Explorer extends Controller {
 		$paycoin = new PaycoinDb();
 
 		$transaction = $paycoin->getTransaction($txid);
+		$transactionsIn = $paycoin->getTransactionsIn($txid);
 		$transactionsOut = $paycoin->getTransactionsOut($txid);
+echo '<pre>
+Transaction ' . PHP_EOL;
+var_dump($transaction);
+echo 'Transactions in' . PHP_EOL;
+var_dump($transactionsIn);
+echo 'Transactions out' . PHP_EOL;
+var_dump($transactionsOut);
 
-		$this->setData('transaction', $transaction);
-		$this->setData('transactionsOut', $transactionsOut);
-
+echo '</pre>';
 		$this->render('header');
 		$this->render('transaction');
 		$this->render('footer');
