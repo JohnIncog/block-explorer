@@ -1,16 +1,12 @@
 <?php
 $transaction = $this->getData('transaction');
-$transactionIns = $this->getData('transactionIns');
-$transactionOuts = $this->getData('transactionOuts');
+$transactionsIn = $this->getData('transactionsIn');
+$transactionsOut = $this->getData('transactionsOut');
 $totalOut = 0;
 foreach ($transactionOuts as $t) {
 	$totalOut += $t['value'];
 }
-echo "<pre>";
-var_dump($transaction);
-var_dump($transactionIns);
-var_dump($transactionOuts);
-echo "</pre>";
+
 ?>
 
 
@@ -64,7 +60,7 @@ echo "</pre>";
 				<th>Address</th>
 				<th class="text-right">Amount</th>
 			</tr>
-			<?php foreach ($transactionIns as $i => $transactionIn) { ?>
+			<?php foreach ($transactionsIn as $i => $transactionIn) { ?>
 
 				<tr>
 					<td><?php echo $i ?></td>
@@ -113,7 +109,7 @@ echo "</pre>";
 				<th>Address</th>
 				<th class="text-right">Amount</th>
 			</tr>
-			<?php foreach ($transactionOuts as $i => $transactionOut) { ?>
+			<?php foreach ($transactionsOut as $i => $transactionOut) { ?>
 			<tr>
 				<td><?php echo $i ?></td>
 				<td> --- </td>

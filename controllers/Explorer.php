@@ -68,8 +68,16 @@ class Explorer extends Controller {
 		$transactionsOut = $paycoin->getTransactionsOut($txid);
 
 		$this->setData('transaction', $transaction);
-		$this->setData('transactionIns', $transactionsIn);
-		$this->setData('transactionOuts', $transactionsOut);
+		$this->setData('transactionsIn', $transactionsIn);
+		$this->setData('transactionsOut', $transactionsOut);
+
+		if ($this->bootstrap->httpRequest->get('debug')) {
+			echo "<pre>";
+			var_dump($transaction);
+			var_dump($transactionsIn);
+			var_dump($transactionsOut);
+			echo "</pre>";
+		}
 
 		$this->render('header');
 		$this->render('transaction');

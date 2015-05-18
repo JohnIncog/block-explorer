@@ -114,7 +114,7 @@ class PaycoinDb {
 		foreach ($vins as $vin) {
 			$insert = array();
 			$insert['txidp'] = $transaction['txid'];
-			$insert['time'] = $transaction['txid'];
+			$insert['time'] = $transaction['time'];
 
 			if (isset($vin['txid'])) {
 				$insert['address'] = $this->getVout($vin['txid'], $vin['vout'], "addresses");
