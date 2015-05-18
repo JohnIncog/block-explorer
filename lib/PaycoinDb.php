@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/16/15
- * Time: 11:22 PM
- */
 
 namespace PP;
-use PP\Mysql;
 
 class PaycoinDb {
 
@@ -63,7 +56,7 @@ class PaycoinDb {
 
 	public function getTransactionsOut($txid) {
 
-		$sql = "SELECT  * from transactions_out WHERE `txid` = " . $this->mysql->escape($txid);
+		$sql = "SELECT  * from transactions_out WHERE `txidp` = " . $this->mysql->escape($txid);
 		$transactions = $this->mysql->select($sql);
 
 		return $transactions;
@@ -71,7 +64,7 @@ class PaycoinDb {
 
 	public function getTransactionsIn($txid) {
 
-		$sql = "SELECT  * from transactions_in WHERE `txid` = " . $this->mysql->escape($txid);
+		$sql = "SELECT  * from transactions_in WHERE `txidp` = " . $this->mysql->escape($txid);
 		$transactions = $this->mysql->select($sql);
 
 		return $transactions;
@@ -118,22 +111,27 @@ class PaycoinDb {
 	public function processVin($transaction) {
 
 		$vins = $transaction['vin'];
-		foreach ($vins as $i => $vin) {
+		foreach ($vins as $vin) {
+			$insert = array();
+			$insert['txidp'] = $transaction['txid'];
+			$insert['time'] = $transaction['txid'];
+
 			if (isset($vin['txid'])) {
-				$insert[$i]['address'] = $this->getVout($vin['txid'], $vin['vout'], "addresses");
-				$insert[$i]['value'] = $b = $this->getVout($vin['txid'], $vin['vout'], "value");
+				$insert['address'] = $this->getVout($vin['txid'], $vin['vout'], "addresses");
+				$insert['value'] = $b = $this->getVout($vin['txid'], $vin['vout'], "value");
 			}
 			foreach ($vin as $key => $value) {
 				if ($key == 'scriptSig') {
 					foreach ($value as $ke => $val) {
-						$insert[$i][$ke] = $val;
+						$insert[$ke] = $val;
 					}
 				} else {
-					$insert[$i][$key] = $value;
+					$insert[$key] = $value;
 				}
 			}
+			$this->mysql->insert('transactions_in', $insert);
 		}
-		$this->mysql->insertMultiple('transactions_in', $insert);
+		//$this->mysql->insertMultiple('transactions_in', $insert);
 	}
 
 	public function getVout($txid, $vout, $type) {
@@ -154,9 +152,10 @@ class PaycoinDb {
 
 		$valueTotal  = 0;
 		$vouts = $transaction['vout'];
-		foreach ($vouts as $i => $vout) {
-			$insert[$i]['txid'] = $transaction['txid'];
-			$insert[$i]['time'] = $transaction['time'];
+		foreach ($vouts as $vout) {
+			$insert = array();
+			$insert['txidp'] = $transaction['txid'];
+			$insert['time'] = $transaction['time'];
 			foreach ($vout as $key => $value) {
 				if ($key == "value") {
 					$valueTotal = bcadd($value, $valueTotal, 6);
@@ -164,17 +163,18 @@ class PaycoinDb {
 				if ($key == "scriptPubKey") {
 					foreach ($value as $ke => $val) {
 						if ($ke == "addresses") {
-							$insert[$i]['address'] = $val[0];
+							$insert['address'] = $val[0];
 						} else {
-							$insert[$i][$ke] = $val;
+							$insert[$ke] = $val;
 						}
 					}
 				} else {
-					$insert[$i][$key] = $value;
+					$insert[$key] = $value;
 				}
 			}
+			$this->mysql->insert('transactions_out', $insert);
+
 		}
-		$this->mysql->insertMultiple('transactions_out', $insert);
 		$return['valueTotal'] = $valueTotal;
 
 		return $return;

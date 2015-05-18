@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/16/15
- * Time: 12:29 AM
- */
 
 namespace PP;
 

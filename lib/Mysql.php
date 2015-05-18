@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/16/15
- * Time: 10:56 PM
- */
 
 namespace PP;
 
 
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 class Mysql {
 
@@ -127,6 +120,7 @@ class Mysql {
 		$sql = substr($sql, 0, -2);
 		$this->mysql->query($sql);
 		if (!empty($this->mysql->error)) {
+			echo($sql);
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
 		}
 //		if ($this->mysql->affected_rows != $totalRecords) {

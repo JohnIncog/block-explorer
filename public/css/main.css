@@ -28,3 +28,9 @@ body {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
+.hash {
+	width: 150px;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

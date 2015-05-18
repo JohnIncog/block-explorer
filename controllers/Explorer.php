@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/17/15
- * Time: 11:45 AM
- */
 
 namespace controllers;
 
@@ -29,6 +23,7 @@ class Explorer extends Controller {
 		$transactions = $paycoin->getTransactionsInBlock($block['height']);
 		foreach ($transactions as $k => $transaction) {
 			$transactions[$k]['vout'] = $paycoin->getTransactionsOut($transaction['txid']);
+			$transactions[$k]['vin'] = $paycoin->getTransactionsIn($transaction['txid']);
 		}
 
 		$this->setData('hash', $hash);
@@ -48,15 +43,11 @@ class Explorer extends Controller {
 		$transaction = $paycoin->getTransaction($txid);
 		$transactionsIn = $paycoin->getTransactionsIn($txid);
 		$transactionsOut = $paycoin->getTransactionsOut($txid);
-echo '<pre>
-Transaction ' . PHP_EOL;
-var_dump($transaction);
-echo 'Transactions in' . PHP_EOL;
-var_dump($transactionsIn);
-echo 'Transactions out' . PHP_EOL;
-var_dump($transactionsOut);
 
-echo '</pre>';
+		$this->setData('transaction', $transaction);
+		$this->setData('transactionIns', $transactionsIn);
+		$this->setData('transactionOuts', $transactionsOut);
+
 		$this->render('header');
 		$this->render('transaction');
 		$this->render('footer');

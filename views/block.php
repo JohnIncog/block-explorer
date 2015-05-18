@@ -51,11 +51,14 @@ $transactions = $this->getData('transactions');
 		<tr>
 			<td>Outstanding</td><td> --- XPY</td>
 		</tr>
-		<?php if (strstr($block['flags'], 'Stake') == false) { ?>
+
+
+		<?php //if (strstr($block['flags'], 'Stake') == false) { ?>
 		<tr>
-			<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($block['valueout']); ?> XPY</td>
+			<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY(0.0); ?>?? XPY</td>
 		</tr>
-		<?php } ?>
+		<?php //} ?>
+
 	</table>
 
 	<ul class="nav nav-tabs">
@@ -89,9 +92,10 @@ $transactions = $this->getData('transactions');
 						if ($k == 0) {
 							echo 'Generation + Fees';
 						} else {
-							foreach($transaction['vout'] as $out) { ?>
+							foreach($transaction['vin'] as $in) { ?>
 							<tr>
-								<td><a href="/wallet/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
+								<td><a href="/wallet/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
+								<td><?php echo \PP\Helper::formatXPY($in['value']); ?> XPY</td>
 							</tr>
 							<?php
 							}

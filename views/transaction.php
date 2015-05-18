@@ -1,14 +1,16 @@
 <?php
 $transaction = $this->getData('transaction');
-$transactionsIn = $this->getData('transactionsIn');
-$transactionsOut = $this->getData('transactionsOut');
+$transactionIns = $this->getData('transactionIns');
+$transactionOuts = $this->getData('transactionOuts');
 $totalOut = 0;
-foreach ($transactionsOut as $t) {
+foreach ($transactionOuts as $t) {
 	$totalOut += $t['value'];
 }
-//echo "<pre>";
-//var_dump($transaction);
-//echo "</pre>";
+echo "<pre>";
+var_dump($transaction);
+var_dump($transactionIns);
+var_dump($transactionOuts);
+echo "</pre>";
 ?>
 
 
@@ -62,12 +64,45 @@ foreach ($transactionsOut as $t) {
 				<th>Address</th>
 				<th class="text-right">Amount</th>
 			</tr>
-			<tr>
-				<td>0</td>
-				<td>Generation + Fees</td>
-				<td>N/A</td>
-				<td class="text-right"><?php echo \PP\Helper::formatXPY($totalOut); ?> XPY</td>
-			</tr>
+			<?php foreach ($transactionIns as $i => $transactionIn) { ?>
+
+				<tr>
+					<td><?php echo $i ?></td>
+					<td>
+						<?php if ($i == 0 && empty($transactionIn['txid'])) { ?>
+							Generation + Fees
+						<?php } else { ?>
+							<div class="hash">
+								<a href="/transaction/<?php echo $transactionIn['txid'] ?>"><?php echo $transactionIn['txid'] ?></a>
+							</div>
+						<?php } ?>
+					</td>
+					<td>
+						<?php if ($i == 0 && empty($transactionIn['txid'])) { ?>
+							N/A
+						<?php } else { ?>
+							<a href="/wallet/<?php echo $transactionIn['address'] ?>"><?php echo $transactionIn['address'] ?></a>
+						<?php } ?>
+					</td>
+					<td class="text-right">
+						<?php
+						$value = $transactionIn['value'];
+						if ($i == 0 && empty($transactionIn['txid'])) {
+							$value = $totalOut;
+						} ?>
+
+						<?php echo \PP\Helper::formatXPY($value); ?> XPY
+					</td>
+				</tr>
+
+
+			<?php } ?>
+<!--			<tr>-->
+<!--				<td>0</td>-->
+<!--				<td>Generation + Fees</td>-->
+<!--				<td>N/A</td>-->
+<!--				<td class="text-right">--><?php //echo \PP\Helper::formatXPY($totalOut); ?><!-- XPY</td>-->
+<!--			</tr>-->
 		</table>
 
 		<h3>Outputs</h3>
@@ -78,7 +113,7 @@ foreach ($transactionsOut as $t) {
 				<th>Address</th>
 				<th class="text-right">Amount</th>
 			</tr>
-			<?php foreach ($transactionsOut as $i => $transactionOut) { ?>
+			<?php foreach ($transactionOuts as $i => $transactionOut) { ?>
 			<tr>
 				<td><?php echo $i ?></td>
 				<td> --- </td>
