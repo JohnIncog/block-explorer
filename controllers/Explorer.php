@@ -18,21 +18,25 @@ class Explorer extends Controller {
 
 		$q = $this->bootstrap->httpRequest->get('q');
 
+		$paycoinDb = new PaycoinDb();
+		$results = $paycoinDb->search($q);
+
 		$this->setData('q', $q);
+		$this->setData('results', $results);
 
 		$this->render('header');
 		$this->render('search');
 		$this->render('footer');
 	}
 
-	public function wallet() {
+	public function address() {
 
-		$wallet = $this->bootstrap->route['wallet'];
+		$wallet = $this->bootstrap->route['address'];
 
-		$this->setData('wallet', $wallet);
+		$this->setData('address', $wallet);
 
 		$this->render('header');
-		$this->render('wallet');
+		$this->render('address');
 		$this->render('footer');
 	}
 

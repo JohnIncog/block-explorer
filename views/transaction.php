@@ -77,7 +77,7 @@ foreach ($transactionsOut as $t) {
 						<?php if ($i == 0 && empty($transactionIn['txid'])) { ?>
 							N/A
 						<?php } else { ?>
-							<a href="/wallet/<?php echo $transactionIn['address'] ?>"><?php echo $transactionIn['address'] ?></a>
+							<a href="/address/<?php echo $transactionIn['address'] ?>"><?php echo $transactionIn['address'] ?></a>
 						<?php } ?>
 					</td>
 					<td class="text-right">
@@ -113,7 +113,7 @@ foreach ($transactionsOut as $t) {
 			<tr>
 				<td><?php echo $i ?></td>
 				<td> --- </td>
-				<td><a href="/wallet/<?php echo $transactionOut['address'] ?>"><?php echo $transactionOut['address'] ?></a></td>
+				<td><a href="/address/<?php echo $transactionOut['address'] ?>"><?php echo $transactionOut['address'] ?></a></td>
 				<td class="text-right"><?php echo \PP\Helper::formatXPY($transactionOut['value'])?> XPY</td>
 
 			</tr>

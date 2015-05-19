@@ -246,4 +246,55 @@ class PaycoinDb {
 		return true;
 	}
 
+	public function search($q) {
+
+		$maxResults = 10;
+		$maxPerItemResults = 5;
+		$return = array();
+
+		//check if address
+		if (strlen($q) == 34) {
+			$return['Address'][] = '/address/' . urlencode($q);
+		}
+		//@todo sql for address.
+
+		//check if block height
+
+		if (is_numeric($q) && substr($q, 0, 1) != 0) {
+
+			$block = $this->mysql->selectRow("SELECT `hash`, `height` FROM blocks WHERE `height` = "
+				. $this->mysql->escape($q));
+			$return['Block Height']['Block ' . $block['height']] = '/block/' . urlencode($block['hash']);
+
+
+		}
+
+		//check if block hash
+		if (count($return) <= $maxResults) {
+			$limit = $maxPerItemResults - count($return);
+			$blocks = $this->mysql->select("SELECT `hash`, `height` FROM blocks WHERE `hash` LIKE "
+				. $this->mysql->escape($q . '%') . ' LIMIT ' . $limit);
+			foreach ($blocks as $block) {
+				$return['Block']['Block ' . $block['height']] = '/block/' . urlencode($block['hash']);
+			}
+		}
+
+		//check if transaction
+
+		if (count($return) <= $maxResults) {
+			if (count($return) <= $maxResults) {
+				$limit = $maxPerItemResults - count($return);
+				$transactions = $this->mysql->select("SELECT `txid` FROM transactions WHERE `txid` LIKE "
+					. $this->mysql->escape($q . '%') . ' LIMIT ' . $limit);
+			}
+			foreach ($transactions as $transaction) {
+				$return['Transaction'][] = '/transaction/' . urlencode($transaction['txid']);
+			}
+		}
+
+		return $return;
+
+
+	}
+
 } 

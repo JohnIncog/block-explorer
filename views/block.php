@@ -94,7 +94,7 @@ $transactions = $this->getData('transactions');
 						} else {
 							foreach($transaction['vin'] as $in) { ?>
 							<tr>
-								<td><a href="/wallet/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
+								<td><a href="/address/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
 								<td><?php echo \PP\Helper::formatXPY($in['value']); ?> XPY</td>
 							</tr>
 							<?php
@@ -107,7 +107,7 @@ $transactions = $this->getData('transactions');
 						<table style="width: 100%">
 							<?php foreach ($transaction['vout'] as $out) { ?>
 							<tr>
-								<td><a href="/wallet/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
+								<td><a href="/address/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
 								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?> XPY</td>
 							</tr>
 							<?php } ?>

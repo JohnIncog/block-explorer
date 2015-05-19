@@ -12,6 +12,10 @@ class Mysql {
 		$this->mysql = mysqli_connect('127.0.0.1', 'root', '', 'pp');
 	}
 
+	public function query($sql) {
+		return $this->mysql->query($sql);
+	}
+
 	public function startTransaction() {
 		$this->mysql->begin_transaction();
 	}
@@ -19,7 +23,6 @@ class Mysql {
 		$this->mysql->commit();
 	}
 	public function select($sql) {
-
 		$result = $this->mysql->query($sql);
 		$rows = array();
 		if (!empty($this->mysql->error)) {
