@@ -13,11 +13,24 @@ class Helper {
 
 	}
 
-	public static function formatTime($timestamp) {
-		return date('Y-m-d  H:i:s', $timestamp);
+	public static function getAddressLink($address) {
+		$link = '<a href="' . self::getUrl('address', array('address' => $address))
+			. '" class="">' . $address . '</a>';
+		return $link;
 	}
-	public function getUrl($pageName) {
+
+
+	public static function getUrl($pageName, $params = array()) {
 		switch ($pageName) {
+			case 'block';
+				$url = '/block/' . $params['block'];
+				break;
+			case 'address';
+				$url = '/address/' . $params['address'];
+				break;
+			case 'transaction';
+				$url = '/transaction/' . $params['transaction'];
+				break;
 			case '404':
 				$url = '/404.php';
 				break;
@@ -25,6 +38,10 @@ class Helper {
 				$url = false;
 		}
 		return $url;
+	}
+
+	public static function formatTime($timestamp) {
+		return date('Y-m-d  H:i:s', $timestamp);
 	}
 
 	public static function getValue($collection, $key, $default = false) {

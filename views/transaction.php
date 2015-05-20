@@ -3,10 +3,14 @@ $transaction = $this->getData('transaction');
 $transactionsIn = $this->getData('transactionsIn');
 $transactionsOut = $this->getData('transactionsOut');
 $totalOut = 0;
+$totalIn = 0;
+foreach ($transactionsIn as $t) {
+	$totalIn += $t['value'];
+}
 foreach ($transactionsOut as $t) {
 	$totalOut += $t['value'];
 }
-
+$created = $totalOut - $totalIn;
 ?>
 
 
@@ -37,7 +41,7 @@ foreach ($transactionsOut as $t) {
 		</tr>
 		<tr>
 			<td>Proof of Stake + Fees</td>
-			<td><?php echo \PP\Helper::formatXPY($totalOut); ?> XPY</td>
+			<td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
 		</tr>
 
 	</table>
@@ -76,9 +80,9 @@ foreach ($transactionsOut as $t) {
 					<td>
 						<?php if ($i == 0 && empty($transactionIn['txid'])) { ?>
 							N/A
-						<?php } else { ?>
-							<a href="/address/<?php echo $transactionIn['address'] ?>"><?php echo $transactionIn['address'] ?></a>
-						<?php } ?>
+						<?php } else {
+							echo \PP\Helper::getAddressLink($transactionIn['address']);
+						} ?>
 					</td>
 					<td class="text-right">
 						<?php
@@ -109,15 +113,25 @@ foreach ($transactionsOut as $t) {
 				<th>Address</th>
 				<th class="text-right">Amount</th>
 			</tr>
-			<?php foreach ($transactionsOut as $i => $transactionOut) { ?>
-			<tr>
-				<td><?php echo $i ?></td>
-				<td> --- </td>
-				<td><a href="/address/<?php echo $transactionOut['address'] ?>"><?php echo $transactionOut['address'] ?></a></td>
-				<td class="text-right"><?php echo \PP\Helper::formatXPY($transactionOut['value'])?> XPY</td>
-
-			</tr>
-			<?php } ?>
+			<?php
+				$i = 0;
+				foreach ($transactionsOut as $transactionOut) {
+					if ($transactionOut['type'] == 'nonstandard') {
+						continue;
+					}
+					?>
+					<tr>
+						<td><?php echo $i ?></td>
+						<td>  </td>
+						<td>
+							<?php echo \PP\Helper::getAddressLink($transactionOut['address']); ?>
+						</td>
+						<td class="text-right"><?php echo \PP\Helper::formatXPY($transactionOut['value'])?> XPY</td>
+					</tr>
+					<?php
+					$i++;
+				}
+			?>
 		</table>
 
 	</div>

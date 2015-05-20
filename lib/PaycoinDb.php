@@ -26,9 +26,9 @@ class PaycoinDb {
 
 	public function getBlockByHash($hash) {
 
-		$block = $this->mysql->select("SELECT * FROM blocks b WHERE `hash` = " . $this->mysql->escape($hash));
+		$block = $this->mysql->selectRow("SELECT * FROM blocks b WHERE `hash` = " . $this->mysql->escape($hash));
 
-		return $block[0];
+		return $block;
 	}
 
 	public function getBlockDetails($block) {

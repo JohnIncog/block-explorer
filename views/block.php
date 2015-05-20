@@ -1,17 +1,57 @@
 <?php
 $block = $this->getData('block');
+$hash = $this->getData('hash');
 
-$transactions = $this->getData('transactions');
-//echo '<pre>';
-//var_dump($block);
-//echo '</pre>';
-//@todo FROM  are WRONG... same as TO...
+if ($block != null) {
+	$transactions = $this->getData('transactions');
+	$totalIn = 0;
+
+	foreach($transactions as $k => $transaction) {
+		foreach($transaction['vin'] as $vin) {
+			$totalIn += $vin['value'];
+		}
+	}
+
+
+	// not idea to be looping here...
+	// options..1) do calculations before getting here.. (other loops within)
+	//			2) do calculations of 'valuein' during import.. (i like this idea best)
+
+
+	$created = $block['valueout'] - $totalIn;
+
+} else {
+	?>
+
+	<div class="my-template">
+
+	<?php $this->render('page_header'); ?>
+
+
+	<div class="blockTable">
+		<h2>Unknown Block Hash </h2>
+
+
+		<div class="alert alert-danger" role="alert">
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Error:</span>
+			<?php echo $hash; ?>
+		</div>
+
+
+	</div>
+
+
+	</div>
+
+	<?php
+	return;
+}
 ?>
 
 <div class="my-template">
 
 	<?php $this->render('page_header'); ?>
-
 
 
 	<div class="blockTable">
@@ -21,14 +61,18 @@ $transactions = $this->getData('transactions');
 		<tr>
 			<td>Hash</td>
 			<td>
-				<a href="<?php echo $block['previousblockhash']; ?>"><div class="glyphicon glyphicon-chevron-left"></div></a>
+				<?php if ($block['height'] > 1) { ?>
+					<a href="<?php echo $block['previousblockhash']; ?>"><div class="glyphicon glyphicon-chevron-left"></div></a>
+				<?php } ?>
 				<code><?php echo $this->getData('hash'); ?></code>
 				<a href="<?php echo $block['nextblockhash']; ?>"><div class="glyphicon glyphicon-chevron-right"></div></a>
 			</td>
 		</tr>
 		<tr>
 			<td>Date/Time</td><td><?php echo $block['time']; ?> extracted by
-			<?php if (strstr($block['flags'], 'Stake') == false) {
+			<?php
+
+			if (strstr($block['flags'], 'stake') == false) {
 				echo $transactions[0]['vout'][0]['address'];
 			} else {?>
 				Proof of Stake
@@ -55,7 +99,7 @@ $transactions = $this->getData('transactions');
 
 		<?php //if (strstr($block['flags'], 'Stake') == false) { ?>
 		<tr>
-			<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY(0.0); ?>?? XPY</td>
+			<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
 		</tr>
 		<?php //} ?>
 
@@ -88,7 +132,7 @@ $transactions = $this->getData('transactions');
 					</td>
 					<td>
 						<table style="width: 100%">
-					<?php
+						<?php
 						if ($k == 0) {
 							echo 'Generation + Fees';
 						} else {
@@ -100,12 +144,23 @@ $transactions = $this->getData('transactions');
 							<?php
 							}
 						}
-					?>
+						?>
 					</table>
 					</td>
 					<td>
 						<table style="width: 100%">
-							<?php foreach ($transaction['vout'] as $out) { ?>
+							<?php foreach ($transaction['vout'] as $i => $out) {
+								if ($out['type'] == 'nonstandard' && $i == 0 && $k == 0) {
+									echo "<tr><td>Included in following transaction(s)</td>"
+										. "<td class='text-right'>"
+										. \PP\Helper::formatXPY($created)." XPY</td>";
+									continue;
+								}
+								if (empty($out['address'])) {
+									continue;
+								}
+								?>
+
 							<tr>
 								<td><a href="/address/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
 								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?> XPY</td>
@@ -119,29 +174,6 @@ $transactions = $this->getData('transactions');
 				</tr>
 			<?php } ?>
 
-
-			<!-- tr>
-				<td>dasdas</td>
-				<td>0 XPY</td>
-				<td>
-					<table style="width: 100%">
-						<tr>
-							<td>P9awV6nvXLgab6oxtowJjYAQf3TkqPAnA5</td><td class="text-right">26.546023 XPY</td>
-						</tr>
-						<tr>
-							<td>P9awV6nvXLgab6oxtowJjYAQf3TkqPAnA5</td><td class="text-right">26.546023 XPY</td>
-						</tr>
-
-					</table>
-				</td>
-				<td colspan="2">
-					<table style="width: 100%">
-						<tr>
-							<td>P9awV6nvXLgab6oxtowJjYAQf3TkqPAnA5</td><td class="text-right">26.546023 XPY</td>
-						</tr>
-					</table>
-				</td>
-			</tr-->
 
 		</table>
 	</div>
