@@ -10,6 +10,9 @@ $routeCollection->add('block', new Routing\Route('/block/{hash}', array("class" 
 $routeCollection->add('transaction', new Routing\Route('/transaction/{txid}', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('search', new Routing\Route('/search/{q}', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('address', new Routing\Route('/address/{address}', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('api', new Routing\Route('/api', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('about', new Routing\Route('/about', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('contact', new Routing\Route('/contact', array("class" => "\\controllers\\Explorer")));
 
 
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Home")));

@@ -4,27 +4,17 @@ $hash = $this->getData('hash');
 
 if ($block != null) {
 	$transactions = $this->getData('transactions');
-	$totalIn = 0;
-
-	foreach($transactions as $k => $transaction) {
-		foreach($transaction['vin'] as $vin) {
-			$totalIn += $vin['value'];
-		}
+	$created = $block['mint'];
+	$destroyed = (int)$block['txFees'];
+	if ($created > 0 && $destroyed < 0) {
+		$created = bcadd($created, $destroyed, 8);
+		unset($destroyed);
 	}
-
-
-	// not idea to be looping here...
-	// options..1) do calculations before getting here.. (other loops within)
-	//			2) do calculations of 'valuein' during import.. (i like this idea best)
-
-
-	$created = $block['valueout'] - $totalIn;
 
 } else {
 	?>
 
 	<div class="my-template">
-
 	<?php $this->render('page_header'); ?>
 
 
@@ -93,15 +83,23 @@ if ($block != null) {
 			<td>Difficulty</td><td><?php echo $block['difficulty']; ?></td>
 		</tr>
 		<tr>
-			<td>Outstanding</td><td> --- XPY</td>
+			<td>Outstanding</td><td><?php echo \PP\Helper::formatXPY($block['outstanding']); ?> XPY</td>
 		</tr>
 
 
 		<?php //if (strstr($block['flags'], 'Stake') == false) { ?>
-		<tr>
-			<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
-		</tr>
-		<?php //} ?>
+		<?php if ($created > 0) { ?>
+			<tr>
+				<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
+			</tr>
+		<?php } ?>
+		<?php if ($destroyed < 0) { ?>
+			<tr>
+				<td><strong>Destroyed</strong></td><td><?php echo \PP\Helper::formatXPY($destroyed); ?> XPY</td>
+			</tr>
+		<?php } ?>
+		<?php
+		//} ?>
 
 	</table>
 

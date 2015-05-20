@@ -39,11 +39,29 @@ $created = $totalOut - $totalIn;
 			<td>Total Output</td>
 			<td><?php echo \PP\Helper::formatXPY($totalOut); ?> XPY</td>
 		</tr>
+		<?php if (stristr($transaction['flags'], 'proof-of-stake') !== false) { ?>
 		<tr>
 			<td>Proof of Stake + Fees</td>
 			<td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
 		</tr>
-
+		<?php } ?>
+		<?php if (stristr($transaction['flags'], 'proof-of-work') !== false) { ?>
+			<tr>
+				<td><?php if ($created > 0) {
+					echo "Mined + ";
+					} else {
+						$created = abs($created);
+					}
+					?> Fees</td>
+				<td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
+			</tr>
+		<?php } ?>
+		<?php if ($transaction['txFee'] > 0) { ?>
+		<tr>
+			<td>Fees</td>
+			<td><?php echo \PP\Helper::formatXPY($transaction['txFee']); ?> XPY</td>
+		</tr>
+		<?php } ?>
 	</table>
 
 

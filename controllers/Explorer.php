@@ -44,7 +44,6 @@ class Explorer extends Controller {
 		$this->render('footer');
 	}
 
-
 	public function block() {
 
 		$hash = $this->bootstrap->route['hash'];
@@ -94,4 +93,27 @@ class Explorer extends Controller {
 		$this->render('footer');
 
 	}
+
+
+	public function about() {
+
+		$this->render('header');
+		$this->render('about');
+		$this->render('footer');
+	}
+
+	public function api() {
+
+		$this->render('header');
+		$this->render('api');
+		$this->render('footer');
+	}
+
+	public function contact() {
+
+		$this->render('header');
+		$this->render('contact');
+		$this->render('footer');
+	}
+
 } 

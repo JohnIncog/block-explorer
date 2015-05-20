@@ -72,44 +72,58 @@ class PaycoinDb {
 
 	public function getTransaction($txId) {
 
-		$block = $this->mysql->select("SELECT * FROM transactions t WHERE `txid` = " . $this->mysql->escape($txId));
+		$transaction = $this->mysql->selectRow("
+			SELECT t.*, b.flags FROM transactions t
+			 JOIN blocks b on b.height = t.block_height
+			WHERE t.txid = " . $this->mysql->escape($txId));
 
-		return $block[0];
+		return $transaction;
 	}
 
-	public function processTransactions($transactions, $height) {
+	public function processTransactions($block) {
+		$transactions = $block['tx'];
 
 		$paycoin = new PaycoinRPC();
 		$totalValue = 0;
+		$totalValueIn = 0;
 		$transactionCount = 0;
 		foreach ($transactions as $transactions) {
 			$transactionCount++;
 			$rawTransaction = $paycoin->getRawTransaction($transactions);
 			$decodedTransaction = $paycoin->decodeRawTransaction($rawTransaction);
 
+			$vIn = $this->processVin($decodedTransaction);
+			$vOut = $this->processVout($decodedTransaction);
+			$this->processTX($decodedTransaction);
+
+			$totalValue = bcadd($vOut['valueTotal'], $totalValue, 8);
+			$totalValueIn = bcadd($vIn['valueTotal'], $totalValueIn, 8);
+
+			$txFee = bcsub($totalValue, $totalValueIn, 8);
+			$txFee = bcsub($txFee, $block['mint'], 8);
+
 			$transactionInsert[] = array(
 				'txid' => $decodedTransaction['txid'],
 				'version' => $decodedTransaction['version'],
 				'time' => $decodedTransaction['time'],
 				'locktime' => $decodedTransaction['locktime'],
-				'block_height' => $height,
+				'block_height' => $block['height'],
+				'txFee' => $txFee,
 				'raw' => serialize($decodedTransaction),
 			);
 
-			$this->processVin($decodedTransaction);
-			$vOut = $this->processVout($decodedTransaction);
-			$this->processTX($decodedTransaction);
-			$totalValue = bcadd($vOut['valueTotal'], $totalValue, 6);
+
 		}
 		$this->mysql->insertMultiple('transactions', $transactionInsert);
 		$return['totalValue'] = $totalValue;
+		$return['totalValueIn'] = $totalValueIn;
 		$return['transactionCount'] = $transactionCount;
 
 		return $return;
 	}
 
 	public function processVin($transaction) {
-
+		$valueTotal  = 0;
 		$vins = $transaction['vin'];
 		foreach ($vins as $vin) {
 			$insert = array();
@@ -118,7 +132,8 @@ class PaycoinDb {
 
 			if (isset($vin['txid'])) {
 				$insert['address'] = $this->getVout($vin['txid'], $vin['vout'], "addresses");
-				$insert['value'] = $b = $this->getVout($vin['txid'], $vin['vout'], "value");
+				$insert['value'] =  $this->getVout($vin['txid'], $vin['vout'], "value");
+				$valueTotal = bcadd($insert['value'], $valueTotal, 8);
 			}
 			foreach ($vin as $key => $value) {
 				if ($key == 'scriptSig') {
@@ -131,6 +146,9 @@ class PaycoinDb {
 			}
 			$this->mysql->insert('transactions_in', $insert);
 		}
+		$return['valueTotal'] = $valueTotal;
+
+		return $return;
 		//$this->mysql->insertMultiple('transactions_in', $insert);
 	}
 
@@ -158,7 +176,7 @@ class PaycoinDb {
 			$insert['time'] = $transaction['time'];
 			foreach ($vout as $key => $value) {
 				if ($key == "value") {
-					$valueTotal = bcadd($value, $valueTotal, 6);
+					$valueTotal = bcadd($value, $valueTotal, 8);
 				}
 				if ($key == "scriptPubKey") {
 					foreach ($value as $ke => $val) {
@@ -207,11 +225,12 @@ class PaycoinDb {
 	}
 
 	public function buildDb($startBlockHeight, $endBlockHeight) {
-
+		$outstanding = 0;
 		$paycoinRPC = new PaycoinRPC();
 		for ($i = $startBlockHeight; $i < $endBlockHeight; $i++) {
 			$blockHash = $paycoinRPC->getBlockHash($i);
 			$block = $paycoinRPC->getBlock($blockHash);
+
 			//echo "Block Height {$block['height']}" . PHP_EOL;
 			$blockInsert = array(
 				'hash' => $block['hash'],
@@ -235,9 +254,30 @@ class PaycoinDb {
 			);
 
 			$this->mysql->startTransaction();
-			$transactionsReturn = $this->processTransactions($block['tx'], $block['height']);
+			$transactionsReturn = $this->processTransactions($block);
+
+
 			$blockInsert['transactions'] = $transactionsReturn['transactionCount'];
 			$blockInsert['valueout'] = $transactionsReturn['totalValue'];
+			$blockInsert['valuein'] = $transactionsReturn['totalValueIn'];
+
+
+			$outstanding = bcadd($block['mint'], $outstanding, 8);
+
+			if (count($block['tx']) > 1) {
+				$txFees = bcsub($blockInsert['valueout'], bcadd($blockInsert['valuein'], $blockInsert['mint'], 8), 8);
+				$outstanding = bcadd($outstanding, $txFees, 8);
+				$blockInsert['txFees'] = $txFees;
+			}
+
+//			if ($block['height'] == 126) {  //first txfee
+//			if ($block['height'] == 309) {  //first destroy -0.005
+//			if ($block['height'] == 279) {  //first block with 0 coins / fees / stakes (nonstandard)
+
+
+			$blockInsert['outstanding'] = $outstanding;
+
+
 			$this->mysql->insert('blocks', $blockInsert);
 			$this->mysql->completeTransaction();
 

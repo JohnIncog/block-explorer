@@ -5,5 +5,7 @@ $wallet = $this->getData('wallet');
 
 	<?php $this->render('page_header'); ?>
 
+	<h1>Wallet Details</h1>
+	Coming Soon
 
 </div>

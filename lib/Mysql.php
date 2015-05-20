@@ -40,6 +40,11 @@ class Mysql {
 	public function selectRow($sql) {
 
 		$result = $this->mysql->query($sql);
+		$this->mysql->query($sql);
+		if (!empty($this->mysql->error)) {
+			echo $sql . PHP_EOL;
+			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		}
 		$row = $result->fetch_assoc();
 
 		return $row;
