@@ -55,7 +55,9 @@ if ($block != null) {
 					<a href="<?php echo $block['previousblockhash']; ?>"><div class="glyphicon glyphicon-chevron-left"></div></a>
 				<?php } ?>
 				<code><?php echo $this->getData('hash'); ?></code>
-				<a href="<?php echo $block['nextblockhash']; ?>"><div class="glyphicon glyphicon-chevron-right"></div></a>
+				<?php if (!empty($block['nextblockhash'])) { ?>
+					<a href="<?php echo $block['nextblockhash']; ?>"><div class="glyphicon glyphicon-chevron-right"></div></a>
+				<?php } ?>
 			</td>
 		</tr>
 		<tr>
@@ -77,25 +79,25 @@ if ($block != null) {
 			<td>Transactions</td><td><?php echo $block['transactions']; ?></td>
 		</tr>
 		<tr>
-			<td>Value Out</td><td><?php echo \PP\Helper::formatXPY($block['valueout']); ?> XPY</td>
+			<td>Value Out</td><td><?php echo \PP\Helper::formatXPY($block['valueout']); ?></td>
 		</tr>
 		<tr>
 			<td>Difficulty</td><td><?php echo $block['difficulty']; ?></td>
 		</tr>
 		<tr>
-			<td>Outstanding</td><td><?php echo \PP\Helper::formatXPY($block['outstanding']); ?> XPY</td>
+			<td>Outstanding</td><td><?php echo \PP\Helper::formatXPY($block['outstanding']); ?></td>
 		</tr>
 
 
 		<?php //if (strstr($block['flags'], 'Stake') == false) { ?>
 		<?php if ($created > 0) { ?>
 			<tr>
-				<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
+				<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?></td>
 			</tr>
 		<?php } ?>
 		<?php if ($destroyed < 0) { ?>
 			<tr>
-				<td><strong>Destroyed</strong></td><td><?php echo \PP\Helper::formatXPY($destroyed); ?> XPY</td>
+				<td><strong>Destroyed</strong></td><td><?php echo \PP\Helper::formatXPY($destroyed); ?></td>
 			</tr>
 		<?php } ?>
 		<?php
@@ -126,7 +128,7 @@ if ($block != null) {
 						foreach ($transaction['vout'] as $out) {
 							$total += $out['value'];
 						}
-						echo \PP\Helper::formatXPY($total); ?>XPY
+						echo \PP\Helper::formatXPY($total); ?>
 					</td>
 					<td>
 						<table style="width: 100%">
@@ -137,7 +139,7 @@ if ($block != null) {
 							foreach($transaction['vin'] as $in) { ?>
 							<tr>
 								<td><a href="/address/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
-								<td><?php echo \PP\Helper::formatXPY($in['value']); ?> XPY</td>
+								<td><?php echo \PP\Helper::formatXPY($in['value']); ?></td>
 							</tr>
 							<?php
 							}
@@ -151,7 +153,7 @@ if ($block != null) {
 								if ($out['type'] == 'nonstandard' && $i == 0 && $k == 0) {
 									echo "<tr><td>Included in following transaction(s)</td>"
 										. "<td class='text-right'>"
-										. \PP\Helper::formatXPY($created)." XPY</td>";
+										. \PP\Helper::formatXPY($created)."</td>";
 									continue;
 								}
 								if (empty($out['address'])) {
@@ -161,7 +163,7 @@ if ($block != null) {
 
 							<tr>
 								<td><a href="/address/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
-								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?> XPY</td>
+								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?></td>
 							</tr>
 							<?php } ?>
 						</table>

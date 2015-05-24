@@ -12,9 +12,9 @@ class PaycoinDb {
 
 	public function getBlockByHeight($blockHeight) {
 		$blockHeight = (int)$blockHeight;
-		$block = $this->mysql->select("SELECT * FROM blocks b WHERE `height` = $blockHeight ");
+		$block = $this->mysql->selectRow("SELECT * FROM blocks b WHERE `height` = $blockHeight ");
 
-		return $block[0];
+		return $block;
 	}
 
 	public function getLatestBlocks($limit) {
@@ -70,10 +70,23 @@ class PaycoinDb {
 		return $transactions;
 	}
 
+	/**
+	 * Used to determine Redeemed in
+	 * @param $txid
+	 * @return array
+	 */
+	public function getTransactionIn($txid) {
+
+		$sql = "SELECT  * from transactions_in WHERE `txid` = " . $this->mysql->escape($txid);
+		$transactions = $this->mysql->select($sql);
+
+		return $transactions;
+	}
+
 	public function getTransaction($txId) {
 
 		$transaction = $this->mysql->selectRow("
-			SELECT t.*, b.flags FROM transactions t
+			SELECT t.*, b.flags, b.hash FROM transactions t
 			 JOIN blocks b on b.height = t.block_height
 			WHERE t.txid = " . $this->mysql->escape($txId));
 
@@ -225,7 +238,13 @@ class PaycoinDb {
 	}
 
 	public function buildDb($startBlockHeight, $endBlockHeight) {
+
 		$outstanding = 0;
+		if ($startBlockHeight > 1) {
+			$previousBlock = $this->getBlockByHeight($startBlockHeight-1);
+			$outstanding = $previousBlock['outstanding'];
+		}
+
 		$paycoinRPC = new PaycoinRPC();
 		for ($i = $startBlockHeight; $i < $endBlockHeight; $i++) {
 			$blockHash = $paycoinRPC->getBlockHash($i);
@@ -334,6 +353,209 @@ class PaycoinDb {
 
 		return $return;
 
+
+	}
+
+	public function getAddressTransactions($address, $limit = 100000) {
+
+		$return['totalInTransactions'] = 0;
+		$return['totalStakeTransactions'] = 0;
+		$return['totalOutTransactions'] = 0;
+		$return['totalInValue'] = 0;
+		$return['totalOutValue'] = 0;
+		$return['totalStakeValue'] = 0;
+
+		$limit = (int)$limit;
+		$sql = "SELECT `txidp`, SUM(`value`) AS `value`, tri.`time`, COUNT(*) as cnt, t.block_height, tri.*
+				FROM transactions_in `tri`
+				JOIN transactions t ON tri.txidp = t.txid
+				WHERE address=" . $this->mysql->escape($address) . "
+				GROUP BY txidp
+				ORDER BY t.block_height DESC LIMIT $limit ";
+
+		//if count > 2 then its a receive else its a stake.
+
+		echo '<pre>';
+		var_dump($sql);
+		echo '</pre>';
+
+		$transactions = $this->mysql->select($sql);
+		foreach ($transactions as &$transaction) {
+			if ($transaction['cnt'] > 2) {
+				$transaction['type'] = 'Sent';
+//				$return['totalOutTransactions']++;
+			//} elseif ($transaction['cnt'] > 2) {
+			} else {
+				$transaction['type'] = 'Stake';
+
+				if ( //address PS43Jt2x3LXCkou2hZPaKjGwb1TQmAaihg
+					$transaction['txidp'] == '4a5b15b24ae3cd94b04db90e891954c70411e7e89893df34f0f83f974f4f5a05'
+					|| $transaction['txidp'] == '0c6332632bcbbab460800018ac03f7498e68fbfe5f9f4e112a1ad31d51d0903a'
+				) {
+					//wtf makes these different...
+					echo '<pre>';
+					var_dump($transaction);
+					echo '</pre>';
+					$transaction['type'] = 'Sent';
+				} else {
+					echo '<pre>';
+					var_dump('!!', $transaction);
+					echo '</pre>';
+				}
+
+//				$return['totalStakeTransactions']++;
+			}
+
+			$return['transactions'][$transaction['txidp']] = $transaction;
+		}
+
+//		echo '<pre>';
+//		var_dump($return);
+//		echo '</pre>';
+
+
+		$sql = "SELECT `txidp`, SUM(`value`) AS `value`, tro.`time`, t.block_height,  t.block_height, tro.type
+			FROM transactions_out `tro` JOIN transactions t ON tro.txidp = t.txid
+			WHERE address=" . $this->mysql->escape($address) . "
+			-- AND TYPE='pubkeyhash'
+			GROUP BY txidp
+			ORDER BY t.block_height DESC LIMIT $limit ";
+
+//
+//		echo '<pre>';
+//		var_dump($sql);
+//		echo '</pre>';
+
+		$transactions = $this->mysql->select($sql);
+		foreach ($transactions as &$transaction) {
+			$transaction['type'] = 'Received';
+//			$return['totalInTransactions']++;
+
+			if (isset($return['transactions'][$transaction['txidp']])) {
+				$return['transactions'][$transaction['txidp']]['value'] = $transaction['value'] - $return['transactions'][$transaction['txidp']]['value'];
+				if ($return['transactions'][$transaction['txidp']]['value'] < 0) {
+
+					var_dump($transaction);
+					var_dump($return['transactions'][$transaction['txidp']]);
+					die;
+				}
+
+			} else {
+				$return['transactions'][$transaction['txidp']] = $transaction;
+			}
+		}
+
+		$return['totalInTransactions'] = 0;
+		$return['totalStakeTransactions'] = 0;
+		$return['totalOutTransactions'] = 0;
+		$return['totalInValue'] = 0;
+		$return['totalOutValue'] = 0;
+		$return['totalStakeValue'] = 0;
+
+		foreach ($return['transactions'] as $i => $t) {
+			if ($t['type'] == 'Stake') {
+				$return['totalStakeTransactions']++;
+				$return['totalStakeValue'] += $t['value'];
+
+			} elseif ($t['type'] == 'Sent') {
+				$return['totalOutTransactions']++;
+				$return['totalOutValue'] += $t['value'];
+
+			} elseif ($t['type'] == 'Received') {
+				$return['totalInTransactions']++;
+				$return['totalInValue'] += $t['value'];
+
+			}
+
+		}
+
+
+//		echo '<pre>';
+//		var_dump($return);
+//		echo '</pre>';
+
+
+		return $return;
+
+	}
+
+	public function getAddressInformation($address, $limit = 100) {
+		$limit = (int)$limit;
+		$sql = "SELECT
+				*
+			FROM (
+				SELECT NULL, `txidp`, SUM(`value`) AS `value`, `time`, 'Received' as `type` FROM transactions_out WHERE address=" . $this->mysql->escape($address) . "
+				GROUP BY txidp
+				UNION
+				SELECT `txid`, `txidp`, `value`, `time`, 'Sent' as `type` FROM transactions_in WHERE address=" . $this->mysql->escape($address) . "
+
+			) AS transactions
+
+			JOIN transactions t ON transactions.txidp = t.txid
+
+			ORDER BY t.block_height DESC limit $limit
+			";
+
+		echo '<pre>';
+		var_dump($sql);
+		echo '</pre>';
+
+		$return['transactions'] = $this->mysql->select($sql);
+
+		$balance = 0;
+		$return['transactions'] = array_reverse($return['transactions']);
+
+		foreach ($return['transactions'] as $i => $t) {
+
+			if (!empty($return['transactions'][$i-1]) && $return['transactions'][$i-1]['txid'] == $return['transactions'][$i]['txid']) {
+
+				if ($return['transactions'][$i-1]['txFee'] == 0) {
+					$return['transactions'][$i]['type'] = 'Stake';
+				}
+				$return['transactions'][$i]['value'] = $return['transactions'][$i]['value'] - $return['transactions'][$i-1]['value'];
+				$balance += $t['value'];
+				$return['transactions'][$i]['balance'] = $balance;
+				unset($return['transactions'][$i-1]);
+
+			} elseif ($t['type'] == 'Sent') {
+				$balance -= $t['value'];
+				$return['transactions'][$i]['balance'] = $balance;
+			} elseif ($t['type'] == 'Received') {
+				$balance += $t['value'];
+				$return['transactions'][$i]['balance'] = $balance;
+			}
+
+		}
+
+		$return['totalInTransactions'] = 0;
+		$return['totalStakeTransactions'] = 0;
+		$return['totalOutTransactions'] = 0;
+		$return['totalInValue'] = 0;
+		$return['totalOutValue'] = 0;
+		$return['totalStakeValue'] = 0;
+
+		foreach ($return['transactions'] as $i => $t) {
+			if ($t['type'] == 'Stake') {
+				$return['totalStakeTransactions']++;
+				$return['totalStakeValue'] += $t['value'];
+
+			} elseif ($t['type'] == 'Sent') {
+				$return['totalOutTransactions']++;
+				$return['totalOutValue'] += $t['value'];
+
+			} elseif ($t['type'] == 'Received') {
+				$return['totalInTransactions']++;
+				$return['totalInValue'] += $t['value'];
+
+			}
+
+		}
+
+		$return['transactions'] = array_reverse($return['transactions']);
+		$last = current($return['transactions']);
+
+		$return['balance'] = $last['balance'];
+		return $return;
 
 	}
 

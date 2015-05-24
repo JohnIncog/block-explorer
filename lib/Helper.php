@@ -4,13 +4,21 @@ namespace PP;
 class Helper {
 
 	public static function formatXPY($xpy) {
-		$number = number_format($xpy, 8);
+
+		return self::formatCoin($xpy, 'XPY');
+
+	}
+
+	public static function formatCoin($amount, $symbol) {
+		$number = number_format($amount, 8);
 		$number = rtrim($number, 0);
 		if (substr($number, -1) == '.') {
 			$number = $number . 0;
 		}
-		return $number;
-
+		if ($number < 0) {
+			return '- ' . abs($number) . ' ' . $symbol;
+		}
+		return $number . ' ' . $symbol;
 	}
 
 	public static function getAddressLink($address) {
@@ -19,6 +27,11 @@ class Helper {
 		return $link;
 	}
 
+	public static function getTxHashLink($transaction) {
+		$link = '<div class="hash"><a href="' . self::getUrl('transaction', array('transaction' => $transaction))
+			. '" class="">' . $transaction . '</a></div>';
+		return $link;
+	}
 
 	public static function getUrl($pageName, $params = array()) {
 		switch ($pageName) {

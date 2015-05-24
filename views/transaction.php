@@ -1,5 +1,6 @@
 <?php
 $transaction = $this->getData('transaction');
+$redeemedIn = $this->getData('redeemedIn');
 $transactionsIn = $this->getData('transactionsIn');
 $transactionsOut = $this->getData('transactionsOut');
 $totalOut = 0;
@@ -37,12 +38,18 @@ $created = $totalOut - $totalIn;
 		</tr>
 		<tr>
 			<td>Total Output</td>
-			<td><?php echo \PP\Helper::formatXPY($totalOut); ?> XPY</td>
+			<td><?php echo \PP\Helper::formatXPY($totalOut); ?></td>
 		</tr>
 		<?php if (stristr($transaction['flags'], 'proof-of-stake') !== false) { ?>
 		<tr>
-			<td>Proof of Stake + Fees</td>
-			<td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
+			<td><?php if ($created > 0) {
+				echo 'Proof of Stake + ';
+				} else {
+					$created = abs($created);
+				}
+				?>
+				Fees</td>
+			<td><?php echo \PP\Helper::formatXPY($created); ?></td>
 		</tr>
 		<?php } ?>
 		<?php if (stristr($transaction['flags'], 'proof-of-work') !== false) { ?>
@@ -53,13 +60,13 @@ $created = $totalOut - $totalIn;
 						$created = abs($created);
 					}
 					?> Fees</td>
-				<td><?php echo \PP\Helper::formatXPY($created); ?> XPY</td>
+				<td><?php echo \PP\Helper::formatXPY($created); ?></td>
 			</tr>
 		<?php } ?>
 		<?php if ($transaction['txFee'] > 0) { ?>
 		<tr>
 			<td>Fees</td>
-			<td><?php echo \PP\Helper::formatXPY($transaction['txFee']); ?> XPY</td>
+			<td><?php echo \PP\Helper::formatXPY($transaction['txFee']); ?></td>
 		</tr>
 		<?php } ?>
 	</table>
@@ -109,18 +116,12 @@ $created = $totalOut - $totalIn;
 							$value = $totalOut;
 						} ?>
 
-						<?php echo \PP\Helper::formatXPY($value); ?> XPY
+						<?php echo \PP\Helper::formatXPY($value); ?>
 					</td>
 				</tr>
 
 
 			<?php } ?>
-<!--			<tr>-->
-<!--				<td>0</td>-->
-<!--				<td>Generation + Fees</td>-->
-<!--				<td>N/A</td>-->
-<!--				<td class="text-right">--><?php //echo \PP\Helper::formatXPY($totalOut); ?><!-- XPY</td>-->
-<!--			</tr>-->
 		</table>
 
 		<h3>Outputs</h3>
@@ -140,11 +141,18 @@ $created = $totalOut - $totalIn;
 					?>
 					<tr>
 						<td><?php echo $i ?></td>
-						<td>  </td>
+						<td><?php
+							if (!empty($redeemedIn[$i]['txidp'])) {
+								echo \PP\Helper::getTxHashLink($redeemedIn[$i]['txidp']);
+							} else {
+								echo '<i>Not yet redeemed</i>';
+							}
+
+							?></td>
 						<td>
 							<?php echo \PP\Helper::getAddressLink($transactionOut['address']); ?>
 						</td>
-						<td class="text-right"><?php echo \PP\Helper::formatXPY($transactionOut['value'])?> XPY</td>
+						<td class="text-right"><?php echo \PP\Helper::formatXPY($transactionOut['value'])?></td>
 					</tr>
 					<?php
 					$i++;

@@ -19,11 +19,16 @@ class Explorer extends Controller {
 	public function search() {
 
 		$q = $this->bootstrap->httpRequest->get('q');
-
+		$q = trim($q);
 		$paycoinDb = new PaycoinDb();
 		$results = $paycoinDb->search($q);
 
-		//@todo if only one result then redirect.
+		if (count($results) == 1) {
+			$result = current($results);
+			$url = current(array_values($result));
+			header('Location: ' . $url);
+			return;
+		}
 
 		$this->setData('q', $q);
 		$this->setData('results', $results);
@@ -35,9 +40,16 @@ class Explorer extends Controller {
 
 	public function address() {
 
-		$wallet = $this->bootstrap->route['address'];
+		$address = $this->bootstrap->route['address'];
 
-		$this->setData('address', $wallet);
+
+		$paycoinDb = new PaycoinDb();
+
+		//$addressInformation = $paycoinDb->getAddressInformation($address);
+		$addressInformation = $paycoinDb->getAddressTransactions($address);
+
+		$this->setData('address', $address);
+		$this->setData('addressInformation', $addressInformation);
 
 		$this->render('header');
 		$this->render('address');
@@ -76,17 +88,10 @@ class Explorer extends Controller {
 		$transactionsIn = $paycoin->getTransactionsIn($txid);
 		$transactionsOut = $paycoin->getTransactionsOut($txid);
 
+		$this->setData('redeemedIn', $paycoin->getTransactionIn($transaction['txid']));
 		$this->setData('transaction', $transaction);
 		$this->setData('transactionsIn', $transactionsIn);
 		$this->setData('transactionsOut', $transactionsOut);
-
-		if ($this->bootstrap->httpRequest->get('debug')) {
-			echo "<pre>";
-			var_dump($transaction);
-			var_dump($transactionsIn);
-			var_dump($transactionsOut);
-			echo "</pre>";
-		}
 
 		$this->render('header');
 		$this->render('transaction');

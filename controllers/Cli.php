@@ -23,7 +23,7 @@ class Cli extends Controller {
 
 		$startBlockHeight = $paycoinDb->getLastBlockInDb();
 		$startBlockHeight = (int)$startBlockHeight;
-		$startBlockHeight++;
+
 
 		$endBlockHeight = $paycoinRPC->getBlockCount();
 
@@ -35,7 +35,7 @@ class Cli extends Controller {
 		}
 
 		//@todo move this...
-
+		$startBlockHeight++;
 		$paycoinDb->buildDb($startBlockHeight, $endBlockHeight);
 
 		echo "Complete" . PHP_EOL;
