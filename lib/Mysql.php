@@ -66,7 +66,7 @@ class Mysql {
 		return $escaped;
 	}
 
-	public function insert($table, array $insert, $ignore = false) {
+	public function insert($table, array $insert, $ignore = false, $update = false) {
 
 
 		$sql = "INSERT ";
@@ -87,6 +87,16 @@ class Mysql {
 		}
 		$sql = substr($sql, 0, -2);
 		$sql .= ")";
+
+		if ($update) {
+			$sql .= ' ON DUPLICATE KEY UPDATE ';
+			foreach ($update as $field => $value) {
+				$sql .= "{$field} = {$value}, ";
+			}
+			$sql = substr($sql, 0, -2);
+
+		}
+
 		$this->mysql->query($sql);
 		if (!empty($this->mysql->error)) {
 			throw new \Exception('SQL Error: ' . $this->mysql->error);

@@ -12,11 +12,12 @@ class Helper {
 	public static function formatCoin($amount, $symbol) {
 		$number = number_format($amount, 8);
 		$number = rtrim($number, 0);
+
 		if (substr($number, -1) == '.') {
 			$number = $number . 0;
 		}
 		if ($number < 0) {
-			return '- ' . abs($number) . ' ' . $symbol;
+			return str_replace('-', '- ', $number) . ' ' . $symbol;
 		}
 		return $number . ' ' . $symbol;
 	}

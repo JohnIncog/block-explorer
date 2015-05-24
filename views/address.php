@@ -45,7 +45,7 @@ $addressInformation = $this->getData('addressInformation');
 		</tr>
 		<?php foreach ($addressInformation['transactions'] as $i => $t) { ?>
 		<tr>
-			<td><?php echo \PP\Helper::getTxHashLink($t['txidp']) ?></td>
+			<td><?php echo \PP\Helper::getTxHashLink($t['txid']) ?></td>
 			<td><?php echo $t['block_height'] ?></td>
 			<td><?php echo \PP\Helper::formatTime($t['time']) ?></td>
 			<td>
@@ -55,13 +55,13 @@ $addressInformation = $this->getData('addressInformation');
 				}
 				?>
 				<?php echo \PP\Helper::formatXPY($t['value']);
-				if ($t['type'] == 'Stake') {
+				if ($t['type'] == 'stake') {
 					echo ' <span class="label label-info">Stake</span>';
 				}
 
 				?>
 			</td>
-			<td><?php echo \PP\Helper::formatXPY($t['balance']), $t['type'] ?></td>
+			<td><?php echo \PP\Helper::formatXPY($t['balance']) ?></td>
 		</tr>
 		<?php } ?>
 	</table>

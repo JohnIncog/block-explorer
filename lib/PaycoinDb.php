@@ -355,207 +355,189 @@ class PaycoinDb {
 
 
 	}
+	public function getAddressTransactions($address, $limit = 10000) {
 
-	public function getAddressTransactions($address, $limit = 100000) {
-
-		$return['totalInTransactions'] = 0;
-		$return['totalStakeTransactions'] = 0;
-		$return['totalOutTransactions'] = 0;
-		$return['totalInValue'] = 0;
-		$return['totalOutValue'] = 0;
-		$return['totalStakeValue'] = 0;
-
-		$limit = (int)$limit;
-		$sql = "SELECT `txidp`, SUM(`value`) AS `value`, tri.`time`, COUNT(*) as cnt, t.block_height, tri.*
-				FROM transactions_in `tri`
-				JOIN transactions t ON tri.txidp = t.txid
-				WHERE address=" . $this->mysql->escape($address) . "
-				GROUP BY txidp
-				ORDER BY t.block_height DESC LIMIT $limit ";
-
-		//if count > 2 then its a receive else its a stake.
-
-		echo '<pre>';
-		var_dump($sql);
-		echo '</pre>';
-
+		$sql = "SELECT * FROM wallets WHERE address = " . $this->mysql->escape($address)
+			.  "ORDER BY id DESC LIMIT $limit ";
 		$transactions = $this->mysql->select($sql);
-		foreach ($transactions as &$transaction) {
-			if ($transaction['cnt'] > 2) {
-				$transaction['type'] = 'Sent';
-//				$return['totalOutTransactions']++;
-			//} elseif ($transaction['cnt'] > 2) {
-			} else {
-				$transaction['type'] = 'Stake';
+		$return['transactions'] = $transactions;
 
-				if ( //address PS43Jt2x3LXCkou2hZPaKjGwb1TQmAaihg
-					$transaction['txidp'] == '4a5b15b24ae3cd94b04db90e891954c70411e7e89893df34f0f83f974f4f5a05'
-					|| $transaction['txidp'] == '0c6332632bcbbab460800018ac03f7498e68fbfe5f9f4e112a1ad31d51d0903a'
-				) {
-					//wtf makes these different...
-					echo '<pre>';
-					var_dump($transaction);
-					echo '</pre>';
-					$transaction['type'] = 'Sent';
-				} else {
-					echo '<pre>';
-					var_dump('!!', $transaction);
-					echo '</pre>';
-				}
-
-//				$return['totalStakeTransactions']++;
-			}
-
-			$return['transactions'][$transaction['txidp']] = $transaction;
-		}
-
-//		echo '<pre>';
-//		var_dump($return);
-//		echo '</pre>';
+		$last = current($transactions);
+		$return['balance'] = $last['balance'];
 
 
-		$sql = "SELECT `txidp`, SUM(`value`) AS `value`, tro.`time`, t.block_height,  t.block_height, tro.type
-			FROM transactions_out `tro` JOIN transactions t ON tro.txidp = t.txid
-			WHERE address=" . $this->mysql->escape($address) . "
-			-- AND TYPE='pubkeyhash'
-			GROUP BY txidp
-			ORDER BY t.block_height DESC LIMIT $limit ";
+		$sql = "SELECT `address`, `type`, SUM(`value`) as `sum`, COUNT(*) as `transactions` FROM wallets WHERE address = " . $this->mysql->escape($address)
+			.  "GROUP BY `address`, `type` ";
 
-//
-//		echo '<pre>';
-//		var_dump($sql);
-//		echo '</pre>';
-
-		$transactions = $this->mysql->select($sql);
-		foreach ($transactions as &$transaction) {
-			$transaction['type'] = 'Received';
-//			$return['totalInTransactions']++;
-
-			if (isset($return['transactions'][$transaction['txidp']])) {
-				$return['transactions'][$transaction['txidp']]['value'] = $transaction['value'] - $return['transactions'][$transaction['txidp']]['value'];
-				if ($return['transactions'][$transaction['txidp']]['value'] < 0) {
-
-					var_dump($transaction);
-					var_dump($return['transactions'][$transaction['txidp']]);
-					die;
-				}
-
-			} else {
-				$return['transactions'][$transaction['txidp']] = $transaction;
-			}
-		}
-
-		$return['totalInTransactions'] = 0;
-		$return['totalStakeTransactions'] = 0;
-		$return['totalOutTransactions'] = 0;
-		$return['totalInValue'] = 0;
-		$return['totalOutValue'] = 0;
-		$return['totalStakeValue'] = 0;
-
-		foreach ($return['transactions'] as $i => $t) {
-			if ($t['type'] == 'Stake') {
-				$return['totalStakeTransactions']++;
-				$return['totalStakeValue'] += $t['value'];
-
-			} elseif ($t['type'] == 'Sent') {
-				$return['totalOutTransactions']++;
-				$return['totalOutValue'] += $t['value'];
-
-			} elseif ($t['type'] == 'Received') {
-				$return['totalInTransactions']++;
-				$return['totalInValue'] += $t['value'];
-
+		$totals = $this->mysql->select($sql);
+		foreach ($totals as $total) {
+			if ($total['type'] == 'receive') {
+				$return['totalInValue'] = $total['sum'];
+				$return['totalInTransactions'] = $total['transactions'];
+			} if ($total['type'] == 'send') {
+				$return['totalOutValue'] = $total['sum'];
+				$return['totalOutTransactions'] = $total['transactions'];
+			} elseif ($total['type'] == 'stake') {
+				$return['totalStakeValue'] = $total['sum'];
+				$return['totalStakeTransactions'] = $total['transactions'];
 			}
 
 		}
-
-
-//		echo '<pre>';
-//		var_dump($return);
-//		echo '</pre>';
-
-
 		return $return;
 
 	}
 
-	public function getAddressInformation($address, $limit = 100) {
-		$limit = (int)$limit;
-		$sql = "SELECT
-				*
-			FROM (
-				SELECT NULL, `txidp`, SUM(`value`) AS `value`, `time`, 'Received' as `type` FROM transactions_out WHERE address=" . $this->mysql->escape($address) . "
-				GROUP BY txidp
-				UNION
-				SELECT `txid`, `txidp`, `value`, `time`, 'Sent' as `type` FROM transactions_in WHERE address=" . $this->mysql->escape($address) . "
 
-			) AS transactions
 
-			JOIN transactions t ON transactions.txidp = t.txid
+	public function buildWalletDb() {
 
-			ORDER BY t.block_height DESC limit $limit
-			";
+		$offset = 0;
+		$limit = 1000;
 
-		echo '<pre>';
-		var_dump($sql);
-		echo '</pre>';
+		//$last = 640168;
+		$q = $this->mysql->selectRow('SELECT MAX(`id`) as `max` from transactions');
+		$last = (int)$q['max'];
 
-		$return['transactions'] = $this->mysql->select($sql);
+		for ($i = $offset; $i <= $last; $i = $i+$limit) {
+			echo "$i, $limit" . PHP_EOL;
 
-		$balance = 0;
-		$return['transactions'] = array_reverse($return['transactions']);
+			$sql = "SELECT * FROM transactions LIMIT {$i}, {$limit}";
+			$transactions = $this->mysql->select($sql);
 
-		foreach ($return['transactions'] as $i => $t) {
+			foreach ($transactions as $transaction) {
+				$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
+				$transactionsIn = $this->mysql->select($sql);
 
-			if (!empty($return['transactions'][$i-1]) && $return['transactions'][$i-1]['txid'] == $return['transactions'][$i]['txid']) {
+				$sql = "SELECT * FROM transactions_out WHERE txidp = " . $this->mysql->escape($transaction['txid']);
+				$transactionsOut = $this->mysql->select($sql);
 
-				if ($return['transactions'][$i-1]['txFee'] == 0) {
-					$return['transactions'][$i]['type'] = 'Stake';
+				if (count($transactionsIn) == 0) { //only outputs.. creation?
+					$a = array();
+					$value = 0;
+					foreach ($transactionsOut as $transactionOut) {
+						if (empty($transactionOut['address'])) {
+							continue;
+						}
+						if (!isset($a[$transactionOut['address']])) {
+							$a[$transactionOut['address']] = 0;
+						}
+						if ($transactionOut['value'] > 0) {
+							$value += $transactionOut['value'];
+							$a[$transactionOut['address']] = $value;
+						}
+
+					}
+					if (count($a) > 0) {
+						//echo "creation {$transaction['txid']}" . PHP_EOL;
+						foreach ($a as $address => $value) {
+							$insert = array(
+								'address' => $address,
+								'value' => $value,
+								'txid' => $transaction['txid'],
+								'block_height' => $transaction['block_height'],
+								'time' => $transaction['time'],
+								'type' => 'creation'
+							);
+
+							$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
+								. "ORDER BY id DESC LIMIT 1";
+							$q = $this->mysql->selectRow($sql);
+							if ($q['balance'] == null) {
+								$balance = $value;
+							} else {
+								$balance = $q['balance'] + $value;
+							}
+							$insert['balance'] = $balance;
+
+
+
+							$this->mysql->insert('wallets', $insert);
+						//	var_dump($insert);
+						}
+						//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
+						//var_dump($a);
+					}
+					//var_dump($transactionsOut);
+
+				} else {
+
+					$a = array();
+					//echo "transactions {$transaction['txid']}" . PHP_EOL;
+
+					foreach ($transactionsIn as $transactionIn) {
+						if (!isset($a[$transactionIn['address']])) {
+							$a[$transactionIn['address']] = 0;
+						}
+						$a[$transactionIn['address']] -= $transactionIn['value'];
+						//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
+					}
+					//var_dump($a);
+					$stake = false;
+					foreach ($transactionsOut as $transactionOut) {
+
+						if (empty($transactionOut['address'])) {
+
+							//echo 'stake!' . PHP_EOL;
+							$stake = true;
+							unset($transactionOut['address']);
+
+						} else {
+							if (!isset($a[$transactionOut['address']])) {
+								$a[$transactionOut['address']] = 0;
+							}
+
+							$a[$transactionOut['address']] += $transactionOut['value'];
+						}
+						//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
+					}
+					//var_dump($a);
+					foreach ($a as $address => $value) {
+						$insert = array(
+							'address' => $address,
+							'value' => $value,
+							'txid' => $transaction['txid'],
+							'block_height' => $transaction['block_height'],
+							'time' => $transaction['time'],
+							'type' => 'transaction',
+
+						);
+
+						if ($stake) {
+							$insert['type'] = 'stake';
+						} elseif ($value < 0) {
+							$insert['type'] = 'send';
+						} else {
+							$insert['type'] = 'receive';
+						}
+
+						$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
+							. "ORDER BY id DESC LIMIT 1";
+						$q = $this->mysql->selectRow($sql);
+						if ($q['balance'] == null) {
+							$balance = $value;
+						} else {
+							$balance = $q['balance'] + $value;
+						}
+						$insert['balance'] = $balance;
+						$this->mysql->insert('wallets', $insert);
+						//var_dump($insert);
+					}
+					//echo "unknown" . PHP_EOL;
+//
+//				var_dump($transaction);
+//				var_dump($transactionsIn);
+//				var_dump($transactionsOut);
+
 				}
-				$return['transactions'][$i]['value'] = $return['transactions'][$i]['value'] - $return['transactions'][$i-1]['value'];
-				$balance += $t['value'];
-				$return['transactions'][$i]['balance'] = $balance;
-				unset($return['transactions'][$i-1]);
 
-			} elseif ($t['type'] == 'Sent') {
-				$balance -= $t['value'];
-				$return['transactions'][$i]['balance'] = $balance;
-			} elseif ($t['type'] == 'Received') {
-				$balance += $t['value'];
-				$return['transactions'][$i]['balance'] = $balance;
+
+//			exit;
 			}
-
 		}
 
-		$return['totalInTransactions'] = 0;
-		$return['totalStakeTransactions'] = 0;
-		$return['totalOutTransactions'] = 0;
-		$return['totalInValue'] = 0;
-		$return['totalOutValue'] = 0;
-		$return['totalStakeValue'] = 0;
 
-		foreach ($return['transactions'] as $i => $t) {
-			if ($t['type'] == 'Stake') {
-				$return['totalStakeTransactions']++;
-				$return['totalStakeValue'] += $t['value'];
 
-			} elseif ($t['type'] == 'Sent') {
-				$return['totalOutTransactions']++;
-				$return['totalOutValue'] += $t['value'];
 
-			} elseif ($t['type'] == 'Received') {
-				$return['totalInTransactions']++;
-				$return['totalInValue'] += $t['value'];
-
-			}
-
-		}
-
-		$return['transactions'] = array_reverse($return['transactions']);
-		$last = current($return['transactions']);
-
-		$return['balance'] = $last['balance'];
-		return $return;
 
 	}
 

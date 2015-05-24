@@ -42,6 +42,12 @@ class Cli extends Controller {
 
 	}
 
+	public function buildWalletDatabase() {
 
+		$paycoinDb = new PaycoinDb();
+		echo "Building wallet database" .PHP_EOL;
+		$paycoinDb->buildWalletDb();
+
+	}
 
 } 
