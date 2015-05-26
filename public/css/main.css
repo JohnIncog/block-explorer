@@ -50,3 +50,9 @@ body {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
+.addressReceive {
+	color: green;
+}
+.addressSend {
+	color: red;
+}

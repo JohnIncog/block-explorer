@@ -355,14 +355,19 @@ class PaycoinDb {
 
 
 	}
-	public function getAddressTransactions($address, $limit = 10000) {
+	public function getAddressInformation($address, $limit = 100000) {
 
-		$sql = "SELECT * FROM wallets WHERE address = " . $this->mysql->escape($address)
-			.  "ORDER BY id DESC LIMIT $limit ";
+		$sql = "SELECT w.*, rl.rank FROM wallets w "
+			.  " LEFT JOIN richlist rl on rl.address= w.address"
+			. " WHERE w.address = " . $this->mysql->escape($address)
+			.  " ORDER BY w.id DESC LIMIT $limit ";
+
 		$transactions = $this->mysql->select($sql);
+
 		$return['transactions'] = $transactions;
 
 		$last = current($transactions);
+		$return['rank'] = $last['rank'];
 		$return['balance'] = $last['balance'];
 
 
@@ -371,11 +376,11 @@ class PaycoinDb {
 
 		$totals = $this->mysql->select($sql);
 		foreach ($totals as $total) {
-			if ($total['type'] == 'receive') {
+			if ($total['type'] == 'receive' ) {
 				$return['totalInValue'] = $total['sum'];
 				$return['totalInTransactions'] = $total['transactions'];
 			} if ($total['type'] == 'send') {
-				$return['totalOutValue'] = $total['sum'];
+				$return['totalOutValue'] = str_replace('-', '',$total['sum']);
 				$return['totalOutTransactions'] = $total['transactions'];
 			} elseif ($total['type'] == 'stake') {
 				$return['totalStakeValue'] = $total['sum'];
@@ -387,11 +392,13 @@ class PaycoinDb {
 
 	}
 
-
-
 	public function buildWalletDb() {
 
-		$offset = 0;
+		//@todo make this this resume...
+
+		$q = $this->mysql->selectRow('SELECT id FROM transactions WHERE txid = (SELECT txid FROM wallets ORDER BY id DESC LIMIT 1)');
+		$offset = (int)$q['id'];
+
 		$limit = 1000;
 
 		//$last = 640168;
@@ -401,143 +408,239 @@ class PaycoinDb {
 		for ($i = $offset; $i <= $last; $i = $i+$limit) {
 			echo "$i, $limit" . PHP_EOL;
 
-			$sql = "SELECT * FROM transactions LIMIT {$i}, {$limit}";
+			$sql = "SELECT * FROM transactions ORDER BY id LIMIT {$i}, {$limit}";
 			$transactions = $this->mysql->select($sql);
 
 			foreach ($transactions as $transaction) {
-				$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
-				$transactionsIn = $this->mysql->select($sql);
 
-				$sql = "SELECT * FROM transactions_out WHERE txidp = " . $this->mysql->escape($transaction['txid']);
-				$transactionsOut = $this->mysql->select($sql);
+				$this->addTransactionToAddress($transaction);
 
-				if (count($transactionsIn) == 0) { //only outputs.. creation?
-					$a = array();
-					$value = 0;
-					foreach ($transactionsOut as $transactionOut) {
-						if (empty($transactionOut['address'])) {
-							continue;
-						}
-						if (!isset($a[$transactionOut['address']])) {
-							$a[$transactionOut['address']] = 0;
-						}
-						if ($transactionOut['value'] > 0) {
-							$value += $transactionOut['value'];
-							$a[$transactionOut['address']] = $value;
-						}
-
-					}
-					if (count($a) > 0) {
-						//echo "creation {$transaction['txid']}" . PHP_EOL;
-						foreach ($a as $address => $value) {
-							$insert = array(
-								'address' => $address,
-								'value' => $value,
-								'txid' => $transaction['txid'],
-								'block_height' => $transaction['block_height'],
-								'time' => $transaction['time'],
-								'type' => 'creation'
-							);
-
-							$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
-								. "ORDER BY id DESC LIMIT 1";
-							$q = $this->mysql->selectRow($sql);
-							if ($q['balance'] == null) {
-								$balance = $value;
-							} else {
-								$balance = $q['balance'] + $value;
-							}
-							$insert['balance'] = $balance;
-
-
-
-							$this->mysql->insert('wallets', $insert);
-						//	var_dump($insert);
-						}
-						//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
-						//var_dump($a);
-					}
-					//var_dump($transactionsOut);
-
-				} else {
-
-					$a = array();
-					//echo "transactions {$transaction['txid']}" . PHP_EOL;
-
-					foreach ($transactionsIn as $transactionIn) {
-						if (!isset($a[$transactionIn['address']])) {
-							$a[$transactionIn['address']] = 0;
-						}
-						$a[$transactionIn['address']] -= $transactionIn['value'];
-						//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
-					}
-					//var_dump($a);
-					$stake = false;
-					foreach ($transactionsOut as $transactionOut) {
-
-						if (empty($transactionOut['address'])) {
-
-							//echo 'stake!' . PHP_EOL;
-							$stake = true;
-							unset($transactionOut['address']);
-
-						} else {
-							if (!isset($a[$transactionOut['address']])) {
-								$a[$transactionOut['address']] = 0;
-							}
-
-							$a[$transactionOut['address']] += $transactionOut['value'];
-						}
-						//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
-					}
-					//var_dump($a);
-					foreach ($a as $address => $value) {
-						$insert = array(
-							'address' => $address,
-							'value' => $value,
-							'txid' => $transaction['txid'],
-							'block_height' => $transaction['block_height'],
-							'time' => $transaction['time'],
-							'type' => 'transaction',
-
-						);
-
-						if ($stake) {
-							$insert['type'] = 'stake';
-						} elseif ($value < 0) {
-							$insert['type'] = 'send';
-						} else {
-							$insert['type'] = 'receive';
-						}
-
-						$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
-							. "ORDER BY id DESC LIMIT 1";
-						$q = $this->mysql->selectRow($sql);
-						if ($q['balance'] == null) {
-							$balance = $value;
-						} else {
-							$balance = $q['balance'] + $value;
-						}
-						$insert['balance'] = $balance;
-						$this->mysql->insert('wallets', $insert);
-						//var_dump($insert);
-					}
-					//echo "unknown" . PHP_EOL;
-//
-//				var_dump($transaction);
-//				var_dump($transactionsIn);
-//				var_dump($transactionsOut);
-
-				}
-
-
-//			exit;
 			}
 		}
 
+	}
+
+	/**
+	 *
+	 * Add/Update address balance tracking.
+	 *
+	 * @param array $transaction req keys = txid, block_height, time
+	 *
+	 */
+	public function addTransactionToAddress(array $transaction) {
+
+		$this->mysql->startTransaction();
+
+		$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
+		$transactionsIn = $this->mysql->select($sql);
+
+		$sql = "SELECT * FROM transactions_out WHERE txidp = " . $this->mysql->escape($transaction['txid']);
+		$transactionsOut = $this->mysql->select($sql);
+
+		if (count($transactionsIn) == 0) { //only outputs.. creation?
+			$a = array();
+			$value = 0;
+
+			//get the out put address and insert
+			foreach ($transactionsOut as $transactionOut) {
+				if (empty($transactionOut['address'])) {
+					continue;
+				}
+				if (!isset($a[$transactionOut['address']])) {
+					$a[$transactionOut['address']] = 0;
+				}
+				if ($transactionOut['value'] > 0) {
+					$value += $transactionOut['value'];
+					$a[$transactionOut['address']] = $value;
+				}
+
+			}
+
+			if (count($a) > 0) {
+				//echo "creation {$transaction['txid']}" . PHP_EOL;
+				foreach ($a as $address => $value) {
+					$insert = array(
+						'address' => $address,
+						'value' => $value,
+						'txid' => $transaction['txid'],
+						'block_height' => $transaction['block_height'],
+						'time' => $transaction['time'],
+						'type' => 'creation'
+					);
+
+					$addressBalance = $this->getAddressBalance($address);
+					if ($addressBalance == 0) {
+						$balance = $value;
+					} else {
+						$balance = $addressBalance + $value;
+					}
+					$insert['balance'] = $balance;
+					$this->mysql->insert('wallets', $insert);
+				}
+				//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
+				//var_dump($a);
+			}
+			//var_dump($transactionsOut);
+
+		} else {
+
+			$a = array();
+			//echo "transactions {$transaction['txid']}" . PHP_EOL;
+
+			foreach ($transactionsIn as $transactionIn) {
+				if (!isset($a[$transactionIn['address']])) {
+					$a[$transactionIn['address']] = 0;
+				}
+				$a[$transactionIn['address']] -= $transactionIn['value'];
+				//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
+			}
+			//var_dump($a);
+			$stake = false;
+			foreach ($transactionsOut as $transactionOut) {
+
+				if (empty($transactionOut['address'])) {
+
+					//echo 'stake!' . PHP_EOL;
+					$stake = true;
+					unset($transactionOut['address']);
+
+				} else {
+					if (!isset($a[$transactionOut['address']])) {
+						$a[$transactionOut['address']] = 0;
+					}
+
+					$a[$transactionOut['address']] += $transactionOut['value'];
+				}
+				//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
+			}
+			//var_dump($a);
+			foreach ($a as $address => $value) {
+				$insert = array(
+					'address' => $address,
+					'value' => $value,
+					'txid' => $transaction['txid'],
+					'block_height' => $transaction['block_height'],
+					'time' => $transaction['time'],
+					'type' => 'transaction',
+
+				);
+
+				if ($stake) {
+					$insert['type'] = 'stake';
+				} elseif ($value < 0) {
+					$insert['type'] = 'send';
+				} else {
+					$insert['type'] = 'receive';
+				}
+
+				$addressBalance = $this->getAddressBalance($address);
+				if ($addressBalance == 0) {
+					$balance = $value;
+				} else {
+					$balance = $addressBalance + $value;
+				}
+				$insert['balance'] = $balance;
+				$this->mysql->insert('wallets', $insert);
+			}
+
+
+		}
+
+		$this->mysql->completeTransaction();
+	}
+
+	/**
+	 * @param array $addressValues key = address, value = coin value
+	 */
+	public function processWalletUpdates(array $addressValues, $transaction, $stake = false) {
+
+		foreach ($addressValues as $address => $value) {
+			$insert = array(
+				'address' => $address,
+				'value' => $value,
+				'txid' => $transaction['txid'],
+				'block_height' => $transaction['block_height'],
+				'time' => $transaction['time'],
+				'type' => 'transaction',
+
+			);
+
+			if ($stake) {
+				$insert['type'] = 'stake';
+			} elseif ($value < 0) {
+				$insert['type'] = 'send';
+			} else {
+				$insert['type'] = 'receive';
+			}
+
+			$addressBalance = $this->getAddressBalance($address);
+			if ($addressBalance == 0) {
+				$balance = $value;
+			} else {
+				$balance = $addressBalance + $value;
+			}
+			$insert['balance'] = $balance;
+			$this->mysql->insert('wallets', $insert);
+		}
+	}
+
+	public function getAddressBalance($address) {
+		$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
+			. "ORDER BY id DESC LIMIT 1";
+		$q = $this->mysql->selectRow($sql);
+		$balance = 0;
+		if ($q['balance'] != null) {
+			$balance = $q['balance'];
+		}
+		return $balance;
+	}
 
 
 
+	public function buildRichList() {
+
+		$q = $this->mysql->selectRow('SELECT outstanding from blocks ORDER BY height DESC LIMIT 1 ');
+		$outstanding = (int)$q['outstanding'];
+
+		$this->mysql->query("CREATE TABLE new_richlist LIKE richlist");
+
+		$sql = "SELECT SUM(`value`) AS `balance`, address, MAX(`block_height`) as `block_height`, MAX(`time`) as `time` FROM wallets
+			 GROUP BY address
+			 ORDER BY balance DESC LIMIT 10000";
+
+		$richList = $this->mysql->select($sql);
+
+		foreach ($richList as $rank => $rich) {
+			$f = $rich['balance']/$outstanding*100;
+
+
+			//$per = bcdiv($rich['balance'], $outstanding, 8);
+			//$per = bcmul($per, 100, 8);
+			//var_dump($per);
+			$insert[] = array(
+				'rank' => $rank + 1,
+				'address' => $rich['address'],
+				'balance' => $rich['balance'],
+				'block_height' => $rich['block_height'],
+				'time' => $rich['time'],
+				'percent' => $f
+			);
+		}
+
+		$this->mysql->insertMultiple('new_richlist', $insert);
+		$this->mysql->startTransaction();
+		$this->mysql->query("DROP TABLE richlist ");
+		$this->mysql->query("CREATE TABLE richlist LIKE new_richlist");
+		$this->mysql->query("INSERT INTO richlist SELECT * FROM new_richlist");
+		$this->mysql->query("DROP TABLE new_richlist ");
+		$this->mysql->completeTransaction();
+
+	}
+
+	public function getRichList($limit = 100) {
+		$limit = (int) $limit;
+		$richlist = $this->mysql->select("SELECT * FROM richlist LIMIT $limit");
+		return $richlist;
 
 	}
 

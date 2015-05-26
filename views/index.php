@@ -13,7 +13,7 @@
 
 		<ul class="nav nav-tabs">
 			<li role="presentation" class="active"><a href="#">Latest Blocks</a></li>
-			<li role="presentation"><a href="#">What</a></li>
+			<li role="presentation"><a href="/richlist">Rich List</a></li>
 			<li role="presentation"><a href="#">Will</a></li>
 			<li role="presentation"><a href="#">I</a></li>
 			<li role="presentation"><a href="#">Do</a></li>

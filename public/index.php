@@ -1,7 +1,7 @@
 <?php
 
 ini_set('display_errors', '1');
-ini_set('memory_limit', '500M');
+//ini_set('memory_limit', '500M');
 date_default_timezone_set('UTC');
 require_once dirname(__FILE__) . '/../bootstrap.php';
 require_once dirname(__FILE__) . '/../conf/config.php';

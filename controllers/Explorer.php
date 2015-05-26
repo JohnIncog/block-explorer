@@ -45,8 +45,7 @@ class Explorer extends Controller {
 
 		$paycoinDb = new PaycoinDb();
 
-		//$addressInformation = $paycoinDb->getAddressInformation($address);
-		$addressInformation = $paycoinDb->getAddressTransactions($address);
+		$addressInformation = $paycoinDb->getAddressInformation($address);
 
 		$this->setData('address', $address);
 		$this->setData('addressInformation', $addressInformation);
@@ -119,6 +118,18 @@ class Explorer extends Controller {
 		$this->render('header');
 		$this->render('contact');
 		$this->render('footer');
+	}
+
+	public function richlist() {
+
+		$paycoin = new PaycoinDb();
+		$richList = $paycoin->getRichList();
+
+		$this->setData('richList', $richList);
+		$this->render('header');
+		$this->render('richlist');
+		$this->render('footer');
+
 	}
 
 } 

@@ -13,6 +13,7 @@ $routeCollection->add('address', new Routing\Route('/address/{address}', array("
 $routeCollection->add('api', new Routing\Route('/api', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('about', new Routing\Route('/about', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('contact', new Routing\Route('/contact', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('richlist', new Routing\Route('/richlist', array("class" => "\\controllers\\Explorer")));
 
 
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Home")));
@@ -24,6 +25,7 @@ $routeCollection->add('getLatestBlocks', new Routing\Route('/api/latestblocks', 
 
 $routeCollection->add('buildDatabase', new Routing\Route('/cli/buildDatabase', array("class" => "\\controllers\\Cli")));
 $routeCollection->add('buildWalletDatabase', new Routing\Route('/cli/buildWalletDatabase', array("class" => "\\controllers\\Cli")));
+$routeCollection->add('buildRichList', new Routing\Route('/cli/buildRichList', array("class" => "\\controllers\\Cli")));
 
 //$routeCollection->add('video', new Routing\Route('/{slug}/video{videoId}/', array("class" => "Page_Video")));
 

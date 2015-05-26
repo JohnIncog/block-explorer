@@ -8,8 +8,21 @@ $addressInformation = $this->getData('addressInformation');
 
 	<?php $this->render('page_header'); ?>
 
+
 	<h1>Wallet Details</h1>
-	<h2>This page is not working properly... </h2>
+
+	<?php if (count($addressInformation['transactions']) == 0)  { ?>
+		<div class="blockTable">
+
+			<div class="alert alert-warning" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				<span class="sr-only"></span>
+				No transactions found for this address
+			</div>
+
+
+		</div>
+	<?php } else { ?>
 
 	<table class="table blockTable">
 		<tr>
@@ -19,14 +32,22 @@ $addressInformation = $this->getData('addressInformation');
 			<td>Balance</td>
 			<td><?php echo \PP\Helper::formatXPY($addressInformation['balance']); ?></td>
 		</tr>
+		<?php if ($addressInformation['rank'] > 0) { ?>
+		<tr>
+			<td>Rank</td>
+			<td><?php echo $addressInformation['rank']; ?></td>
+		</tr>
+		<?php } ?>
 		<tr>
 			<td>Received</td>
 			<td><?php echo \PP\Helper::formatXPY($addressInformation['totalInValue']); ?> in <?php echo $addressInformation['totalInTransactions'] ?> transactions</td>
 		</tr>
+		<?php if (isset($addressInformation['totalOutTransactions'])) { ?>
 		<tr>
 			<td>Sent</td>
 			<td><?php echo \PP\Helper::formatXPY($addressInformation['totalOutValue']); ?> in <?php echo $addressInformation['totalOutTransactions'] ?> transactions</td>
 		</tr>
+		<?php } ?>
 		<?php if (isset($addressInformation['totalStakeTransactions'])) {  ?>
 		<tr>
 			<td>Staked</td>
@@ -51,10 +72,13 @@ $addressInformation = $this->getData('addressInformation');
 			<td>
 				<?php
 				if ($t['value'] > 0) {
-					echo '+';
+					echo '<span class="addressReceive">+';
+				} else {
+					echo '<span class="addressSend">';
 				}
 				?>
 				<?php echo \PP\Helper::formatXPY($t['value']);
+				echo '</span>';
 				if ($t['type'] == 'stake') {
 					echo ' <span class="label label-info">Stake</span>';
 				}
@@ -65,5 +89,7 @@ $addressInformation = $this->getData('addressInformation');
 		</tr>
 		<?php } ?>
 	</table>
+
+	<?php }  ?>
 
 </div>
