@@ -9,7 +9,7 @@ $addressInformation = $this->getData('addressInformation');
 	<?php $this->render('page_header'); ?>
 
 
-	<h1>Wallet Details</h1>
+	<h1 class="text-left">Details for Address</h1>
 
 	<?php if (count($addressInformation['transactions']) == 0)  { ?>
 		<div class="blockTable">
@@ -30,12 +30,12 @@ $addressInformation = $this->getData('addressInformation');
 		</tr>
 		<tr>
 			<td>Balance</td>
-			<td><?php echo \PP\Helper::formatXPY($addressInformation['balance']); ?></td>
+			<td><strong><?php echo \PP\Helper::formatXPY($addressInformation['balance']); ?></strong></td>
 		</tr>
 		<?php if ($addressInformation['rank'] > 0) { ?>
 		<tr>
-			<td>Rank</td>
-			<td><?php echo $addressInformation['rank']; ?></td>
+			<td>Rich List</td>
+			<td>Rank <?php echo $addressInformation['rank']; ?></td>
 		</tr>
 		<?php } ?>
 		<tr>

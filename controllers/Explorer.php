@@ -1,7 +1,5 @@
 <?php
 
-//#todo blcok Difficulty	0.18723002 diff cutoff... check db etc.
-
 namespace controllers;
 
 use PP\PaycoinDb;
@@ -42,10 +40,12 @@ class Explorer extends Controller {
 
 		$address = $this->bootstrap->route['address'];
 
+		//@todo to do limit we need to get a count...
+		$limit = 10000;
 
 		$paycoinDb = new PaycoinDb();
 
-		$addressInformation = $paycoinDb->getAddressInformation($address);
+		$addressInformation = $paycoinDb->getAddressInformation($address, $limit);
 
 		$this->setData('address', $address);
 		$this->setData('addressInformation', $addressInformation);

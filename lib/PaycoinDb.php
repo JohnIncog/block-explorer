@@ -100,9 +100,9 @@ class PaycoinDb {
 		$totalValue = 0;
 		$totalValueIn = 0;
 		$transactionCount = 0;
-		foreach ($transactions as $transactions) {
+		foreach ($transactions as $transaction) {
 			$transactionCount++;
-			$rawTransaction = $paycoin->getRawTransaction($transactions);
+			$rawTransaction = $paycoin->getRawTransaction($transaction);
 			$decodedTransaction = $paycoin->decodeRawTransaction($rawTransaction);
 
 			$vIn = $this->processVin($decodedTransaction);
@@ -115,7 +115,7 @@ class PaycoinDb {
 			$txFee = bcsub($totalValue, $totalValueIn, 8);
 			$txFee = bcsub($txFee, $block['mint'], 8);
 
-			$transactionInsert[] = array(
+			$transactionInsert = array(
 				'txid' => $decodedTransaction['txid'],
 				'version' => $decodedTransaction['version'],
 				'time' => $decodedTransaction['time'],
@@ -124,10 +124,10 @@ class PaycoinDb {
 				'txFee' => $txFee,
 				'raw' => serialize($decodedTransaction),
 			);
-
-
+			$this->mysql->insert('transactions', $transactionInsert);
+			$this->addTransactionToAddress($transactionInsert);
 		}
-		$this->mysql->insertMultiple('transactions', $transactionInsert);
+		//$this->mysql->insertMultiple('transactions', $transactionInsert);
 		$return['totalValue'] = $totalValue;
 		$return['totalValueIn'] = $totalValueIn;
 		$return['transactionCount'] = $transactionCount;
@@ -246,6 +246,7 @@ class PaycoinDb {
 		}
 
 		$paycoinRPC = new PaycoinRPC();
+		//stay one block behind, or update, nextblockhash of previous block for endblock as we go.
 		for ($i = $startBlockHeight; $i < $endBlockHeight; $i++) {
 			$blockHash = $paycoinRPC->getBlockHash($i);
 			$block = $paycoinRPC->getBlock($blockHash);
@@ -394,14 +395,12 @@ class PaycoinDb {
 
 	public function buildWalletDb() {
 
-		//@todo make this this resume...
+		$limit = 1000;
 
 		$q = $this->mysql->selectRow('SELECT id FROM transactions WHERE txid = (SELECT txid FROM wallets ORDER BY id DESC LIMIT 1)');
 		$offset = (int)$q['id'];
 
-		$limit = 1000;
 
-		//$last = 640168;
 		$q = $this->mysql->selectRow('SELECT MAX(`id`) as `max` from transactions');
 		$last = (int)$q['max'];
 
@@ -429,7 +428,7 @@ class PaycoinDb {
 	 */
 	public function addTransactionToAddress(array $transaction) {
 
-		$this->mysql->startTransaction();
+		//$this->mysql->startTransaction();
 
 		$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
 		$transactionsIn = $this->mysql->select($sql);
@@ -441,7 +440,6 @@ class PaycoinDb {
 			$a = array();
 			$value = 0;
 
-			//get the out put address and insert
 			foreach ($transactionsOut as $transactionOut) {
 				if (empty($transactionOut['address'])) {
 					continue;
@@ -468,19 +466,11 @@ class PaycoinDb {
 						'type' => 'creation'
 					);
 
-					$addressBalance = $this->getAddressBalance($address);
-					if ($addressBalance == 0) {
-						$balance = $value;
-					} else {
-						$balance = $addressBalance + $value;
-					}
-					$insert['balance'] = $balance;
+					$insert['balance'] = $this->getAddressNewBalance($address, $value);
 					$this->mysql->insert('wallets', $insert);
 				}
 				//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
-				//var_dump($a);
 			}
-			//var_dump($transactionsOut);
 
 		} else {
 
@@ -494,26 +484,20 @@ class PaycoinDb {
 				$a[$transactionIn['address']] -= $transactionIn['value'];
 				//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
 			}
-			//var_dump($a);
 			$stake = false;
 			foreach ($transactionsOut as $transactionOut) {
 
 				if (empty($transactionOut['address'])) {
-
-					//echo 'stake!' . PHP_EOL;
 					$stake = true;
 					unset($transactionOut['address']);
-
 				} else {
 					if (!isset($a[$transactionOut['address']])) {
 						$a[$transactionOut['address']] = 0;
 					}
-
 					$a[$transactionOut['address']] += $transactionOut['value'];
 				}
 				//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
 			}
-			//var_dump($a);
 			foreach ($a as $address => $value) {
 				$insert = array(
 					'address' => $address,
@@ -521,8 +505,6 @@ class PaycoinDb {
 					'txid' => $transaction['txid'],
 					'block_height' => $transaction['block_height'],
 					'time' => $transaction['time'],
-					'type' => 'transaction',
-
 				);
 
 				if ($stake) {
@@ -533,55 +515,24 @@ class PaycoinDb {
 					$insert['type'] = 'receive';
 				}
 
-				$addressBalance = $this->getAddressBalance($address);
-				if ($addressBalance == 0) {
-					$balance = $value;
-				} else {
-					$balance = $addressBalance + $value;
-				}
-				$insert['balance'] = $balance;
+				$insert['balance'] = $this->getAddressNewBalance($address, $value);
 				$this->mysql->insert('wallets', $insert);
 			}
 
 
 		}
 
-		$this->mysql->completeTransaction();
+		//$this->mysql->completeTransaction();
 	}
 
-	/**
-	 * @param array $addressValues key = address, value = coin value
-	 */
-	public function processWalletUpdates(array $addressValues, $transaction, $stake = false) {
-
-		foreach ($addressValues as $address => $value) {
-			$insert = array(
-				'address' => $address,
-				'value' => $value,
-				'txid' => $transaction['txid'],
-				'block_height' => $transaction['block_height'],
-				'time' => $transaction['time'],
-				'type' => 'transaction',
-
-			);
-
-			if ($stake) {
-				$insert['type'] = 'stake';
-			} elseif ($value < 0) {
-				$insert['type'] = 'send';
-			} else {
-				$insert['type'] = 'receive';
-			}
-
-			$addressBalance = $this->getAddressBalance($address);
-			if ($addressBalance == 0) {
-				$balance = $value;
-			} else {
-				$balance = $addressBalance + $value;
-			}
-			$insert['balance'] = $balance;
-			$this->mysql->insert('wallets', $insert);
+	private function getAddressNewBalance($address, $value) {
+		$addressBalance = $this->getAddressBalance($address);
+		if ($addressBalance == 0) {
+			$balance = $value;
+		} else {
+			$balance = $addressBalance + $value;
 		}
+		return $balance;
 	}
 
 	public function getAddressBalance($address) {
@@ -594,8 +545,6 @@ class PaycoinDb {
 		}
 		return $balance;
 	}
-
-
 
 	public function buildRichList() {
 
@@ -638,8 +587,10 @@ class PaycoinDb {
 	}
 
 	public function getRichList($limit = 100) {
+
 		$limit = (int) $limit;
 		$richlist = $this->mysql->select("SELECT * FROM richlist LIMIT $limit");
+
 		return $richlist;
 
 	}
