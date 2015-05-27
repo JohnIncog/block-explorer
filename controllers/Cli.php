@@ -1,6 +1,5 @@
 <?php
 
-
 namespace controllers;
 use PP\PaycoinDb;
 use PP\PaycoinRPC;
@@ -10,11 +9,15 @@ use PP\Mysql;
 
 class Cli extends Controller {
 
+	const LOCK_FILE = "/tmp/clibuildDatabase.lock";
+
 	public function buildDatabase() {
 
-		//@todo add outstanding calculations
-		//@todo refactor.. Move out of controller...
-		//@todo scrape wallets.
+
+		if (!$this->tryLock()) {
+			die("Already running.\n");
+		}
+		register_shutdown_function('unlink', self::LOCK_FILE);
 
 		echo 'Building Database' . PHP_EOL;
 
@@ -56,6 +59,22 @@ class Cli extends Controller {
 		echo "Building rich list" . PHP_EOL;
 		$paycoinDb->buildRichList();
 
+	}
+
+	private function tryLock() {
+
+		if (@symlink("/proc/" . getmypid(), self::LOCK_FILE) !== FALSE) # the @ in front of 'symlink' is to suppress the NOTICE you get if the LOCK_FILE exists
+			return true;
+
+		# link already exists
+		# check if it's stale
+		if (is_link(self::LOCK_FILE) && !is_dir(self::LOCK_FILE)) {
+			unlink(self::LOCK_FILE);
+			# try to lock again
+			return $this->tryLock();
+		}
+
+		return false;
 	}
 
 

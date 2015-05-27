@@ -124,7 +124,7 @@ class PaycoinDb {
 				'txFee' => $txFee,
 				'raw' => serialize($decodedTransaction),
 			);
-			$this->mysql->insert('transactions', $transactionInsert);
+			$this->mysql->insert('transactions', $transactionInsert , true);
 			$this->addTransactionToAddress($transactionInsert);
 		}
 		//$this->mysql->insertMultiple('transactions', $transactionInsert);
@@ -157,7 +157,7 @@ class PaycoinDb {
 					$insert[$key] = $value;
 				}
 			}
-			$this->mysql->insert('transactions_in', $insert);
+			$this->mysql->insert('transactions_in', $insert, true);
 		}
 		$return['valueTotal'] = $valueTotal;
 
@@ -203,7 +203,7 @@ class PaycoinDb {
 					$insert[$key] = $value;
 				}
 			}
-			$this->mysql->insert('transactions_out', $insert);
+			$this->mysql->insert('transactions_out', $insert, true);
 
 		}
 		$return['valueTotal'] = $valueTotal;

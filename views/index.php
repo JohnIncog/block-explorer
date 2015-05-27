@@ -57,6 +57,7 @@
 			url: "/api/latestblocks",
 			context: document.body
 		}).done(function(data) {
+
 				console.log(data)
 
 				$.each(data, function(index, value) {
@@ -66,17 +67,18 @@
 					var extractedBy = extractedBy.replace(/-/g, " ");
 					var extractedBy = ucwords(extractedBy);
 
-					$('#latestTransactions').append( "<tr class=\"blockclick\" id=\"tr_" + value['hash'] +"\"></tr>" );
+					$('#latestTransactions').append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
 					$('#tr_' + value['hash']).append( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
 						.append( "<td>" + value['time'] +"</td>" )
 						.append( "<td>" + value['transactions'] +"</td>" )
 						.append( "<td>" + value['valueout'] +" XPY</td>" )
 						.append( "<td>" + value['difficulty'] +"</td>" )
 						.append( "<td>" + extractedBy + "</td>" );
+					$('#tr_' + value['hash']).click( function() {
+						window.location.href='/block/' + value['hash'];
+					} );
 
 				});
-
-
 
 		});
 	</script>

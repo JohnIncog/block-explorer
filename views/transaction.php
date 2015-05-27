@@ -20,10 +20,10 @@ $created = $totalOut - $totalIn;
 	<?php $this->render('page_header'); ?>
 
 
-	<div class="blockTable">
-		<h2>Details for Transaction</h2>
-	</div>
-	<table class="table blockTable" align="center">
+
+	<h2 class="text-left">Details for Transaction</h2>
+
+	<table class="table infoTable" align="center">
 		<tr>
 			<td>Hash</td>
 			<td><code><?php echo $transaction['txid']; ?></code></td>

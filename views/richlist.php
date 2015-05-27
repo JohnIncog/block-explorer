@@ -5,14 +5,13 @@ $richList = $this->getData('richList');
 
 	<?php $this->render('page_header'); ?>
 
-	<h1>Rich List</h1>
 
 	<ul class="nav nav-tabs">
 		<li role="presentation" ><a href="/">Latest Blocks</a></li>
 		<li role="presentation" class="active"><a href="/richlist">Rich List</a></li>
 
 	</ul>
-	<table class="table blockTable table-striped blockTable">
+	<table class="table infoTable table-striped">
 		<tr>
 			<th class="text-right" style="width: 45px">Rank</th>
 			<th>Address</th>

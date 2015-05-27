@@ -12,7 +12,7 @@ $addressInformation = $this->getData('addressInformation');
 	<h1 class="text-left">Details for Address</h1>
 
 	<?php if (count($addressInformation['transactions']) == 0)  { ?>
-		<div class="blockTable">
+		<div class="infoTable">
 
 			<div class="alert alert-warning" role="alert">
 				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -24,7 +24,7 @@ $addressInformation = $this->getData('addressInformation');
 		</div>
 	<?php } else { ?>
 
-	<table class="table blockTable">
+	<table class="table infoTable">
 		<tr>
 			<td>Address</td><td><?php echo \PP\Helper::getAddressLink($address); ?></td>
 		</tr>
@@ -56,13 +56,13 @@ $addressInformation = $this->getData('addressInformation');
 		<?php } ?>
 	</table>
 
-	<table class="table blockTable">
+	<table class="table infoTable">
 		<tr>
 			<th>Hash</th>
 			<th>Block</th>
 			<th>Date/Time</th>
 			<th>Amount</th>
-			<th>Balance</th>
+			<th class="text-right">Balance</th>
 		</tr>
 		<?php foreach ($addressInformation['transactions'] as $i => $t) { ?>
 		<tr>
@@ -80,12 +80,12 @@ $addressInformation = $this->getData('addressInformation');
 				<?php echo \PP\Helper::formatXPY($t['value']);
 				echo '</span>';
 				if ($t['type'] == 'stake') {
-					echo ' <span class="label label-info">Stake</span>';
+					echo '<span class="label label-info" style="margin-left: 15px">Stake</span>';
 				}
 
 				?>
 			</td>
-			<td><?php echo \PP\Helper::formatXPY($t['balance']) ?></td>
+			<td class="text-right"><?php echo \PP\Helper::formatXPY($t['balance']) ?></td>
 		</tr>
 		<?php } ?>
 	</table>

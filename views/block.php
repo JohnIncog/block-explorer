@@ -44,10 +44,10 @@ if ($block != null) {
 	<?php $this->render('page_header'); ?>
 
 
-	<div class="blockTable">
+	<div class="text-left">
 		<h2>Details for Block # <?php echo $block['height']; ?></h2>
 	</div>
-	<table class="table blockTable" align="center">
+	<table class="table infoTable" align="center">
 		<tr>
 			<td>Hash</td>
 			<td>
@@ -114,7 +114,7 @@ if ($block != null) {
 		<table class="blockTable table">
 			<tr>
 				<th>Hash</th>
-				<th>Value Out</th>
+				<th class="text-right">Value Out</th>
 				<th>From (amount)</th>
 				<th>To (amount)</th>
 				<th></th>
@@ -123,7 +123,7 @@ if ($block != null) {
 			<?php foreach($transactions as $k => $transaction) { ?>
 				<tr>
 					<td><div class="addr"><a href="/transaction/<?php echo $transaction['txid']; ?>"><code><?php echo $transaction['txid']; ?></code></a></div></td>
-					<td><?php
+					<td class="text-right"><?php
 						$total = 0;
 						foreach ($transaction['vout'] as $out) {
 							$total += $out['value'];
@@ -139,7 +139,7 @@ if ($block != null) {
 							foreach($transaction['vin'] as $in) { ?>
 							<tr>
 								<td><a href="/address/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
-								<td><?php echo \PP\Helper::formatXPY($in['value']); ?></td>
+								<td class="text-right"><?php echo \PP\Helper::formatXPY($in['value']); ?></td>
 							</tr>
 							<?php
 							}
