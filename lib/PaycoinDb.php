@@ -356,16 +356,21 @@ class PaycoinDb {
 
 
 	}
+
 	public function getAddressInformation($address, $limit = 100000) {
 
 		$sql = "SELECT w.*, rl.rank FROM wallets w "
 			.  " LEFT JOIN richlist rl on rl.address= w.address"
 			. " WHERE w.address = " . $this->mysql->escape($address)
-			.  " ORDER BY w.id DESC LIMIT $limit ";
+			.  " ORDER BY w.id DESC";
+		if ($limit > 0 && $limit != 'all') {
+			$sql .= " LIMIT " . (int)$limit;
+		}
 
 		$transactions = $this->mysql->select($sql);
 
 		$return['transactions'] = $transactions;
+		$return['address'] = $address;
 
 		$last = current($transactions);
 		$return['rank'] = $last['rank'];
@@ -376,6 +381,8 @@ class PaycoinDb {
 			.  "GROUP BY `address`, `type` ";
 
 		$totals = $this->mysql->select($sql);
+		$return['totalTransactions'] = 0;
+
 		foreach ($totals as $total) {
 			if ($total['type'] == 'receive' ) {
 				$return['totalInValue'] = $total['sum'];
@@ -387,6 +394,7 @@ class PaycoinDb {
 				$return['totalStakeValue'] = $total['sum'];
 				$return['totalStakeTransactions'] = $total['transactions'];
 			}
+			$return['totalTransactions'] += $total['transactions'];
 
 		}
 		return $return;
@@ -484,6 +492,7 @@ class PaycoinDb {
 				$a[$transactionIn['address']] -= $transactionIn['value'];
 				//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
 			}
+
 			$stake = false;
 			foreach ($transactionsOut as $transactionOut) {
 
@@ -498,6 +507,7 @@ class PaycoinDb {
 				}
 				//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
 			}
+
 			foreach ($a as $address => $value) {
 				$insert = array(
 					'address' => $address,
@@ -560,19 +570,13 @@ class PaycoinDb {
 		$richList = $this->mysql->select($sql);
 
 		foreach ($richList as $rank => $rich) {
-			$f = $rich['balance']/$outstanding*100;
-
-
-			//$per = bcdiv($rich['balance'], $outstanding, 8);
-			//$per = bcmul($per, 100, 8);
-			//var_dump($per);
 			$insert[] = array(
 				'rank' => $rank + 1,
 				'address' => $rich['address'],
 				'balance' => $rich['balance'],
 				'block_height' => $rich['block_height'],
 				'time' => $rich['time'],
-				'percent' => $f
+				'percent' => $rich['balance'] / $outstanding * 100
 			);
 		}
 
@@ -595,4 +599,46 @@ class PaycoinDb {
 
 	}
 
+	public function primeStakes($limit) {
+
+		$limit = (int) $limit;
+
+		$primeStakes = $this->mysql->select("SELECT txidp as txid, asm FROM transactions_out tro
+			WHERE asm LIKE 'OP_PRIME%' ORDER BY tro.id DESC LIMIT $limit");
+
+
+		$txIds = array();
+		foreach ($primeStakes as &$primeStake) {
+			$txIds[] = $primeStake['txid'];
+		}
+
+		$rows = $this->mysql->select("SELECT t.txid, block_height, t.time, b.hash, address
+				FROM transactions t
+				JOIN blocks b ON b.height=t.block_height
+				JOIN transactions_out tro ON t.`txid` = tro.`txidp` AND address IS NOT NULL
+				WHERE t.txid " . $this->mysql->getInClause($txIds));
+
+		$blocks = array();
+		foreach ($rows as $row) {
+			$blocks[$row['txid']] = $row;
+		}
+
+		foreach ($primeStakes as &$primeStake) {
+			$primeStake['address'] = $blocks[$primeStake['txid']]['address'];
+			$primeStake['hash'] = $blocks[$primeStake['txid']]['hash'];
+			$primeStake['block_height'] = $blocks[$primeStake['txid']]['block_height'];
+			$primeStake['time'] = $blocks[$primeStake['txid']]['time'];;
+			$primeStake['OP'] = substr($primeStake['asm'], 0, 15);
+		}
+		return $primeStakes;
+
+	}
+
+	public function getLatestTransactions($limit = 100) {
+		$limit = (int) $limit;
+
+		$transactions = $this->mysql->select("SELECT * FROM wallets w ORDER BY w.id DESC LIMIT $limit");
+		return $transactions;
+
+	}
 } 

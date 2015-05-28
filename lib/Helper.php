@@ -19,12 +19,14 @@ class Helper {
 		if ($number < 0) {
 			return str_replace('-', '- ', $number) . ' ' . $symbol;
 		}
-		return $number . ' ' . $symbol;
+		list($whole, $decimal) = explode('.', $number);
+
+		return '<span class="coin-whole">' . $whole . '</span>.' . '<span class="coin-decimal">' .$decimal . '</span> ' . $symbol;
 	}
 
 	public static function getAddressLink($address) {
 		$link = '<a href="' . self::getUrl('address', array('address' => $address))
-			. '" class="">' . $address . '</a>';
+			. '" class="">' . htmlspecialchars($address) . '</a>';
 		return $link;
 	}
 

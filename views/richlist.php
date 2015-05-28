@@ -8,9 +8,11 @@ $richList = $this->getData('richList');
 
 	<ul class="nav nav-tabs">
 		<li role="presentation" ><a href="/">Latest Blocks</a></li>
+		<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
 		<li role="presentation" class="active"><a href="/richlist">Rich List</a></li>
-
+		<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
 	</ul>
+
 	<table class="table infoTable table-striped">
 		<tr>
 			<th class="text-right" style="width: 45px">Rank</th>

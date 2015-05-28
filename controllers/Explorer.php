@@ -31,6 +31,7 @@ class Explorer extends Controller {
 		$this->setData('q', $q);
 		$this->setData('results', $results);
 
+		$this->setData('pageTitle', 'Search');
 		$this->render('header');
 		$this->render('search');
 		$this->render('footer');
@@ -40,8 +41,11 @@ class Explorer extends Controller {
 
 		$address = $this->bootstrap->route['address'];
 
-		//@todo to do limit we need to get a count...
-		$limit = 10000;
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = 100;
+		}
+		$this->setData('limit', $limit);
 
 		$paycoinDb = new PaycoinDb();
 
@@ -49,9 +53,38 @@ class Explorer extends Controller {
 
 		$this->setData('address', $address);
 		$this->setData('addressInformation', $addressInformation);
+		$this->setData('pageTitle', 'Paycoin Address - ' . $address);
 
 		$this->render('header');
 		$this->render('address');
+		$this->render('footer');
+	}
+
+	public function primeStakes() {
+
+		$limit = 100;
+
+		$paycoinDb = new PaycoinDb();
+		$primeStakes = $paycoinDb->primeStakes($limit);
+		$this->setData('primeStakes', $primeStakes);
+
+		$this->setData('pageTitle', 'Prime Stakes');
+		$this->render('header');
+		$this->render('primestakes');
+		$this->render('footer');
+	}
+
+	public function latestTransactions() {
+
+		$limit = 100;
+
+		$paycoinDb = new PaycoinDb();
+		$transactions = $paycoinDb->getLatestTransactions($limit);
+		$this->setData('transactions', $transactions);
+
+		$this->setData('pageTitle', 'Latest Transactions');
+		$this->render('header');
+		$this->render('latesttransactions');
 		$this->render('footer');
 	}
 
@@ -71,7 +104,7 @@ class Explorer extends Controller {
 		}
 		$this->setData('hash', $hash);
 		$this->setData('block', $block);
-
+		$this->setData('pageTitle', 'Paycoin Block - ' . (int)$block['height']);
 
 		$this->render('header');
 		$this->render('block');
@@ -92,6 +125,7 @@ class Explorer extends Controller {
 		$this->setData('transactionsIn', $transactionsIn);
 		$this->setData('transactionsOut', $transactionsOut);
 
+		$this->setData('pageTitle', 'Paycoin Transaction - ' . $txid);
 		$this->render('header');
 		$this->render('transaction');
 		$this->render('footer');
@@ -101,6 +135,9 @@ class Explorer extends Controller {
 
 	public function about() {
 
+		$this->setData('pageTitle', 'About');
+		$this->setData('pageName', 'About');
+
 		$this->render('header');
 		$this->render('about');
 		$this->render('footer');
@@ -108,12 +145,25 @@ class Explorer extends Controller {
 
 	public function api() {
 
+		$this->setData('pageTitle', 'API');
+		$this->setData('pageName', 'API');
+
 		$this->render('header');
 		$this->render('api');
 		$this->render('footer');
 	}
 
 	public function contact() {
+
+		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
+
+			//$this->setData('sent', true);
+			//@todo get support address
+			$this->setData('error', 'Error sending email.  Please email XXXXXXXXX');
+		}
+
+		$this->setData('pageTitle', 'Contact');
+		$this->setData('pageName', 'Contact');
 
 		$this->render('header');
 		$this->render('contact');
@@ -126,6 +176,7 @@ class Explorer extends Controller {
 		$richList = $paycoin->getRichList();
 
 		$this->setData('richList', $richList);
+		$this->setData('pageTitle', 'Paycoin Rich List');
 		$this->render('header');
 		$this->render('richlist');
 		$this->render('footer');

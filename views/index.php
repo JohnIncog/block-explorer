@@ -12,10 +12,12 @@
 
 
 		<ul class="nav nav-tabs">
-			<li role="presentation" class="active"><a href="#">Latest Blocks</a></li>
+			<li role="presentation" class="active"><a href="/">Latest Blocks</a></li>
+			<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
 			<li role="presentation"><a href="/richlist">Rich List</a></li>
-
+			<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
 		</ul>
+
 
 			<table id="latestTransactions" class="table-striped table latestTransactions" align="center">
 				<tr>

@@ -5,9 +5,10 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>Paycoin</title>
+	<title><?php echo htmlspecialchars($this->getData('pageTitle', 'Paycoin Blockchain')) ?></title>
 
 	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.js"></script>
+	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
@@ -25,10 +26,23 @@
 		</div>
 		<div id="navbar" class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="/">Home</a></li>
-				<li><a href="/about">About</a></li>
-				<li><a href="/contact">Contact</a></li>
-				<li><a href="/api">API</a></li>
+				<?php
+				$menuItems = array(
+					array('href' => '/', 'name' => 'Home'),
+					array('href' => '/about', 'name' => 'About'),
+					array('href' => '/contact', 'name' => 'Contact'),
+					array('href' => '/api', 'name' => 'API'),
+				);
+				$pageName = $this->getData('pageName', 'Home');
+				foreach ($menuItems as $menuItem) {
+					echo '<li';
+					if ($menuItem['name'] == $pageName) {
+						echo ' class="active"';
+					}
+					echo '><a href="' . $menuItem['href'] . '">'  . $menuItem['name'];
+					echo '</a></li>';
+				}
+				?>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>

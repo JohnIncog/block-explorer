@@ -3,7 +3,6 @@
 namespace PP;
 
 
-
 class Mysql {
 
 	protected $mysql;
@@ -23,7 +22,7 @@ class Mysql {
 		$this->mysql->commit();
 	}
 	public function select($sql) {
-		$result = $this->mysql->query($sql);
+		$result = $this->query($sql);
 		$rows = array();
 		if (!empty($this->mysql->error)) {
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
@@ -39,8 +38,8 @@ class Mysql {
 
 	public function selectRow($sql) {
 
-		$result = $this->mysql->query($sql);
-		$this->mysql->query($sql);
+		$result = $this->query($sql);
+		$this->query($sql);
 		if (!empty($this->mysql->error)) {
 			echo $sql . PHP_EOL;
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
@@ -97,7 +96,7 @@ class Mysql {
 
 		}
 
-		$this->mysql->query($sql);
+		$this->query($sql);
 		if (!empty($this->mysql->error)) {
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
 		}
@@ -123,31 +122,29 @@ class Mysql {
 		foreach ($values as $insert) {
 			$sql .= "(";
 			foreach ($insert as $value) {
-//				if (is_null($value)) {
-//					$sql .= "NULL, ";
-//				} elseif (is_int($value)) {
-//					$sql .= "$value, ";
-//				} else {
-//					$sql .= "'$value', ";
-//				}
 				$sql .= $this->escape($value) .', ';
 			}
 			$sql = substr($sql, 0, -2);
 			$sql .= "), ";
 		}
 		$sql = substr($sql, 0, -2);
-		$this->mysql->query($sql);
+		$this->query($sql);
 		if (!empty($this->mysql->error)) {
 			echo($sql);
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
 		}
-//		if ($this->mysql->affected_rows != $totalRecords) {
-//			var_dump($sql);
-//		}
-//		if ($table == 'blocks') {
-//			var_dump($sql, $this->mysql->affected_rows);
-//		}
 
+
+	}
+
+	public function getInClause(array $ins) {
+		$sql = ' IN (';
+		foreach ($ins as $in) {
+			$sql .= $this->escape($in) . ', ';
+		}
+		$sql = substr($sql, 0, -2);
+		$sql .= ' )';
+		return $sql;
 	}
 
 } 

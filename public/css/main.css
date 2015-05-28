@@ -55,3 +55,13 @@ body {
 .addressSend {
 	color: red;
 }
+.coin-decimal {
+	font-size: 12px;
+}
+.coin-whole {
+	font-size: 13px;
+	font-weight: bold;
+}
+th[data-sort]{
+	cursor:pointer;
+}
