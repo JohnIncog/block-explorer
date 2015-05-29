@@ -110,6 +110,7 @@
 					type: "GET",
 					success: function(data) {
 						console.log("polling");
+						console.log(data);
 
 						$.each(data, function(index, value) {
 
