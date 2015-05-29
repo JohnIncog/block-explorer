@@ -64,12 +64,13 @@ class Api extends Controller {
 	public function getLatestBlocks() {
 
 		$limit = $this->bootstrap->httpRequest->get('limit');
+		$height = $this->bootstrap->httpRequest->get('height');
 		if (!$limit) {
 			$limit = 10;
 		}
 
 		$paycoin = new PaycoinDb();
-		$blocks = $paycoin->getLatestBlocks($limit);
+		$blocks = $paycoin->getLatestBlocks($limit, $height);
 		foreach ($blocks as &$block) {
 			$block['raw'] = unserialize($block['raw']);
 		}

@@ -17,9 +17,14 @@ class PaycoinDb {
 		return $block;
 	}
 
-	public function getLatestBlocks($limit) {
+	public function getLatestBlocks($limit, $height = 0) {
 
-		$blocks = $this->mysql->select("SELECT * FROM blocks b ORDER by `height` DESC LIMIT " . (int)$limit);
+		$sql = "SELECT * FROM blocks b ";
+		if ($height > 0) {
+			$sql .= " WHERE `height` >= " .(int)$height;
+		}
+		$sql .= " ORDER by `height` DESC LIMIT " . (int)$limit;
+		$blocks = $this->mysql->select($sql);
 
 		return $blocks;
 	}

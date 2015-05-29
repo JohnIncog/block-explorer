@@ -76,7 +76,7 @@
 		}).done(function(data) {
 
 				console.log(data)
-				blockHeight = data.[0].height;
+				blockHeight = data[0].height;
 				$.each(data, function(index, value) {
 					
 					var extractedBy = value['flags'];
@@ -112,7 +112,7 @@
 					success: function(data) {
 						console.log("polling");
 						console.log(data);
-						blockHeight = data.[0].height; // Store Blockheight
+						blockHeight = data[0].height; // Store Blockheight
 						$.each(data, function(index, value) {
 
 							var extractedBy = value['flags'];
