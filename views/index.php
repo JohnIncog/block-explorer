@@ -67,7 +67,7 @@
 
 
 <script>
-
+		var blockHeight = 0;
 
 
 		$.ajax({
@@ -76,9 +76,9 @@
 		}).done(function(data) {
 
 				console.log(data)
-
+				blockHeight = data.[0].height;
 				$.each(data, function(index, value) {
-
+					
 					var extractedBy = value['flags'];
 					var extractedBy = extractedBy.replace('stake-modifier', " ");
 					var extractedBy = extractedBy.replace(/-/g, " ");
@@ -108,10 +108,11 @@
 				$.ajax({
 					url: "/api/latestblocks",
 					type: "GET",
+  					data: { height: blockHeight },
 					success: function(data) {
 						console.log("polling");
 						console.log(data);
-
+						blockHeight = data.[0].height; // Store Blockheight
 						$.each(data, function(index, value) {
 
 							var extractedBy = value['flags'];
