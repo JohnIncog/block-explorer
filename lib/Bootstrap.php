@@ -99,7 +99,11 @@ class Bootstrap {
 	public function route($uri = false) {
 
 		if (!$uri) {
-			$uri = $_SERVER['REQUEST_URI'];
+			if (empty($_SERVER['REDIRECT_URL'])) {
+				$uri = $_SERVER['REQUEST_URI'];
+			} else {
+				$uri = $_SERVER['REDIRECT_URL'];
+			}
 		}
 		$context = new RequestContext($uri);
 		$locator = new FileLocator(array(dirname(__FILE__) . '/../conf'));
@@ -115,6 +119,7 @@ class Bootstrap {
 		}
 
 		$this->route = $router->match($uri);
+
 		$this->controller = new $this->route['class']($this);
 
 

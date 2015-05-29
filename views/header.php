@@ -9,6 +9,8 @@
 
 	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.js"></script>
 	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
+	<script type="application/javascript" src="/js/main.js"></script>
+	<script type="application/javascript" src="/js/timeago.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>

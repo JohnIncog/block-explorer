@@ -61,7 +61,7 @@ if ($block != null) {
 			</td>
 		</tr>
 		<tr>
-			<td>Date/Time</td><td><?php echo $block['time']; ?> extracted by
+			<td>Date/Time</td><td><?php echo \PP\Helper::getLocalDateTime($block['time']); ?> extracted by
 			<?php
 
 			if (strstr($block['flags'], 'stake') == false) {

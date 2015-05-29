@@ -22,7 +22,7 @@ $transactions = $this->getData('transactions');
 		</tr>
 		<?php foreach($transactions as $transaction) { ?>
 			<tr>
-				<td><?php echo \PP\Helper::formatTime($transaction['time']) ?></td>
+				<td><?php echo \PP\Helper::formatTime($transaction['time'], true) ?></td>
 				<td><?php echo \PP\Helper::getTxHashLink($transaction['txid']) ?></td>
 				<td class="text-right">
 					<?php

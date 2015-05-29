@@ -63,12 +63,61 @@ class Api extends Controller {
 
 	public function getLatestBlocks() {
 
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = 10;
+		}
+
 		$paycoin = new PaycoinDb();
-		$blocks = $paycoin->getLatestBlocks(10);
+		$blocks = $paycoin->getLatestBlocks($limit);
 		foreach ($blocks as &$block) {
 			$block['raw'] = unserialize($block['raw']);
 		}
 		echo json_encode($blocks);
+	}
+
+	public function getLatestTransactions() {
+
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = 100;
+		}
+
+		$paycoinDb = new PaycoinDb();
+		$transactions = $paycoinDb->getLatestTransactions($limit);
+		echo json_encode($transactions);
+	}
+
+
+	public function getAddress() {
+
+		$address = $this->bootstrap->route['address'];
+
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = 100;
+		}
+
+		$paycoinDb = new PaycoinDb();
+
+		$addressInformation = $paycoinDb->getAddressInformation($address, $limit);
+		echo json_encode($addressInformation);
+	}
+
+	public function getRichlist() {
+
+		$paycoin = new PaycoinDb();
+		$richList = $paycoin->getRichList();
+		echo json_encode($richList);
+	}
+
+	public function getPrimeStakes() {
+
+		$limit = 100;
+
+		$paycoinDb = new PaycoinDb();
+		$primeStakes = $paycoinDb->primeStakes($limit);
+		echo json_encode($primeStakes);
 	}
 
 	public function test() {

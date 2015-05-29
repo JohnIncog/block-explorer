@@ -637,7 +637,7 @@ class PaycoinDb {
 	public function getLatestTransactions($limit = 100) {
 		$limit = (int) $limit;
 
-		$transactions = $this->mysql->select("SELECT * FROM wallets w ORDER BY w.id DESC LIMIT $limit");
+		$transactions = $this->mysql->select("SELECT * FROM wallets w ORDER BY time DESC LIMIT $limit");
 		return $transactions;
 
 	}

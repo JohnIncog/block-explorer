@@ -65,3 +65,10 @@ body {
 th[data-sort]{
 	cursor:pointer;
 }
+.to-top {
+	color: cornflowerblue;
+}
+footer {
+	padding: 40px 0;
+
+}

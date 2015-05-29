@@ -3,13 +3,40 @@
 
 		<?php $this->render('page_header'); ?>
 
-		<div class="panel panel-default">
-			<div class="panel-heading">Lorem Ipsum</div>
-			<div class="panel-body">
-				Some sort of graph... or some market stats...
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">--</div>
+					<div class="panel-body">
+						--
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">--</div>
+					<div class="panel-body">
+						--
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">--</div>
+					<div class="panel-body">
+						--
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">Outstanding</div>
+					<div class="panel-body" id="outstanding">
+						0 XPY
+					</div>
+				</div>
 			</div>
 		</div>
-
 
 		<ul class="nav nav-tabs">
 			<li role="presentation" class="active"><a href="/">Latest Blocks</a></li>
@@ -20,6 +47,7 @@
 
 
 			<table id="latestTransactions" class="table-striped table latestTransactions" align="center">
+				<thead>
 				<tr>
 					<th>Height</th>
 					<th>Time</th>
@@ -28,6 +56,10 @@
 					<th>Difficulty</th>
 					<th>Extracted By</th>
 				</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
 			</table>
 
 	</div>
@@ -36,24 +68,7 @@
 
 <script>
 
-	function ucwords(str) {
-		//  discuss at: http://phpjs.org/functions/ucwords/
-		// original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-		// improved by: Waldo Malqui Silva
-		// improved by: Robin
-		// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-		// bugfixed by: Onno Marsman
-		//    input by: James (http://www.james-bell.co.uk/)
-		//   example 1: ucwords('kevin van  zonneveld');
-		//   returns 1: 'Kevin Van  Zonneveld'
-		//   example 2: ucwords('HELLO WORLD');
-		//   returns 2: 'HELLO WORLD'
 
-		return (str + '')
-			.replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function($1) {
-				return $1.toUpperCase();
-			});
-	}
 
 		$.ajax({
 			url: "/api/latestblocks",
@@ -68,21 +83,81 @@
 					var extractedBy = extractedBy.replace('stake-modifier', " ");
 					var extractedBy = extractedBy.replace(/-/g, " ");
 					var extractedBy = ucwords(extractedBy);
+					var date = new Date(value['time']);
+					var date = date.toString().replace(/GMT.*/g,'');
 
-					$('#latestTransactions').append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
+					$("#latestTransactions tbody").append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
 					$('#tr_' + value['hash']).append( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
-						.append( "<td>" + value['time'] +"</td>" )
+						.append( "<td>" + jQuery.timeago(date) + "</td>" )
 						.append( "<td>" + value['transactions'] +"</td>" )
-						.append( "<td>" + value['valueout'] +" XPY</td>" )
+						.append( "<td>" + addCommas((value['valueout']*1).toString()) +" XPY</td>" )
 						.append( "<td>" + value['difficulty'] +"</td>" )
 						.append( "<td>" + extractedBy + "</td>" );
 					$('#tr_' + value['hash']).click( function() {
 						window.location.href='/block/' + value['hash'];
 					} );
+					$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
+
 
 				});
 
 		});
+
+		(function poll() {
+			setTimeout(function() {
+				$.ajax({
+					url: "/api/latestblocks",
+					type: "GET",
+					success: function(data) {
+						console.log("polling");
+
+						$.each(data, function(index, value) {
+
+							var extractedBy = value['flags'];
+							var extractedBy = extractedBy.replace('stake-modifier', " ");
+							var extractedBy = extractedBy.replace(/-/g, " ");
+							var extractedBy = ucwords(extractedBy);
+							var date = new Date(value['time']);
+							var date = date.toString().replace(/GMT.*/g,'');
+
+							//check if
+
+							if ( !$('#tr_' + value['hash']).length ) {
+								console.log('new block!');
+
+								$("#latestTransactions tbody").prepend( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
+								$('#tr_' + value['hash']).html( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
+									.append( "<td>" + jQuery.timeago(date) + "</td>" )
+									.append( "<td>" + value['transactions'] +"</td>" )
+									.append( "<td>" + addCommas((value['valueout']*1).toString()) +" XPY</td>" )
+									.append( "<td>" + value['difficulty'] +"</td>" )
+									.append( "<td>" + extractedBy + "</td>" );
+								$('#tr_' + value['hash']).click( function() {
+									window.location.href='/block/' + value['hash'];
+								} );
+
+								$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
+							}
+
+
+
+
+						});
+
+
+						//console.log(data);
+						//console.log($("#latestTransactions tr:first td").val())
+						//console.log($("#latestTransactions tr:last"))
+					},
+					dataType: "json",
+					complete: poll,
+					timeout: 2000
+				})
+			}, 20000);
+		})();
+
+
+
 	</script>
 
 

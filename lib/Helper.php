@@ -56,8 +56,19 @@ class Helper {
 		return $url;
 	}
 
-	public static function formatTime($timestamp) {
-		return date('Y-m-d  H:i:s', $timestamp);
+	public static function formatTime($timestamp, $timeAgo = false) {
+		return static::getLocalDateTime(date('Y-m-d  H:i:s', $timestamp) . ' UTC', $timeAgo);
+	}
+
+	public static function getLocalDateTime($utcDateTime, $timeAgo = false) {
+		$js = "
+		<script>var date = new Date('" . $utcDateTime . "');
+		document.write(date.toString().replace(/GMT.*/g,''));";
+		if ($timeAgo == true) {
+			$js .= "document.write( '(' + jQuery.timeago(date.toString().replace(/GMT.*/g,'')) + ')' );";
+		}
+		$js .= "</script>";
+		return $js;
 	}
 
 	public static function getValue($collection, $key, $default = false) {

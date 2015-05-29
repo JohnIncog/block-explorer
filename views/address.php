@@ -135,6 +135,11 @@ $addressInformation = $this->getData('addressInformation');
 
 </div>
 
+<?php if ($addressInformation['totalTransactions'] > 25) { ?>
+<button id="toTop" type="button" class="btn btn-default btn-lg to-top pull-right">
+	<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span> Top
+</button>
+<?php } ?>
 
 
 <script src="/js/jquery.qrcode-0.12.0.min.js"></script>

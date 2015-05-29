@@ -1,5 +1,36 @@
 <?php
-
+/**
+ *
+ * Features/Ideas
+ *
+ * Address Tagging
+ * Allow user to tag an address with a name.  This name will show along side address and allow for a url.
+ * If an address is tagged by multiple users, tag will be removed and a signed message will be required for a tag to be reapplied.
+ *
+ * Address Monitor
+ * Flag an address to be monitored and receive alerts when it makes transactions
+ * Alert types: in browser, email, sms, web hook
+ *
+ *
+ *
+ *
+ *
+ * Live updates
+ * Latest blocks
+ * Latest transaction
+ *
+ *
+ * Graphs
+ * Inflation
+ * Rich list
+ * Difficulty
+ * Value out
+ * Number of transactions
+ * Time between blocks?
+ *
+ *
+ *
+ */
 namespace controllers;
 
 use PP\PaycoinDb;

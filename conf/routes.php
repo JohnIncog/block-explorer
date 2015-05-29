@@ -21,9 +21,13 @@ $routeCollection->add('latestTransactions', new Routing\Route('/latesttransactio
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Home")));
 
 $routeCollection->add('getTransaction', new Routing\Route('/api/transaction/{txid}', array("class" => "\\controllers\\Api")));
-$routeCollection->add('getBlockByHeight', new Routing\Route('/api/block/{height}', array("class" => "\\controllers\\Api")));
-$routeCollection->add('getBlockByHash', new Routing\Route('/api/blockhash/{hash}', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getAddress', new Routing\Route('/api/address/{address}', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getRichlist', new Routing\Route('/api/richlist', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getPrimeStakes', new Routing\Route('/api/primestakes', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getBlockByHeight', new Routing\Route('/api/blockheight/{height}', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getBlockByHash', new Routing\Route('/api/block/{hash}', array("class" => "\\controllers\\Api")));
 $routeCollection->add('getLatestBlocks', new Routing\Route('/api/latestblocks', array("class" => "\\controllers\\Api")));
+$routeCollection->add('getLatestTransactions', new Routing\Route('/api/latesttransactions', array("class" => "\\controllers\\Api")));
 
 $routeCollection->add('buildDatabase', new Routing\Route('/cli/buildDatabase', array("class" => "\\controllers\\Cli")));
 $routeCollection->add('buildWalletDatabase', new Routing\Route('/cli/buildWalletDatabase', array("class" => "\\controllers\\Cli")));
