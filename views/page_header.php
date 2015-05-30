@@ -1,7 +1,7 @@
 <?php
 $q = $this->getData('q', '');
 ?>
-<h1>Paycoin Blockchain</h1>
+<h1>paycoin blockchain</h1>
 <form id="searchform" method="get" action="/search/">
 <div class="row">
 	<div class="col-sm-3"></div>

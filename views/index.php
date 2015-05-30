@@ -76,8 +76,8 @@
 		}).done(function(data) {
 
 				console.log(data)
-				blockHeight = data[0].height;
-				$.each(data, function(index, value) {
+				blockHeight = data.data[0].height;
+				$.each(data.data, function(index, value) {
 					
 					var extractedBy = value['flags'];
 					var extractedBy = extractedBy.replace('stake-modifier', " ");
@@ -112,8 +112,8 @@
 					success: function(data) {
 						console.log("polling");
 //						console.log(data);
-						blockHeight = data[0].height; // Store Blockheight
-						$.each(data, function(index, value) {
+						blockHeight = data.data[0].height; // Store Blockheight
+						$.each(data.data, function(index, value) {
 
 							var extractedBy = value['flags'];
 							var extractedBy = extractedBy.replace('stake-modifier', " ");

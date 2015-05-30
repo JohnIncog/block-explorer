@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/15/15
- * Time: 10:17 PM
- */
 
 namespace controllers;
 use PP\PaycoinDb;
@@ -13,9 +7,6 @@ class Api extends Controller {
 
 	public function __construct($bootstrap) {
 		parent::__construct($bootstrap);
-		Header('Content-Type: application/json');
-
-
 
 	}
 
@@ -33,7 +24,7 @@ class Api extends Controller {
 		$block['transactions'] = $paycoin->getTransactionsInBlock($block['height']);
 		$block['transactionsOut'] = $paycoin->getTransactionsOut($block['height']);
 		$block['raw'] = unserialize($block['raw']);
-		echo json_encode($block);
+		$this->render($block);
 	}
 
 
@@ -45,7 +36,7 @@ class Api extends Controller {
 		$block = $paycoin->getBlockByHash($hash);
 		$block['transaction'] = $paycoin->getTransactionsInBlock($block['height']);
 
-		echo json_encode($block);
+		$this->render($block);
 	}
 
 
@@ -56,37 +47,31 @@ class Api extends Controller {
 		$transaction = $paycoin->getTransaction($txid);
 		$transaction['raw'] = unserialize($transaction['raw']);
 
-		echo json_encode($transaction);
+		$this->render($transaction);
 
 	}
 
 
 	public function getLatestBlocks() {
 
-		$limit = $this->bootstrap->httpRequest->get('limit');
 		$height = $this->bootstrap->httpRequest->get('height');
-		if (!$limit) {
-			$limit = 10;
-		}
+		$limit = $this->getLimit(10, 100);
 
 		$paycoin = new PaycoinDb();
 		$blocks = $paycoin->getLatestBlocks($limit, $height);
 		foreach ($blocks as &$block) {
 			$block['raw'] = unserialize($block['raw']);
 		}
-		echo json_encode($blocks);
+		$this->render($blocks);
 	}
 
 	public function getLatestTransactions() {
 
-		$limit = $this->bootstrap->httpRequest->get('limit');
-		if (!$limit) {
-			$limit = 100;
-		}
+		$limit = $this->getLimit();
 
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestTransactions($limit);
-		echo json_encode($transactions);
+		$this->render($transactions);
 	}
 
 
@@ -94,41 +79,57 @@ class Api extends Controller {
 
 		$address = $this->bootstrap->route['address'];
 
-		$limit = $this->bootstrap->httpRequest->get('limit');
-		if (!$limit) {
-			$limit = 100;
-		}
+		$limit = $this->getLimit();
 
 		$paycoinDb = new PaycoinDb();
 
 		$addressInformation = $paycoinDb->getAddressInformation($address, $limit);
-		echo json_encode($addressInformation);
+		$this->render($addressInformation);
 	}
 
 	public function getRichlist() {
 
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList();
-		echo json_encode($richList);
+		$this->render($richList);
+
 	}
 
 	public function getPrimeStakes() {
 
-		$limit = 100;
+		$limit = $this->getLimit();
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
-		echo json_encode($primeStakes);
+		$this->render($primeStakes);
 	}
 
-	public function test() {
-		echo "<pre>\n";
-		$paycoin = new Paycoin();
-		print_r($paycoin->getLastBlocks());
-		print_r($paycoin->getInfo());
-		print_r($paycoin->help());
-		return;
-		echo "</pre>";
+	private function getLimit($default = 100, $max = 10000) {
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = $default;
+		}
+		if ($limit > $max) {
+			$limit = $max;
+		}
+		return $limit;
+	}
+
+	public function render($data) {
+
+		$cacheTime = 120;
+		$ts = gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT";
+		header("Expires: $ts");
+		header("Pragma: cache");
+		header("Cache-Control: max-age=$cacheTime");
+		header('Content-Type: application/json');
+
+		echo json_encode(
+			array(
+				'version' => '0.1',
+				'data' => $data
+			)
+		);
 	}
 
 } 

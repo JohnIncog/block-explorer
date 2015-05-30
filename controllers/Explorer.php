@@ -37,7 +37,15 @@ use PP\PaycoinDb;
 
 class Explorer extends Controller {
 
+	public function __construct($bootstrap) {
+		parent::__construct($bootstrap);
+
+
+	}
+
 	public function index() {
+
+		$this->setData('cacheTime', 60);
 
 		$this->render('header');
 		$this->render('index');
@@ -85,6 +93,7 @@ class Explorer extends Controller {
 		$this->setData('address', $address);
 		$this->setData('addressInformation', $addressInformation);
 		$this->setData('pageTitle', 'Paycoin Address - ' . $address);
+		$this->setData('cacheTime', 60);
 
 		$this->render('header');
 		$this->render('address');
@@ -100,6 +109,7 @@ class Explorer extends Controller {
 		$this->setData('primeStakes', $primeStakes);
 
 		$this->setData('pageTitle', 'Prime Stakes');
+		$this->setData('cacheTime', 60);
 		$this->render('header');
 		$this->render('primestakes');
 		$this->render('footer');
@@ -114,6 +124,7 @@ class Explorer extends Controller {
 		$this->setData('transactions', $transactions);
 
 		$this->setData('pageTitle', 'Latest Transactions');
+		$this->setData('cacheTime', 60);
 		$this->render('header');
 		$this->render('latesttransactions');
 		$this->render('footer');
@@ -136,6 +147,7 @@ class Explorer extends Controller {
 		$this->setData('hash', $hash);
 		$this->setData('block', $block);
 		$this->setData('pageTitle', 'Paycoin Block - ' . (int)$block['height']);
+		$this->setData('cacheTime', 60);
 
 		$this->render('header');
 		$this->render('block');
@@ -157,6 +169,8 @@ class Explorer extends Controller {
 		$this->setData('transactionsOut', $transactionsOut);
 
 		$this->setData('pageTitle', 'Paycoin Transaction - ' . $txid);
+		$this->setData('cacheTime', 60);
+
 		$this->render('header');
 		$this->render('transaction');
 		$this->render('footer');
@@ -168,6 +182,7 @@ class Explorer extends Controller {
 
 		$this->setData('pageTitle', 'About');
 		$this->setData('pageName', 'About');
+		$this->setData('cacheTime', 3600);
 
 		$this->render('header');
 		$this->render('about');
@@ -178,6 +193,7 @@ class Explorer extends Controller {
 
 		$this->setData('pageTitle', 'API');
 		$this->setData('pageName', 'API');
+		$this->setData('cacheTime', 3600);
 
 		$this->render('header');
 		$this->render('api');
@@ -205,6 +221,7 @@ class Explorer extends Controller {
 
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList();
+		$this->setData('cacheTime', 60);
 
 		$this->setData('richList', $richList);
 		$this->setData('pageTitle', 'Paycoin Rich List');
@@ -213,5 +230,6 @@ class Explorer extends Controller {
 		$this->render('footer');
 
 	}
+
 
 } 

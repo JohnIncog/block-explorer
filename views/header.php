@@ -1,3 +1,12 @@
+<?php
+$cacheTime = $this->getData('cacheTime', 0);
+if ($cacheTime > 0) {
+	$ts = gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT";
+	header("Expires: $ts");
+	header("Pragma: cache");
+	header("Cache-Control: max-age=$cacheTime");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +23,8 @@
 	<script type="application/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css" rel="stylesheet">
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 	<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:700' rel='stylesheet' type='text/css'>
 	<nav class="navbar navbar-default navbar-fixed-top">
 	<div class="container container-fluid">
 		<div class="navbar-header">

@@ -282,6 +282,7 @@ class PaycoinDb {
 				'modifier' => $block['modifier'],
 				'modifierchecksum' => $block['modifierchecksum'],
 				'raw' => serialize($block),
+				'timestamp' => strtotime($block['time'])
 			);
 
 			$this->mysql->startTransaction();
@@ -651,4 +652,45 @@ class PaycoinDb {
 
 	}
 
+	public function getOutstandingDataPoints($limit) {
+
+		$limit = (int) $limit;
+
+		$blocks = $this->mysql->select("SELECT `timestamp`, outstanding,
+		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
+		FROM blocks GROUP BY points ORDER BY `height`   LIMIT " . (int)$limit);
+		//$dataPoints[] = "[1418361000, 0] \n";
+		foreach ($blocks as $block) {
+			$dataPoint = array(
+				'time' => $block['timestamp'] *= 1000, // convert from Unix timestamp to JavaScript time,
+				'value' => $block['outstanding']
+			);
+			$dataPoints[] = "[{$dataPoint['time']}, {$dataPoint['value']}] \n";
+		}
+
+
+		return $dataPoints;
+	}
+
+	public function getDifficultyDataPoints($limit) {
+
+		$limit = (int) $limit;
+
+		$blocks = $this->mysql->select("SELECT `timestamp`, difficulty,
+		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
+		FROM blocks
+		-- GROUP BY points
+		ORDER BY `time`  LIMIT " . (int)$limit);
+		//$dataPoints[] = "[1418361000, 0] \n";
+		foreach ($blocks as $block) {
+			$dataPoint = array(
+				'time' => $block['timestamp'] *= 1000, // convert from Unix timestamp to JavaScript time,
+				'difficulty' => $block['difficulty']
+			);
+			$dataPoints[] = "[{$dataPoint['time']}, {$dataPoint['difficulty']}] \n";
+		}
+
+
+		return $dataPoints;
+	}
 } 

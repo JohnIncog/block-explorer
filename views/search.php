@@ -20,7 +20,10 @@ $results = $this->getData('results');
 			<td><?php echo $name; ?></td>
 			<td><a href="<?php echo $link; ?>"><?php echo $hash; ?></td>
 		</tr>
+		<?php } ?>
 	<?php } ?>
+	<?php if (count($results) == 0) { ?>
+		No results found.
 	<?php } ?>
 	</table>
 
