@@ -66,8 +66,4 @@ class PaycoinRPC {
 		return $blocks;
 	}
 
-//	public function getTransaction($txId) {
-//		$raw = $this->paycoind->getrawtransaction($txId);
-//		return $this->paycoind->decoderawtransaction($raw);
-//	}
 } 

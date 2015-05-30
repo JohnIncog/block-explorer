@@ -18,7 +18,6 @@ use Symfony\Component\Routing\Loader\PhpFileLoader;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router;
 
-//$request = Request::createFromGlobals();
 
 
 class Bootstrap {

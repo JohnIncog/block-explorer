@@ -20,10 +20,12 @@ class PaycoinDb {
 	public function getLatestBlocks($limit, $height = 0) {
 
 		$sql = "SELECT * FROM blocks b ";
+		$sortOrder = 'DESC';
 		if ($height > 0) {
 			$sql .= " WHERE `height` >= " .(int)$height;
+			$sortOrder = 'ASC';
 		}
-		$sql .= " ORDER by `height` DESC LIMIT " . (int)$limit;
+		$sql .= " ORDER by `height` {$sortOrder} LIMIT " . (int)$limit;
 		$blocks = $this->mysql->select($sql);
 
 		return $blocks;
@@ -251,12 +253,16 @@ class PaycoinDb {
 		}
 
 		$paycoinRPC = new PaycoinRPC();
-		//stay one block behind, or update, nextblockhash of previous block for endblock as we go.
-		for ($i = $startBlockHeight; $i < $endBlockHeight; $i++) {
+
+		for ($i = $startBlockHeight; $i <= $endBlockHeight; $i++) {
 			$blockHash = $paycoinRPC->getBlockHash($i);
 			$block = $paycoinRPC->getBlock($blockHash);
 
-			//echo "Block Height {$block['height']}" . PHP_EOL;
+
+			$sql = 'UPDATE blocks SET nextblockhash = ' . $this->mysql->escape($block['hash']) .  ' WHERE `height` =' . ($block['height']-1);
+			$this->mysql->query($sql);
+
+			echo "Block Height {$block['height']}" . PHP_EOL;
 			$blockInsert = array(
 				'hash' => $block['hash'],
 				'size' => $block['size'],
@@ -269,7 +275,7 @@ class PaycoinDb {
 				'difficulty' => $block['difficulty'],
 				'mint' => $block['mint'],
 				'previousblockhash' => Helper::getValue($block, 'previousblockhash'),
-				'nextblockhash' => $block['nextblockhash'],
+				'nextblockhash' => Helper::getValue($block, 'nextblockhash'),
 				'flags' => $block['flags'],
 				'proofhash' => $block['proofhash'],
 				'entropybit' => $block['entropybit'],
@@ -324,13 +330,11 @@ class PaycoinDb {
 		//@todo sql for address.
 
 		//check if block height
-
 		if (is_numeric($q) && substr($q, 0, 1) != 0) {
 
 			$block = $this->mysql->selectRow("SELECT `hash`, `height` FROM blocks WHERE `height` = "
 				. $this->mysql->escape($q));
 			$return['Block Height']['Block ' . $block['height']] = '/block/' . urlencode($block['hash']);
-
 
 		}
 
@@ -358,7 +362,6 @@ class PaycoinDb {
 		}
 
 		return $return;
-
 
 	}
 
@@ -418,7 +421,7 @@ class PaycoinDb {
 		$last = (int)$q['max'];
 
 		for ($i = $offset; $i <= $last; $i = $i+$limit) {
-			echo "$i, $limit" . PHP_EOL;
+//			echo "$i, $limit" . PHP_EOL;
 
 			$sql = "SELECT * FROM transactions ORDER BY id LIMIT {$i}, {$limit}";
 			$transactions = $this->mysql->select($sql);
@@ -646,4 +649,5 @@ class PaycoinDb {
 		return $transactions;
 
 	}
+
 } 

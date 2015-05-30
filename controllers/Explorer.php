@@ -16,7 +16,7 @@
  *
  *
  * Live updates
- * Latest blocks
+ * done - Latest blocks
  * Latest transaction
  *
  *

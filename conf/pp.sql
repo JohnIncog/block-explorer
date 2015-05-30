@@ -29,8 +29,8 @@ CREATE TABLE `blocks` (
   `time` varchar(255) DEFAULT NULL,
   `nonce` int(11) DEFAULT NULL,
   `bits` varchar(16) DEFAULT NULL,
-  `difficulty` float DEFAULT NULL,
-  `mint` float DEFAULT NULL,
+  `difficulty` decimal(18,8) DEFAULT NULL,
+  `mint` decimal(18,8) DEFAULT NULL,
   `previousblockhash` varchar(64) DEFAULT NULL,
   `nextblockhash` varchar(64) DEFAULT NULL,
   `flags` varchar(64) DEFAULT NULL,
@@ -38,11 +38,31 @@ CREATE TABLE `blocks` (
   `entropybit` int(1) DEFAULT NULL,
   `modifier` varchar(16) DEFAULT NULL,
   `modifierchecksum` varchar(8) DEFAULT NULL,
-  `raw` text,
+  `raw` mediumtext,
   `transactions` int(11) DEFAULT NULL,
   `valueout` decimal(18,8) DEFAULT NULL,
-  PRIMARY KEY (`height`)
+  `valuein` decimal(18,8) DEFAULT NULL,
+  `outstanding` decimal(18,8) DEFAULT NULL,
+  `txFees` decimal(18,8) DEFAULT NULL,
+  PRIMARY KEY (`height`),
+  UNIQUE KEY `hash` (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Table structure for table `richlist` */
+
+DROP TABLE IF EXISTS `richlist`;
+
+CREATE TABLE `richlist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `rank` int(11) DEFAULT NULL,
+  `address` varchar(64) DEFAULT NULL,
+  `balance` double(18,8) DEFAULT NULL,
+  `block_height` int(11) DEFAULT NULL,
+  `time` int(11) DEFAULT NULL,
+  `percent` double(4,2) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `address` (`address`)
+) ENGINE=InnoDB AUTO_INCREMENT=10001 DEFAULT CHARSET=latin1;
 
 /*Table structure for table `transactions` */
 
@@ -56,10 +76,11 @@ CREATE TABLE `transactions` (
   `time` int(11) DEFAULT NULL,
   `locktime` int(11) DEFAULT NULL,
   `raw` longtext,
+  `txFee` decimal(18,8) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `block_height` (`block_height`),
-  KEY `txid` (`txid`)
-) ENGINE=InnoDB AUTO_INCREMENT=104854 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `txid` (`txid`),
+  KEY `block_height` (`block_height`)
+) ENGINE=InnoDB AUTO_INCREMENT=673444 DEFAULT CHARSET=latin1;
 
 /*Table structure for table `transactions_in` */
 
@@ -79,8 +100,9 @@ CREATE TABLE `transactions_in` (
   `time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `txid` (`txid`),
-  KEY `txidp` (`txidp`)
-) ENGINE=InnoDB AUTO_INCREMENT=232874 DEFAULT CHARSET=latin1;
+  KEY `txidp` (`txidp`),
+  KEY `address` (`address`)
+) ENGINE=InnoDB AUTO_INCREMENT=1104724 DEFAULT CHARSET=latin1;
 
 /*Table structure for table `transactions_out` */
 
@@ -89,7 +111,6 @@ DROP TABLE IF EXISTS `transactions_out`;
 CREATE TABLE `transactions_out` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `txidp` varchar(64) DEFAULT NULL,
-  `txid` varchar(64) DEFAULT NULL,
   `value` decimal(18,8) DEFAULT NULL,
   `n` int(11) DEFAULT NULL,
   `asm` varchar(255) DEFAULT NULL,
@@ -99,10 +120,22 @@ CREATE TABLE `transactions_out` (
   `address` varchar(64) DEFAULT NULL,
   `time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `txid` (`txid`),
   KEY `address` (`address`),
-  KEY `txidp` (`txidp`)
-) ENGINE=InnoDB AUTO_INCREMENT=273905 DEFAULT CHARSET=latin1;
+  KEY `txidp` (`txidp`),
+  KEY `address_2` (`address`)
+) ENGINE=InnoDB AUTO_INCREMENT=1334299 DEFAULT CHARSET=latin1;
+
+/*Table structure for table `wallet_tags` */
+
+DROP TABLE IF EXISTS `wallet_tags`;
+
+CREATE TABLE `wallet_tags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `wallet` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `wallet` (`wallet`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Table structure for table `wallets` */
 
@@ -110,12 +143,16 @@ DROP TABLE IF EXISTS `wallets`;
 
 CREATE TABLE `wallets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
   `address` varchar(64) DEFAULT NULL,
-  `value` float DEFAULT NULL,
+  `value` decimal(18,8) DEFAULT NULL,
+  `balance` decimal(18,8) DEFAULT NULL,
+  `time` int(11) DEFAULT NULL,
+  `type` varchar(64) DEFAULT NULL,
+  `txid` varchar(64) DEFAULT NULL,
+  `block_height` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `address` (`address`)
-) ENGINE=InnoDB AUTO_INCREMENT=632632 DEFAULT CHARSET=latin1;
+  KEY `address` (`address`)
+) ENGINE=InnoDB AUTO_INCREMENT=1399883 DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

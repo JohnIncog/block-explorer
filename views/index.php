@@ -46,7 +46,7 @@
 		</ul>
 
 
-			<table id="latestTransactions" class="table-striped table latestTransactions" align="center">
+			<table id="latestTransactions" class="table-hover table latestTransactions" align="center">
 				<thead>
 				<tr>
 					<th>Height</th>
@@ -88,7 +88,7 @@
 
 					$("#latestTransactions tbody").append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
 					$('#tr_' + value['hash']).append( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
-						.append( "<td>" + jQuery.timeago(date) + "</td>" )
+						.append( "<td><time class='timeago' datetime='" + date + "'>" + date + "</time></td>" )
 						.append( "<td>" + value['transactions'] +"</td>" )
 						.append( "<td>" + addCommas((value['valueout']*1).toString()) +" XPY</td>" )
 						.append( "<td>" + value['difficulty'] +"</td>" )
@@ -97,7 +97,7 @@
 						window.location.href='/block/' + value['hash'];
 					} );
 					$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
-
+					jQuery("time.timeago").timeago();
 
 				});
 
@@ -111,7 +111,7 @@
   					data: { height: blockHeight },
 					success: function(data) {
 						console.log("polling");
-						console.log(data);
+//						console.log(data);
 						blockHeight = data[0].height; // Store Blockheight
 						$.each(data, function(index, value) {
 
@@ -126,10 +126,10 @@
 
 							if ( !$('#tr_' + value['hash']).length ) {
 								console.log('new block!');
-
-								$("#latestTransactions tbody").prepend( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
+								$("#latestTransactions tbody").prepend( "<tr style=\"background-color: #00EF00\" id=\"tr_" + value['hash'] +"\"></tr>" );
+								$('#tr_' + value['hash']).hide();
 								$('#tr_' + value['hash']).html( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
-									.append( "<td>" + jQuery.timeago(date) + "</td>" )
+									.append( "<td><time class='timeago' datetime='" + date + "'>" + date + "</time></td>" )
 									.append( "<td>" + value['transactions'] +"</td>" )
 									.append( "<td>" + addCommas((value['valueout']*1).toString()) +" XPY</td>" )
 									.append( "<td>" + value['difficulty'] +"</td>" )
@@ -137,10 +137,12 @@
 								$('#tr_' + value['hash']).click( function() {
 									window.location.href='/block/' + value['hash'];
 								} );
-
+								$('#tr_' + value['hash']).show();
+								$("#latestTransactions tr:last").remove();
+								$('#tr_' + value['hash']).animate({backgroundColor: "#f5f5f5" }, 3000)
 								$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
 							}
-
+							jQuery("time.timeago").timeago();
 
 
 

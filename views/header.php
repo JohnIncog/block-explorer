@@ -11,6 +11,7 @@
 	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
 	<script type="application/javascript" src="/js/main.js"></script>
 	<script type="application/javascript" src="/js/timeago.js"></script>
+	<script type="application/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
