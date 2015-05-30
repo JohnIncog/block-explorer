@@ -18,6 +18,7 @@ $primeStakes = $this->getData('primeStakes');
 			<th>Height</th>
 			<th>Transaction ID</th>
 			<th>Address</th>
+			<th>Value</th>
 			<th>Time</th>
 			<th>OP Code</th>
 		</tr>
@@ -26,6 +27,7 @@ $primeStakes = $this->getData('primeStakes');
 				<td><a href="/block/<?php echo $primeStake['hash']?>"><?php echo $primeStake['block_height'] ?></td>
 				<td><?php echo \PP\Helper::getTxHashLink($primeStake['txid']) ?></td>
 				<td><?php echo \PP\Helper::getAddressLink($primeStake['address']) ?></td>
+				<td><?php echo \PP\Helper::formatXPY($primeStake['value']) ?></td>
 				<td><?php echo \PP\Helper::formatTime($primeStake['time']) ?></td>
 				<td><?php echo $primeStake['OP'] ?></td>
 			</tr>

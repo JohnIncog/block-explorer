@@ -620,7 +620,7 @@ class PaycoinDb {
 			$txIds[] = $primeStake['txid'];
 		}
 
-		$rows = $this->mysql->select("SELECT t.txid, block_height, t.time, b.hash, address
+		$rows = $this->mysql->select("SELECT t.txid, block_height, t.time, b.hash, address, b.mint AS `value`
 				FROM transactions t
 				JOIN blocks b ON b.height=t.block_height
 				JOIN transactions_out tro ON t.`txid` = tro.`txidp` AND address IS NOT NULL
@@ -637,6 +637,7 @@ class PaycoinDb {
 			$primeStake['block_height'] = $blocks[$primeStake['txid']]['block_height'];
 			$primeStake['time'] = $blocks[$primeStake['txid']]['time'];;
 			$primeStake['OP'] = substr($primeStake['asm'], 0, 15);
+			$primeStake['value'] = $blocks[$primeStake['txid']]['value'];
 		}
 		return $primeStakes;
 
