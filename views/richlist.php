@@ -13,13 +13,15 @@ $richList = $this->getData('richList');
 		<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
 	</ul>
 
-	<table class="table infoTable table-striped">
+	<table class="table infoTable table-invert table-hover">
+		<thead>
 		<tr>
 			<th class="text-right" style="width: 45px">Rank</th>
 			<th>Address</th>
 			<th>Balance</th>
 			<th>Percent of coins</th>
 		</tr>
+		</thead>
 		<?php foreach($richList as $rich) { ?>
 			<tr>
 				<td class="text-right"><?php echo $rich['rank'] ?></td>

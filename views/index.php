@@ -46,7 +46,7 @@
 		</ul>
 
 
-			<table id="latestTransactions" class="table-hover table latestTransactions" align="center">
+			<table id="latestTransactions" class="table-hover table latestTransactions table-invert" align="center">
 				<thead>
 				<tr>
 					<th>Height</th>
@@ -126,7 +126,7 @@
 
 							if ( !$('#tr_' + value['hash']).length ) {
 								console.log('new block!');
-								$("#latestTransactions tbody").prepend( "<tr style=\"background-color: #00EF00\" id=\"tr_" + value['hash'] +"\"></tr>" );
+								$("#latestTransactions tbody").prepend( "<tr style=\"background-color: #00EF00;\" id=\"tr_" + value['hash'] +"\"></tr>" );
 								$('#tr_' + value['hash']).hide();
 								$('#tr_' + value['hash']).html( "<td><a href=\"/block/"+value['hash']+"\">" + value['height'] +"</a></td>" )
 									.append( "<td><time class='timeago' datetime='" + date + "'>" + date + "</time></td>" )
@@ -139,7 +139,7 @@
 								} );
 								$('#tr_' + value['hash']).show();
 								$("#latestTransactions tr:last").remove();
-								$('#tr_' + value['hash']).animate({backgroundColor: "#f5f5f5" }, 3000)
+								$('#tr_' + value['hash']).animate({backgroundColor: 'rgba(0, 0, 0, 0.20)' }, 3000)
 								$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
 							}
 							jQuery("time.timeago").timeago();

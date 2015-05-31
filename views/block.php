@@ -111,7 +111,8 @@ if ($block != null) {
 	</ul>
 
 	<div class="blockTransactions" id="blockTransactions">
-		<table class="blockTable table">
+		<table class="blockTable table table-hover">
+			<thead>
 			<tr>
 				<th>Hash</th>
 				<th class="text-right">Value Out</th>
@@ -119,10 +120,12 @@ if ($block != null) {
 				<th>To (amount)</th>
 				<th></th>
 			</tr>
-
+			</thead>
 			<?php foreach($transactions as $k => $transaction) { ?>
 				<tr>
-					<td><div class="addr"><a href="/transaction/<?php echo $transaction['txid']; ?>"><code><?php echo $transaction['txid']; ?></code></a></div></td>
+					<td>
+						<?php echo \PP\Helper::getTxHashLink($transaction['txid'])?>
+					</td>
 					<td class="text-right"><?php
 						$total = 0;
 						foreach ($transaction['vout'] as $out) {

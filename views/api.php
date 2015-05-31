@@ -2,7 +2,7 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h1 class="text-left">Public API</h1>
+	<h2 class="text-left">Public API</h2>
 
 
 <pre class="text-left">

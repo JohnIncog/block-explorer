@@ -10,7 +10,7 @@ $addressInformation = $this->getData('addressInformation');
 	<?php $this->render('page_header'); ?>
 
 
-	<h1 class="text-left">Details for Address</h1>
+	<h2 class="text-left">Details for Address</h2>
 
 	<?php if (count($addressInformation['transactions']) == 0)  { ?>
 		<div class="infoTable">

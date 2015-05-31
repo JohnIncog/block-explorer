@@ -12,7 +12,8 @@ $transactions = $this->getData('transactions');
 		<li role="presentation"><a href="/richlist">Rich List</a></li>
 		<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
 	</ul>
-	<table class="table infoTable table-striped">
+	<table class="table infoTable table-invert table-hover">
+		<thead>
 		<tr>
 			<th>Time</th>
 			<th>Transaction ID</th>
@@ -20,6 +21,7 @@ $transactions = $this->getData('transactions');
 			<th>Address</th>
 
 		</tr>
+		</thead>
 		<?php foreach($transactions as $transaction) { ?>
 			<tr>
 				<td><?php echo \PP\Helper::formatTime($transaction['time'], true) ?></td>

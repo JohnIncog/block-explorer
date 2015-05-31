@@ -2,6 +2,6 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h1>About</h1>
+	<h2>About</h2>
 
 </div>

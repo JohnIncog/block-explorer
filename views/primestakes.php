@@ -13,7 +13,8 @@ $primeStakes = $this->getData('primeStakes');
 		<li role="presentation" class="active"><a href="/primestakes">Prime Stakes</a></li>
 	</ul>
 
-	<table class="table infoTable table-striped">
+	<table class="table infoTable table-invert table-hover">
+		<thead>
 		<tr>
 			<th>Height</th>
 			<th>Transaction ID</th>
@@ -22,6 +23,7 @@ $primeStakes = $this->getData('primeStakes');
 			<th>Time</th>
 			<th>OP Code</th>
 		</tr>
+		</thead>
 		<?php foreach($primeStakes as $primeStake) { ?>
 			<tr>
 				<td><a href="/block/<?php echo $primeStake['hash']?>"><?php echo $primeStake['block_height'] ?></td>

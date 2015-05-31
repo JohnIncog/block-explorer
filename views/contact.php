@@ -2,7 +2,7 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h1 >Contact</h1>
+	<h2 >Contact</h2>
 
 	<?php if ($this->getData('sent') === true) { ?>
 
