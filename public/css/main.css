@@ -34,7 +34,7 @@ th {
 	padding-top: 46px;
 }
 .logo {
-	width:540px; /* you can use % */
+	width:500px; /* you can use % */
 	height: auto;
 }
 .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
@@ -71,6 +71,9 @@ nav {
 }
 .panel-default {
 	background-color: rgba(0, 0, 0, 0.20);
+}
+.panel-default>.panel-heading {
+	color: #042d3c;
 }
 .table {
 	font-family: 'Lato', sans-serif;

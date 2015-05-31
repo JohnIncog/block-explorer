@@ -6,17 +6,17 @@
 		<div class="row">
 			<div class="col-md-3">
 				<div class="panel panel-default">
-					<div class="panel-heading">--</div>
+					<div class="panel-heading">Price</div>
 					<div class="panel-body">
-						--
+						$0.00 USD
 					</div>
 				</div>
 			</div>
 			<div class="col-md-3">
 				<div class="panel panel-default">
-					<div class="panel-heading">--</div>
+					<div class="panel-heading">Market Cap</div>
 					<div class="panel-body">
-						--
+						$1.5M
 					</div>
 				</div>
 			</div>
@@ -139,7 +139,7 @@
 								} );
 								$('#tr_' + value['hash']).show();
 								$("#latestTransactions tr:last").remove();
-								$('#tr_' + value['hash']).animate({backgroundColor: 'rgba(0, 0, 0, 0.20)' }, 3000)
+								$('#tr_' + value['hash']).animate({backgroundColor: 'rgba(0, 0, 0, 0)' }, 3000)
 								$("#outstanding").text(addCommas((value['outstanding']*1).toString()) + ' XPY');
 							}
 							jQuery("time.timeago").timeago();

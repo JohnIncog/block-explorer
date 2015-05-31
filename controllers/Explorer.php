@@ -80,10 +80,7 @@ class Explorer extends Controller {
 
 		$address = $this->bootstrap->route['address'];
 
-		$limit = $this->bootstrap->httpRequest->get('limit');
-		if (!$limit) {
-			$limit = 100;
-		}
+		$limit = $this->getLimit(100);
 		$this->setData('limit', $limit);
 
 		$paycoinDb = new PaycoinDb();
@@ -102,7 +99,7 @@ class Explorer extends Controller {
 
 	public function primeStakes() {
 
-		$limit = 100;
+		$limit = $this->getLimit(50);
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
@@ -117,8 +114,7 @@ class Explorer extends Controller {
 
 	public function latestTransactions() {
 
-		$limit = 100;
-
+		$limit = $this->getLimit(50);
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestTransactions($limit);
 		$this->setData('transactions', $transactions);
@@ -231,5 +227,15 @@ class Explorer extends Controller {
 
 	}
 
+	private function getLimit($default = 100, $max = 10000) {
+		$limit = $this->bootstrap->httpRequest->get('limit');
+		if (!$limit) {
+			$limit = $default;
+		}
+		if ($limit > $max) {
+			$limit = $max;
+		}
+		return $limit;
+	}
 
 } 
