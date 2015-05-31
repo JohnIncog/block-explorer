@@ -51,7 +51,7 @@
 					var extractedBy = extractedBy.replace('stake-modifier', " ");
 					var extractedBy = extractedBy.replace(/-/g, " ");
 					var extractedBy = ucwords(extractedBy);
-					var date = new Date(value['time']);
+					var date = new Date(value['timestamp']*1000);
 					var date = date.toString().replace(/GMT.*/g,'');
 
 					$("#latestTransactions tbody").append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
@@ -88,7 +88,7 @@
 							var extractedBy = extractedBy.replace('stake-modifier', " ");
 							var extractedBy = extractedBy.replace(/-/g, " ");
 							var extractedBy = ucwords(extractedBy);
-							var date = new Date(value['time']);
+							var date = new Date(value['timestamp']*1000);
 							var date = date.toString().replace(/GMT.*/g,'');
 
 							//check if

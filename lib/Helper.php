@@ -105,8 +105,9 @@ class Helper {
 	}
 
 	public static function getLocalDateTime($utcDateTime, $timeAgo = false) {
+		$iso = date('c', strtotime($utcDateTime));
 		$js = "
-		<script>var date = new Date('" . $utcDateTime . "');
+		<script>var date = new Date('" . $iso . "');
 		document.write(date.toString().replace(/GMT.*/g,''));";
 		if ($timeAgo == true) {
 			$js .= "document.write( '(' + jQuery.timeago(date.toString().replace(/GMT.*/g,'')) + ')' );";
