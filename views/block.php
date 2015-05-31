@@ -141,7 +141,9 @@ if ($block != null) {
 						} else {
 							foreach($transaction['vin'] as $in) { ?>
 							<tr>
-								<td><a href="/address/<?php echo $in['address'] ?>"><?php echo $in['address'] ?></a></td>
+								<td>
+									<?php echo \PP\Helper::getAddressLink($in['address']); ?>
+								</td>
 								<td class="text-right"><?php echo \PP\Helper::formatXPY($in['value']); ?></td>
 							</tr>
 							<?php
@@ -165,7 +167,7 @@ if ($block != null) {
 								?>
 
 							<tr>
-								<td><a href="/address/<?php echo $out['address'] ?>"><?php echo $out['address'] ?></a></td>
+								<td><?php echo \PP\Helper::getAddressLink($out['address']); ?></td>
 								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?></td>
 							</tr>
 							<?php } ?>

@@ -96,11 +96,11 @@ class Mysql {
 
 		}
 
-		$this->query($sql);
+		$return = $this->query($sql);
 		if (!empty($this->mysql->error)) {
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
 		}
-
+		return $return;
 
 	}
 

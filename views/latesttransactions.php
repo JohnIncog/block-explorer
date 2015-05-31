@@ -5,6 +5,7 @@ $transactions = $this->getData('transactions');
 
 	<?php $this->render('page_header'); ?>
 
+	<?php $this->render('market_info'); ?>
 
 	<ul class="nav nav-tabs">
 		<li role="presentation" ><a href="/">Latest Blocks</a></li>

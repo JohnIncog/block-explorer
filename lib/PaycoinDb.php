@@ -364,13 +364,33 @@ class PaycoinDb {
 		return $return;
 
 	}
+	public function getAddressTag($address) {
+		$sql = "SELECT `tag`, `verified` FROM address_tags"
+			. " WHERE address = " . $this->mysql->escape($address);
+		$tagRow = $this->mysql->selectRow($sql);
+		if ($tagRow == null) {
+			return null;
+		}
+		if ($tagRow['verified'] == 3) { //dispute
+			return null;
+		}
+		return $tagRow;
+
+	}
+	public function disputeAddressTag($address) {
+
+		$sql = "UPDATE address_tags SET verified=3 WHERE address = " . $this->mysql->escape($address);
+		$this->mysql->query($sql);
+
+	}
 
 	public function getAddressInformation($address, $limit = 100000) {
 
-		$sql = "SELECT w.*, rl.rank FROM wallets w "
-			.  " LEFT JOIN richlist rl on rl.address= w.address"
-			. " WHERE w.address = " . $this->mysql->escape($address)
-			.  " ORDER BY w.id DESC";
+		$sql = "SELECT a.*, rl.rank, adt.`tag`, adt.`verified` FROM addresses a "
+			. " LEFT JOIN richlist rl on rl.address= a.address"
+			. " LEFT JOIN address_tags adt ON adt.address = a.address"
+			. " WHERE a.address = " . $this->mysql->escape($address)
+			. " ORDER BY a.id DESC";
 		if ($limit > 0 && $limit != 'all') {
 			$sql .= " LIMIT " . (int)$limit;
 		}
@@ -379,13 +399,17 @@ class PaycoinDb {
 
 		$return['transactions'] = $transactions;
 		$return['address'] = $address;
+		$return['addressTag'] = array(
+			'tag' => $transactions[0]['tag'],
+			'verified' => $transactions[0]['verified']
+		);
 
 		$last = current($transactions);
 		$return['rank'] = $last['rank'];
 		$return['balance'] = $last['balance'];
 
 
-		$sql = "SELECT `address`, `type`, SUM(`value`) as `sum`, COUNT(*) as `transactions` FROM wallets WHERE address = " . $this->mysql->escape($address)
+		$sql = "SELECT `address`, `type`, SUM(`value`) as `sum`, COUNT(*) as `transactions` FROM addresses WHERE address = " . $this->mysql->escape($address)
 			.  "GROUP BY `address`, `type` ";
 
 		$totals = $this->mysql->select($sql);
@@ -416,7 +440,7 @@ class PaycoinDb {
 
 		$limit = 1000;
 
-		$q = $this->mysql->selectRow('SELECT id FROM transactions WHERE txid = (SELECT txid FROM wallets ORDER BY id DESC LIMIT 1)');
+		$q = $this->mysql->selectRow('SELECT id FROM transactions WHERE txid = (SELECT txid FROM addresses ORDER BY id DESC LIMIT 1)');
 		$offset = (int)$q['id'];
 
 
@@ -487,7 +511,7 @@ class PaycoinDb {
 			);
 
 			$insert['balance'] = $this->getAddressNewBalance($address, $value);
-			$this->mysql->insert('wallets', $insert);
+			$this->mysql->insert('addresses', $insert);
 		}
 	}
 
@@ -537,7 +561,7 @@ class PaycoinDb {
 			}
 
 			$insert['balance'] = $this->getAddressNewBalance($address, $value);
-			$this->mysql->insert('wallets', $insert);
+			$this->mysql->insert('addresses', $insert);
 		}
 
 	}
@@ -607,7 +631,7 @@ class PaycoinDb {
 //					);
 //
 //					$insert['balance'] = $this->getAddressNewBalance($address, $value);
-//					$this->mysql->insert('wallets', $insert);
+//					$this->mysql->insert('addresses', $insert);
 //				}
 //				//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
 //			}
@@ -658,7 +682,7 @@ class PaycoinDb {
 //				}
 //
 //				$insert['balance'] = $this->getAddressNewBalance($address, $value);
-//				$this->mysql->insert('wallets', $insert);
+//				$this->mysql->insert('addresses', $insert);
 //			}
 //
 //
@@ -678,7 +702,7 @@ class PaycoinDb {
 	}
 
 	public function getAddressBalance($address) {
-		$sql = "SELECT balance FROM wallets WHERE address = " . $this->mysql->escape($address)
+		$sql = "SELECT balance FROM addresses WHERE address = " . $this->mysql->escape($address)
 			. "ORDER BY id DESC LIMIT 1";
 		$q = $this->mysql->selectRow($sql);
 		$balance = 0;
@@ -695,7 +719,7 @@ class PaycoinDb {
 
 		$this->mysql->query("CREATE TABLE new_richlist LIKE richlist");
 
-		$sql = "SELECT SUM(`value`) AS `balance`, address, MAX(`block_height`) as `block_height`, MAX(`time`) as `time` FROM wallets
+		$sql = "SELECT SUM(`value`) AS `balance`, address, MAX(`block_height`) as `block_height`, MAX(`time`) as `time` FROM addresses
 			 GROUP BY address
 			 ORDER BY balance DESC LIMIT 10000";
 
@@ -772,7 +796,7 @@ class PaycoinDb {
 	public function getLatestTransactions($limit = 100) {
 		$limit = (int) $limit;
 
-		$transactions = $this->mysql->select("SELECT * FROM wallets w ORDER BY time DESC LIMIT $limit");
+		$transactions = $this->mysql->select("SELECT * FROM addresses ORDER BY time DESC LIMIT $limit");
 		return $transactions;
 
 	}
@@ -818,4 +842,13 @@ class PaycoinDb {
 
 		return $dataPoints;
 	}
+
+	public function addTagToAddress($address, $tag) {
+		$insert = array(
+			'address' => $address,
+			'tag' => $tag
+		);
+		return $this->mysql->insert('address_tags', $insert);
+	}
+
 } 

@@ -25,9 +25,57 @@ $addressInformation = $this->getData('addressInformation');
 		</div>
 	<?php } else { ?>
 
+
 	<table class="table infoTable">
 		<tr>
-			<td>Address</td><td><?php echo htmlspecialchars($address); ?></td>
+			<td class="col-md-2">Address</td>
+			<td>
+				<form id="tag-address-form">
+					<input name="address" type="hidden" value="<?php echo htmlspecialchars($address); ?>">
+				<div class="row">
+					<div class="col-md-5"><?php echo htmlspecialchars($address); ?></div>
+					<?php if (!empty($addressInformation['addressTag']['tag'])) {
+						if ($addressInformation['addressTag']['verified'] == 0) { ?>
+							<div class="col-md-2">
+								<h4 style="margin-top: 0; margin-bottom: 0;">
+									<span class="label label-primary tagged-tag"><?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?></span>
+								</h4>
+							</div>
+							<div class="col-md-5 text-right">
+								<button type="button" class="btn btn-danger btn-xs" id="remove-tag">Remove Tag</button>
+							</div>
+						<?php } elseif ($addressInformation['addressTag']['verified'] == 3) { ?>
+							<div class="col-md-2">
+								<h4 style="margin-top: 0; margin-bottom: 0;">
+									<span class="label label-danger tagged-tag" style="text-decoration: line-through"><?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?></span>
+								</h4>
+							</div>
+							<div class="col-md-5 text-right">
+								<button type="button" class="btn btn-primary btn-xs" id="claim-address">Claim Address</button>
+							</div>
+						<?php } elseif ($addressInformation['addressTag']['verified'] == 1) { ?>
+							<div class="col-md-2">
+								<h4 style="margin-top: 0; margin-bottom: 0;">
+									<span class="label label-success tagged-tag"><?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?></span>
+								</h4>
+							</div>
+						<?php } ?>
+
+
+
+					<?php } else { ?>
+						<div class="col-md-4">
+
+							<input name="tag" type="text" class="form-control pull-left" id="tagAddress" placeholder="Add a Tag to Address">
+						</div>
+						<div class="col-md-3">
+							<button type="submit" class=" pull-left btn btn-default">Submit</button>
+						</div>
+					<?php }  ?>
+
+				</div>
+				</form>
+			</td>
 			<td rowspan="100%" class="text-right col-sm-2" style="padding: 15px;">
 				<div id="qrcode"></div></td>
 		</tr>
@@ -73,6 +121,8 @@ $addressInformation = $this->getData('addressInformation');
 		<?php } ?>
 	</table>
 
+
+
 		<div class="row">
 			<div class="col-md-6"><h2 class="text-left">Transactions</h2></div>
 			<div class="col-md-2"></div>
@@ -94,7 +144,7 @@ $addressInformation = $this->getData('addressInformation');
 
 		</div>
 
-	<table class="table infoTable" id="transactionTable">
+	<table class="table latestTransactions" id="transactionTable">
 		<thead>
 		<tr>
 			<th>Hash</th>
@@ -160,6 +210,51 @@ $addressInformation = $this->getData('addressInformation');
 <script src="/js/jquery.qrcode-0.12.0.min.js"></script>
 
 <script>
+
+
+
+	jQuery('#remove-tag').click( function() {
+
+		$.ajax({
+			url: "/api/disputeaddresstag",
+			data: $('#tag-address-form').serialize(),
+			method: 'post'
+		}).done(function(data) {
+				console.log(data.data.message);
+				var alert = '<div class="alert alert-success alert-dismissible" role="alert" id="alert-1" >'
+					+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+					+ '<strong>Great Success!</strong> ' + data.data.message
+					+ '</div>';
+				$(".infoTable").before(alert);
+			})
+	});
+
+	jQuery('#tag-address-form').submit( function() {
+
+		$.ajax({
+			url: "/api/tagaddress",
+			data: $('#tag-address-form').serialize(),
+			method: 'post'
+		}).done(function(data) {
+			console.log(data);
+			if (data.data.success) {
+				var alert = '<div class="alert alert-success alert-dismissible" role="alert" id="alert-1" >'
+					+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+					+ '<strong>Great Success!</strong> Tag has been added to address.'
+					+ '</div>';
+				$(".infoTable").before(alert);
+			} else {
+				var alert = '<div class="alert alert-danger alert-dismissible" role="alert" id="alert-2" >'
+					+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+					+ '<strong>Error!</strong> ' + data.data.error
+					+ '</div>';
+				$(".infoTable").before(alert);
+			}
+
+		});
+		return false;
+	});
+
 	var address = <?php echo json_encode($addressInformation['address']); ?>;
 	$("#transactionTable").stupidtable();
 

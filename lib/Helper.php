@@ -24,9 +24,53 @@ class Helper {
 		return '<span class="coin-whole">' . $whole . '</span>.' . '<span class="coin-decimal">' .$decimal . '</span> ' . $symbol;
 	}
 
-	public static function getAddressLink($address) {
+	/**
+	 * @var array Used for local caching.
+	 */
+	public static $addressTags = array();
+
+	public static function getAddressLink($address, $tag = null) {
+
+
 		$link = '<a href="' . self::getUrl('address', array('address' => $address))
 			. '" class="">' . htmlspecialchars($address) . '</a>';
+
+//		if (true || rand(1,5) == 1) {
+//
+//			//test tags
+//			$randomTags = array(
+//				'Cryptsy', 'Bitrex', 'FastXPY', 'Zencloud', 'xpy.io'
+//			);
+//			$tag = $randomTags[rand(0, count($randomTags)-1)];
+//		}
+
+		//local caching..
+		if ($tag == null) {
+			if (isset(self::$addressTags[$address])) {
+				$tag = self::$addressTags[$address];
+			} else {
+				$paycoinDb = new PaycoinDb();
+				$tag = $paycoinDb->getAddressTag($address);
+				if ($tag == null) {
+					self::$addressTags[$address] = false;
+				} else {
+					self::$addressTags[$address] = $tag;
+				}
+
+			}
+
+		}
+		if (!empty($tag)) {
+			$class = 'label-primary';
+			if ($tag['verified'] == 1) {
+				$class = 'label-success';
+			}
+			$link = '<a href="' . self::getUrl('address', array('address' => $address))
+				. '"><span class="tagged-address pull-left">' . htmlspecialchars($address) . '</span>'
+				. '<h4 class="pull-left" style="margin-top: 0; margin-bottom: 0;"><span class="label ' . $class . ' tagged-tag">' . htmlspecialchars($tag['tag']) . '</span></h4>'
+				. '</a>';
+
+		}
 		return $link;
 	}
 

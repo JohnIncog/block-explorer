@@ -4,15 +4,31 @@
  * Features/Ideas
  *
  * Address Tagging
- * Allow user to tag an address with a name.  This name will show along side address and allow for a url.
+ * done - Allow user to tag an address with a name.
  * If an address is tagged by multiple users, tag will be removed and a signed message will be required for a tag to be reapplied.
+ *
+ * Claim Address Page
+ * Verify a singed message.
+ * then can tag it as verified and url will show
+ *
+ * done - Add blocks with market information to all pages with tab
+ *  also make them only show 25, add toggle to show more
+ *
+ * User Account
+ * signup / login / password reset.
+ *
+ * Admin
+ * list users, edit, remove
  *
  * Address Monitor
  * Flag an address to be monitored and receive alerts when it makes transactions
  * Alert types: in browser, email, sms, web hook
  *
+ * Known bugs
+ *  "Invalid date" all over the page? (firefox)
+ *  not mobile friendly
  *
- *
+ * transaction page - make block height linkable to block page.
  *
  *
  * Live updates
@@ -99,7 +115,7 @@ class Explorer extends Controller {
 
 	public function primeStakes() {
 
-		$limit = $this->getLimit(50);
+		$limit = $this->getLimit(25);
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
@@ -114,7 +130,7 @@ class Explorer extends Controller {
 
 	public function latestTransactions() {
 
-		$limit = $this->getLimit(50);
+		$limit = $this->getLimit(25);
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestTransactions($limit);
 		$this->setData('transactions', $transactions);
@@ -215,8 +231,9 @@ class Explorer extends Controller {
 
 	public function richlist() {
 
+		$limit = $this->getLimit(25);
 		$paycoin = new PaycoinDb();
-		$richList = $paycoin->getRichList();
+		$richList = $paycoin->getRichList($limit);
 		$this->setData('cacheTime', 60);
 
 		$this->setData('richList', $richList);

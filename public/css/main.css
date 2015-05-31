@@ -88,7 +88,12 @@ nav {
 .table>thead>tr>th {
 	border-bottom: 2px solid #087094;
 }
-
+.a-normal {
+	color: blue;
+}
+.a-normal:hover {
+	color: blue;
+}
 .my-template {
 	padding: 40px 0;
 	text-align: center;
@@ -99,7 +104,7 @@ nav {
 }
 .infoTable {
 	text-align: left;
-
+	text-size: 16px;
 }
 .blockTable {
 	text-align: left;
@@ -114,6 +119,15 @@ nav {
 }
 .addr {
 	width: 110px;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+.tagged-tag {
+	margin-left: 10px;
+}
+.tagged-address {
+	width: 150px;
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;

@@ -132,4 +132,67 @@ class Api extends Controller {
 		);
 	}
 
+	public function disputeAddressTag() {
+
+		$address = $this->bootstrap->httpRequest->request->getAlnum('address');
+		$paycoinDb = new PaycoinDb();
+		$paycoinDb->disputeAddressTag($address);
+
+		$response = array(
+			'success' => true,
+			'message' => 'Tag has been removed and tagging disabled. <a href="#" class="a-normal">Claim Address</a> to add a Tag .'
+		);
+		$this->render($response);
+	}
+
+	public function tagAddress() {
+
+		$address = $this->bootstrap->httpRequest->request->getAlnum('address');
+		$tag = $this->bootstrap->httpRequest->request->getAlnum('tag');
+
+		if (empty($address)) {
+			$response = array(
+				'success' => false,
+				'error' => 'Error no address in request.'
+			);
+		} elseif (empty($tag)) {
+			$response = array(
+				'success' => false,
+				'error' => 'You need to enter a tag for the address.'
+			);
+		} else {
+
+			$paycoinDb = new PaycoinDb();
+
+			try {
+				$paycoinDb->addTagToAddress($address, $tag);
+			} catch (\Exception $e) {
+				if (stristr($e->getMessage(), 'Duplicate') !== false) {
+					$response = array(
+						'success' => false,
+						'error' => 'This address is already tagged. Tagging disabled. <a href="#" class="a-normal">Claim Address</a> to add a Tag',
+					);
+					$this->disputeAddressTag($address);
+				} else {
+					$response = array(
+						'success' => false,
+//						'error' => 'Error adding tag to address.',
+						'error' => $e->getMessage()
+					);
+				}
+			}
+			if (empty($response)) {
+				$response = array(
+					'address' => $address,
+					'tag' => $tag,
+					'success' => true,
+					'error' => false
+				);
+			}
+
+		}
+
+		$this->render($response);
+	}
+
 } 
