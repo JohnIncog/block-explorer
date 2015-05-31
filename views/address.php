@@ -27,8 +27,9 @@ $addressInformation = $this->getData('addressInformation');
 
 	<table class="table infoTable">
 		<tr>
-			<td>Address</td><td><?php echo \PP\Helper::getAddressLink($address); ?></td>
-			<td rowspan="5" class="text-right col-sm-2"><div id="qrcode"></div></td>
+			<td>Address</td><td><?php echo htmlspecialchars($address); ?></td>
+			<td rowspan="100%" class="text-right col-sm-2" style="padding: 15px;">
+				<div id="qrcode"></div></td>
 		</tr>
 		<tr>
 			<td>Balance</td>
@@ -40,10 +41,12 @@ $addressInformation = $this->getData('addressInformation');
 			<td>Rank <?php echo $addressInformation['rank']; ?></td>
 		</tr>
 		<?php } ?>
+		<?php if (isset($addressInformation['totalInTransactions'])) { ?>
 		<tr>
 			<td>Received</td>
 			<td><?php echo \PP\Helper::formatXPY($addressInformation['totalInValue']); ?> in <?php echo $addressInformation['totalInTransactions'] ?> transactions</td>
 		</tr>
+		<?php } ?>
 		<?php if (isset($addressInformation['totalOutTransactions'])) { ?>
 		<tr>
 			<td>Sent</td>
@@ -55,6 +58,18 @@ $addressInformation = $this->getData('addressInformation');
 			<td>Staked</td>
 			<td><?php echo \PP\Helper::formatXPY($addressInformation['totalStakeValue']); ?> in <?php echo $addressInformation['totalStakeTransactions'] ?> transactions</td>
 		</tr>
+		<?php } ?>
+		<?php if (isset($addressInformation['totalCreationTransactions'])) {  ?>
+			<tr>
+				<td>Mined</td>
+				<td><?php echo \PP\Helper::formatXPY($addressInformation['totalCreationValue']); ?> in <?php echo $addressInformation['totalCreationTransactions'] ?> transactions</td>
+			</tr>
+		<?php } ?>
+		<?php if (isset($addressInformation['totalTransactions'])) {  ?>
+			<tr>
+				<td>Total Transactions</td>
+				<td><?php echo $addressInformation['totalTransactions']?></td>
+			</tr>
 		<?php } ?>
 	</table>
 
@@ -149,10 +164,11 @@ $addressInformation = $this->getData('addressInformation');
 	$("#transactionTable").stupidtable();
 
 	$('#qrcode').qrcode({
-		size: 175,
+		size: 150,
 
-		"color": "#3a3",
-		"text": address
+		"color": "#087094",
+		"text": address,
+		fill: '#087094'
 
 	});
 

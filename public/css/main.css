@@ -12,7 +12,7 @@ a {
 	color: #ffffff;
 }
 a:hover {
-	color: #087094;
+	color: #ffffff;
 }
 th {
 	font-size: 16px;
@@ -134,8 +134,9 @@ code a, code a:hover, a .hash:hover, .table-hover>tbody>tr:hover code a {
 	font-weight: bold;
 }
 .addressSend {
-	color: #d90000;
-	font-weight: bold;
+	color: #eb2655;
+	font-weight: bolder;
+
 }
 .coin-decimal {
 	font-size: 12px;

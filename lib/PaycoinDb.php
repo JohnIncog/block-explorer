@@ -134,7 +134,6 @@ class PaycoinDb {
 			$this->mysql->insert('transactions', $transactionInsert , true);
 			$this->addTransactionToAddress($transactionInsert);
 		}
-		//$this->mysql->insertMultiple('transactions', $transactionInsert);
 		$return['totalValue'] = $totalValue;
 		$return['totalValueIn'] = $totalValueIn;
 		$return['transactionCount'] = $transactionCount;
@@ -393,15 +392,18 @@ class PaycoinDb {
 		$return['totalTransactions'] = 0;
 
 		foreach ($totals as $total) {
-			if ($total['type'] == 'receive' ) {
+			if ($total['type'] == 'receive') {
 				$return['totalInValue'] = $total['sum'];
 				$return['totalInTransactions'] = $total['transactions'];
-			} if ($total['type'] == 'send') {
+			} if ($total['type'] == 'send' ) {
 				$return['totalOutValue'] = str_replace('-', '',$total['sum']);
 				$return['totalOutTransactions'] = $total['transactions'];
 			} elseif ($total['type'] == 'stake') {
 				$return['totalStakeValue'] = $total['sum'];
 				$return['totalStakeTransactions'] = $total['transactions'];
+			} elseif ($total['type'] == 'creation') {
+				$return['totalCreationValue'] = $total['sum'];
+				$return['totalCreationTransactions'] = $total['transactions'];
 			}
 			$return['totalTransactions'] += $total['transactions'];
 
@@ -440,12 +442,8 @@ class PaycoinDb {
 	 *
 	 * Add/Update address balance tracking.
 	 *
-	 * @param array $transaction req keys = txid, block_height, time
-	 *
 	 */
 	public function addTransactionToAddress(array $transaction) {
-
-		//$this->mysql->startTransaction();
 
 		$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
 		$transactionsIn = $this->mysql->select($sql);
@@ -453,96 +451,221 @@ class PaycoinDb {
 		$sql = "SELECT * FROM transactions_out WHERE txidp = " . $this->mysql->escape($transaction['txid']);
 		$transactionsOut = $this->mysql->select($sql);
 
-		if (count($transactionsIn) == 0) { //only outputs.. creation?
-			$a = array();
-			$value = 0;
-
-			foreach ($transactionsOut as $transactionOut) {
-				if (empty($transactionOut['address'])) {
-					continue;
-				}
-				if (!isset($a[$transactionOut['address']])) {
-					$a[$transactionOut['address']] = 0;
-				}
-				if ($transactionOut['value'] > 0) {
-					$value += $transactionOut['value'];
-					$a[$transactionOut['address']] = $value;
-				}
-
-			}
-
-			if (count($a) > 0) {
-				//echo "creation {$transaction['txid']}" . PHP_EOL;
-				foreach ($a as $address => $value) {
-					$insert = array(
-						'address' => $address,
-						'value' => $value,
-						'txid' => $transaction['txid'],
-						'block_height' => $transaction['block_height'],
-						'time' => $transaction['time'],
-						'type' => 'creation'
-					);
-
-					$insert['balance'] = $this->getAddressNewBalance($address, $value);
-					$this->mysql->insert('wallets', $insert);
-				}
-				//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
-			}
-
+		if (count($transactionsIn) == 0) {
+			//only outputs.. creation?
+			$this->addAddressCreations($transaction, $transactionsOut);
 		} else {
-
-			$a = array();
-			//echo "transactions {$transaction['txid']}" . PHP_EOL;
-
-			foreach ($transactionsIn as $transactionIn) {
-				if (!isset($a[$transactionIn['address']])) {
-					$a[$transactionIn['address']] = 0;
-				}
-				$a[$transactionIn['address']] -= $transactionIn['value'];
-				//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
-			}
-
-			$stake = false;
-			foreach ($transactionsOut as $transactionOut) {
-
-				if (empty($transactionOut['address'])) {
-					$stake = true;
-					unset($transactionOut['address']);
-				} else {
-					if (!isset($a[$transactionOut['address']])) {
-						$a[$transactionOut['address']] = 0;
-					}
-					$a[$transactionOut['address']] += $transactionOut['value'];
-				}
-				//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
-			}
-
-			foreach ($a as $address => $value) {
-				$insert = array(
-					'address' => $address,
-					'value' => $value,
-					'txid' => $transaction['txid'],
-					'block_height' => $transaction['block_height'],
-					'time' => $transaction['time'],
-				);
-
-				if ($stake) {
-					$insert['type'] = 'stake';
-				} elseif ($value < 0) {
-					$insert['type'] = 'send';
-				} else {
-					$insert['type'] = 'receive';
-				}
-
-				$insert['balance'] = $this->getAddressNewBalance($address, $value);
-				$this->mysql->insert('wallets', $insert);
-			}
-
+			$this->addAddressTransactions($transaction, $transactionsIn, $transactionsOut);
 
 		}
 
-		//$this->mysql->completeTransaction();
 	}
+
+	private function updateAddresses(array $transaction, array $addressValueMap, $type = null, $stake=false) {
+
+		if (count($addressValueMap) <= 0) {
+			return;
+		}
+		foreach ($addressValueMap as $address => $value) {
+			if ($type == null) {
+				if ($stake) {
+					$type = 'stake';
+				} elseif ($value < 0) {
+					$type = 'send';
+				} else {
+					$type = 'receive';
+				}
+				var_dump($type,$value);
+			}
+			$insert = array(
+				'address' => $address,
+				'value' => $value,
+				'txid' => $transaction['txid'],
+				'block_height' => $transaction['block_height'],
+				'time' => $transaction['time'],
+				'type' => $type
+			);
+
+			$insert['balance'] = $this->getAddressNewBalance($address, $value);
+			$this->mysql->insert('wallets', $insert);
+		}
+	}
+
+	private function addAddressTransactions($transaction, $transactionsIn, $transactionsOut) {
+
+		$addressValueMap = array();
+		//echo "transactions {$transaction['txid']}" . PHP_EOL;
+
+		foreach ($transactionsIn as $transactionIn) {
+			if (!isset($addressValueMap[$transactionIn['address']])) {
+				$addressValueMap[$transactionIn['address']] = 0;
+			}
+			$addressValueMap[$transactionIn['address']] -= $transactionIn['value'];
+			//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
+		}
+
+		$stake = false;
+		foreach ($transactionsOut as $transactionOut) {
+
+			if (empty($transactionOut['address'])) {
+				$stake = true;
+				unset($transactionOut['address']);
+			} else {
+				if (!isset($addressValueMap[$transactionOut['address']])) {
+					$addressValueMap[$transactionOut['address']] = 0;
+				}
+				$addressValueMap[$transactionOut['address']] += $transactionOut['value'];
+			}
+			//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
+		}
+
+		foreach ($addressValueMap as $address => $value) {
+			$insert = array(
+				'address' => $address,
+				'value' => $value,
+				'txid' => $transaction['txid'],
+				'block_height' => $transaction['block_height'],
+				'time' => $transaction['time'],
+			);
+
+			if ($stake) {
+				$insert['type'] = 'stake';
+			} elseif ($value < 0) {
+				$insert['type'] = 'send';
+			} else {
+				$insert['type'] = 'receive';
+			}
+
+			$insert['balance'] = $this->getAddressNewBalance($address, $value);
+			$this->mysql->insert('wallets', $insert);
+		}
+
+	}
+
+	private function addAddressCreations($transaction, $transactionsOut) {
+
+		$addressValueMap = array();
+		$value = 0;
+
+		foreach ($transactionsOut as $transactionOut) {
+			if (empty($transactionOut['address'])) {
+				continue;
+			}
+			if (!isset($addressValueMap[$transactionOut['address']])) {
+				$addressValueMap[$transactionOut['address']] = 0;
+			}
+			if ($transactionOut['value'] > 0) {
+				$value += $transactionOut['value'];
+				$addressValueMap[$transactionOut['address']] = $value;
+			}
+
+		}
+
+		$this->updateAddresses($transaction, $addressValueMap, 'creation');
+
+	}
+	
+	
+//	public function addTransactionToAddress_old(array $transaction) {
+//
+//		//$this->mysql->startTransaction();
+//
+//		$sql = "SELECT * FROM transactions_in WHERE value IS NOT NULL AND txidp = " . $this->mysql->escape($transaction['txid']);
+//		$transactionsIn = $this->mysql->select($sql);
+//
+//		$sql = "SELECT * FROM transactions_out WHERE txidp = " . $this->mysql->escape($transaction['txid']);
+//		$transactionsOut = $this->mysql->select($sql);
+//
+//		if (count($transactionsIn) == 0) { //only outputs.. creation?
+//			$a = array();
+//			$value = 0;
+//
+//			foreach ($transactionsOut as $transactionOut) {
+//				if (empty($transactionOut['address'])) {
+//					continue;
+//				}
+//				if (!isset($a[$transactionOut['address']])) {
+//					$a[$transactionOut['address']] = 0;
+//				}
+//				if ($transactionOut['value'] > 0) {
+//					$value += $transactionOut['value'];
+//					$a[$transactionOut['address']] = $value;
+//				}
+//
+//			}
+//
+//			if (count($a) > 0) {
+//				//echo "creation {$transaction['txid']}" . PHP_EOL;
+//				foreach ($a as $address => $value) {
+//					$insert = array(
+//						'address' => $address,
+//						'value' => $value,
+//						'txid' => $transaction['txid'],
+//						'block_height' => $transaction['block_height'],
+//						'time' => $transaction['time'],
+//						'type' => 'creation'
+//					);
+//
+//					$insert['balance'] = $this->getAddressNewBalance($address, $value);
+//					$this->mysql->insert('wallets', $insert);
+//				}
+//				//echo "+ creation " . $transactionOut['txidp'] . ' = ' .$value .  PHP_EOL;
+//			}
+//
+//		} else {
+//
+//			$a = array();
+//			//echo "transactions {$transaction['txid']}" . PHP_EOL;
+//
+//			foreach ($transactionsIn as $transactionIn) {
+//				if (!isset($a[$transactionIn['address']])) {
+//					$a[$transactionIn['address']] = 0;
+//				}
+//				$a[$transactionIn['address']] -= $transactionIn['value'];
+//				//echo '- send from ' . $transactionIn['txidp'] . ' ' . $transactionIn['address'] . ' = ' . $transactionIn['value'] . PHP_EOL;
+//			}
+//
+//			$stake = false;
+//			foreach ($transactionsOut as $transactionOut) {
+//
+//				if (empty($transactionOut['address'])) {
+//					$stake = true;
+//					unset($transactionOut['address']);
+//				} else {
+//					if (!isset($a[$transactionOut['address']])) {
+//						$a[$transactionOut['address']] = 0;
+//					}
+//					$a[$transactionOut['address']] += $transactionOut['value'];
+//				}
+//				//echo '+ send to / possible stake? ' . $transactionOut['txidp'] . ' ' . $transactionOut['address']  . ' = ' . $transactionOut['value'] . PHP_EOL;
+//			}
+//
+//			foreach ($a as $address => $value) {
+//				$insert = array(
+//					'address' => $address,
+//					'value' => $value,
+//					'txid' => $transaction['txid'],
+//					'block_height' => $transaction['block_height'],
+//					'time' => $transaction['time'],
+//				);
+//
+//				if ($stake) {
+//					$insert['type'] = 'stake';
+//				} elseif ($value < 0) {
+//					$insert['type'] = 'send';
+//				} else {
+//					$insert['type'] = 'receive';
+//				}
+//
+//				$insert['balance'] = $this->getAddressNewBalance($address, $value);
+//				$this->mysql->insert('wallets', $insert);
+//			}
+//
+//
+//		}
+//
+//		//$this->mysql->completeTransaction();
+//	}
 
 	private function getAddressNewBalance($address, $value) {
 		$addressBalance = $this->getAddressBalance($address);
@@ -620,7 +743,9 @@ class PaycoinDb {
 		foreach ($primeStakes as &$primeStake) {
 			$txIds[] = $primeStake['txid'];
 		}
-
+		if (count($txIds) == 0) {
+			return array();
+		}
 		$rows = $this->mysql->select("SELECT t.txid, block_height, t.time, b.hash, address, b.mint AS `value`
 				FROM transactions t
 				JOIN blocks b ON b.height=t.block_height
