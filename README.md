@@ -45,3 +45,11 @@ Import database structure ```/conf/block-explorer.sql```
 copy ```/conf/config.sample.php``` to ```/conf/config.php```
 
 edit ```/conf/config.php```
+
+#### Crons
+
+```
+30 * * * * php /vagrant/app/public/index.php /cli/buildRichList >> /tmp/buildRichList.log
+*/1 * * * * php /vagrant/app/public/index.php /cli/buildDatabase >> /tmp/buildDatabase.log
+```
+
