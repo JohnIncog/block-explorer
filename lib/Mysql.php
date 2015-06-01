@@ -8,7 +8,13 @@ class Mysql {
 	protected $mysql;
 
 	public function __construct() {
-		$this->mysql = mysqli_connect('127.0.0.1', 'root', '', 'pp');
+		include(__DIR__ . '/../conf/config.php');
+		$this->mysql = mysqli_connect(
+			$config['mysql']['host'],
+			$config['mysql']['user'],
+			$config['mysql']['password'],
+			$config['mysql']['database']
+		);
 	}
 
 	public function query($sql) {

@@ -8,8 +8,10 @@ class PaycoinRPC {
 	public $paycoind;
 
 	public function __construct() {
-
-		$this->paycoind = new \jsonRPCClient('http://user:qwerty@127.0.0.1:8332/');
+		include(__DIR__ . '/../conf/config.php');
+		$rpcUrl = 'http://' . $config['paycoind']['rpcuser'] . ':' . $config['paycoind']['rpcpassword'] .
+			'@' . $config['paycoind']['rpchost'] . ':' . $config['paycoind']['rpcport'] . '/';
+		$this->paycoind = new \jsonRPCClient($rpcUrl);
 	}
 
 	public function getInfo() {
