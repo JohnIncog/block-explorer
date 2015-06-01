@@ -5,14 +5,15 @@
  *
  * Address Tagging
  * done - Allow user to tag an address with a name.
- * If an address is tagged by multiple users, tag will be removed and a signed message will be required for a tag to be reapplied.
+ * done - If an address is tagged by multiple users, tag will be removed
  *
  * Claim Address Page
  * Verify a singed message.
  * then can tag it as verified and url will show
  *
  * done - Add blocks with market information to all pages with tab
- *  also make them only show 25, add toggle to show more
+ * done - also make them only show 25
+ * add toggle to show more
  *
  * User Account
  * signup / login / password reset.
@@ -25,7 +26,7 @@
  * Alert types: in browser, email, sms, web hook
  *
  * Known bugs
- *  "Invalid date" all over the page? (firefox)
+ * fixed -  "Invalid date" all over the page? (firefox)
  *  not mobile friendly
  *
  * transaction page - make block height linkable to block page.

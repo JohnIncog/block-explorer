@@ -14,7 +14,7 @@ $primeStakes = $this->getData('primeStakes');
 		<li role="presentation" class="active"><a href="/primestakes">Prime Stakes</a></li>
 	</ul>
 
-	<table class="table infoTable table-invert table-hover">
+	<table class="table latestTransactions table-invert table-hover">
 		<thead>
 		<tr>
 			<th>Height</th>
@@ -22,7 +22,6 @@ $primeStakes = $this->getData('primeStakes');
 			<th>Address</th>
 			<th>Value</th>
 			<th>Time</th>
-			<th>OP Code</th>
 		</tr>
 		</thead>
 		<?php foreach($primeStakes as $primeStake) { ?>
@@ -32,7 +31,6 @@ $primeStakes = $this->getData('primeStakes');
 				<td><?php echo \PP\Helper::getAddressLink($primeStake['address']) ?></td>
 				<td><?php echo \PP\Helper::formatXPY($primeStake['value']) ?></td>
 				<td><?php echo \PP\Helper::formatTime($primeStake['time']) ?></td>
-				<td><?php echo $primeStake['OP'] ?></td>
 			</tr>
 		<?php } ?>
 	</table>

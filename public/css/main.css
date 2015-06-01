@@ -34,7 +34,7 @@ th {
 	padding-top: 46px;
 }
 .logo {
-	width:500px; /* you can use % */
+	width: 100%; /* you can use % */
 	height: auto;
 }
 .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {

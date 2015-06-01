@@ -54,8 +54,8 @@ $addressInformation = $this->getData('addressInformation');
 								<button type="button" class="btn btn-primary btn-xs" id="claim-address">Claim Address</button>
 							</div>
 						<?php } elseif ($addressInformation['addressTag']['verified'] == 1) { ?>
-							<div class="col-md-2">
-								<h4 style="margin-top: 0; margin-bottom: 0;">
+							<div class="col-md-7">
+								<h4 style="margin-left: 5px; margin-top: 0; margin-bottom: 0;">
 									<span class="label label-success tagged-tag"><?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?></span>
 								</h4>
 							</div>
