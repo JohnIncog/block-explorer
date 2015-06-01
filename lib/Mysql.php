@@ -1,6 +1,6 @@
 <?php
 
-namespace PP;
+namespace lib;
 
 
 class Mysql {

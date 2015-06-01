@@ -1,7 +1,7 @@
 <?php
 
 namespace controllers;
-use PP\Paycoin;
+use lib\Paycoin;
 
 class Cron extends Controller {
 

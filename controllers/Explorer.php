@@ -1,56 +1,8 @@
 <?php
-/**
- *
- * Features/Ideas
- *
- * Address Tagging
- * done - Allow user to tag an address with a name.
- * done - If an address is tagged by multiple users, tag will be removed
- *
- * Claim Address Page
- * Verify a singed message.
- * then can tag it as verified and url will show
- *
- * done - Add blocks with market information to all pages with tab
- * done - also make them only show 25
- * add toggle to show more
- *
- * User Account
- * signup / login / password reset.
- *
- * Admin
- * list users, edit, remove
- *
- * Address Monitor
- * Flag an address to be monitored and receive alerts when it makes transactions
- * Alert types: in browser, email, sms, web hook
- *
- * Known bugs
- * fixed -  "Invalid date" all over the page? (firefox)
- *  not mobile friendly
- *
- * transaction page - make block height linkable to block page.
- *
- *
- * Live updates
- * done - Latest blocks
- * Latest transaction
- *
- *
- * Graphs
- * Inflation
- * Rich list
- * Difficulty
- * Value out
- * Number of transactions
- * Time between blocks?
- *
- *
- *
- */
+
 namespace controllers;
 
-use PP\PaycoinDb;
+use lib\PaycoinDb;
 
 class Explorer extends Controller {
 

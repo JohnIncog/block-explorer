@@ -2,7 +2,7 @@
 
 namespace controllers;
 
-use PP\PaycoinDb;
+use lib\PaycoinDb;
 
 class Chart extends Controller {
 

@@ -1,7 +1,7 @@
 <?php
 
 namespace controllers;
-use PP\PaycoinDb;
+use lib\PaycoinDb;
 
 class Api extends Controller {
 

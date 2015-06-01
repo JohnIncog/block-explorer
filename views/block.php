@@ -61,7 +61,7 @@ if ($block != null) {
 			</td>
 		</tr>
 		<tr>
-			<td>Date/Time</td><td><?php echo \PP\Helper::getLocalDateTime($block['time']); ?> extracted by
+			<td>Date/Time</td><td><?php echo \lib\Helper::getLocalDateTime($block['time']); ?> extracted by
 			<?php
 
 			if (strstr($block['flags'], 'stake') == false) {
@@ -79,25 +79,25 @@ if ($block != null) {
 			<td>Transactions</td><td><?php echo $block['transactions']; ?></td>
 		</tr>
 		<tr>
-			<td>Value Out</td><td><?php echo \PP\Helper::formatXPY($block['valueout']); ?></td>
+			<td>Value Out</td><td><?php echo \lib\Helper::formatXPY($block['valueout']); ?></td>
 		</tr>
 		<tr>
 			<td>Difficulty</td><td><?php echo $block['difficulty']; ?></td>
 		</tr>
 		<tr>
-			<td>Outstanding</td><td><?php echo \PP\Helper::formatXPY($block['outstanding']); ?></td>
+			<td>Outstanding</td><td><?php echo \lib\Helper::formatXPY($block['outstanding']); ?></td>
 		</tr>
 
 
 		<?php //if (strstr($block['flags'], 'Stake') == false) { ?>
 		<?php if ($created > 0) { ?>
 			<tr>
-				<td><strong>Created</strong></td><td><?php echo \PP\Helper::formatXPY($created); ?></td>
+				<td><strong>Created</strong></td><td><?php echo \lib\Helper::formatXPY($created); ?></td>
 			</tr>
 		<?php } ?>
 		<?php if ($destroyed < 0) { ?>
 			<tr>
-				<td><strong>Destroyed</strong></td><td><?php echo \PP\Helper::formatXPY($destroyed); ?></td>
+				<td><strong>Destroyed</strong></td><td><?php echo \lib\Helper::formatXPY($destroyed); ?></td>
 			</tr>
 		<?php } ?>
 		<?php
@@ -124,14 +124,14 @@ if ($block != null) {
 			<?php foreach($transactions as $k => $transaction) { ?>
 				<tr>
 					<td>
-						<?php echo \PP\Helper::getTxHashLink($transaction['txid'])?>
+						<?php echo \lib\Helper::getTxHashLink($transaction['txid'])?>
 					</td>
 					<td class="text-right"><?php
 						$total = 0;
 						foreach ($transaction['vout'] as $out) {
 							$total += $out['value'];
 						}
-						echo \PP\Helper::formatXPY($total); ?>
+						echo \lib\Helper::formatXPY($total); ?>
 					</td>
 					<td>
 						<table style="width: 100%">
@@ -142,9 +142,9 @@ if ($block != null) {
 							foreach($transaction['vin'] as $in) { ?>
 							<tr>
 								<td>
-									<?php echo \PP\Helper::getAddressLink($in['address']); ?>
+									<?php echo \lib\Helper::getAddressLink($in['address']); ?>
 								</td>
-								<td class="text-right"><?php echo \PP\Helper::formatXPY($in['value']); ?></td>
+								<td class="text-right"><?php echo \lib\Helper::formatXPY($in['value']); ?></td>
 							</tr>
 							<?php
 							}
@@ -158,7 +158,7 @@ if ($block != null) {
 								if ($out['type'] == 'nonstandard' && $i == 0 && $k == 0) {
 									echo "<tr><td>Included in following transaction(s)</td>"
 										. "<td class='text-right'>"
-										. \PP\Helper::formatXPY($created)."</td>";
+										. \lib\Helper::formatXPY($created)."</td>";
 									continue;
 								}
 								if (empty($out['address'])) {
@@ -167,8 +167,8 @@ if ($block != null) {
 								?>
 
 							<tr>
-								<td><?php echo \PP\Helper::getAddressLink($out['address']); ?></td>
-								<td class="text-right"><?php echo \PP\Helper::formatXPY($out['value']) ?></td>
+								<td><?php echo \lib\Helper::getAddressLink($out['address']); ?></td>
+								<td class="text-right"><?php echo \lib\Helper::formatXPY($out['value']) ?></td>
 							</tr>
 							<?php } ?>
 						</table>

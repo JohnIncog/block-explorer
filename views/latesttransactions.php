@@ -25,8 +25,8 @@ $transactions = $this->getData('transactions');
 		</thead>
 		<?php foreach($transactions as $transaction) { ?>
 			<tr>
-				<td><?php echo \PP\Helper::formatTime($transaction['time'], true) ?></td>
-				<td><?php echo \PP\Helper::getTxHashLink($transaction['txid']) ?></td>
+				<td><?php echo \lib\Helper::formatTime($transaction['time'], true) ?></td>
+				<td><?php echo \lib\Helper::getTxHashLink($transaction['txid']) ?></td>
 				<td class="text-right">
 					<?php
 					if ($transaction['value'] > 0) {
@@ -34,9 +34,9 @@ $transactions = $this->getData('transactions');
 					} else {
 						echo '<span class="addressSend">';
 					}
-					echo \PP\Helper::formatXPY($transaction['value']) ?></span>
+					echo \lib\Helper::formatXPY($transaction['value']) ?></span>
 				</td>
-				<td ><?php echo \PP\Helper::getAddressLink($transaction['address']) ?></td>
+				<td ><?php echo \lib\Helper::getAddressLink($transaction['address']) ?></td>
 			</tr>
 		<?php } ?>
 	</table>

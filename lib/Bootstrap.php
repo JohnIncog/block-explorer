@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: John
- * Date: 5/15/15
- * Time: 9:25 PM
- */
 
-namespace PP;
+namespace lib;
 
 use controllers\Home;
-use PP\Helper;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\Request;

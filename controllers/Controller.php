@@ -7,7 +7,7 @@ class Controller {
 
 	public $data;
 
-	/** @var \PP\Bootstrap */
+	/** @var \lib\Bootstrap */
 	public $bootstrap;
 
 	public function __construct($bootstrap) {

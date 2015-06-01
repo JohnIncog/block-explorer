@@ -26,8 +26,8 @@ $richList = $this->getData('richList');
 		<?php foreach($richList as $rich) { ?>
 			<tr>
 				<td class="text-right"><?php echo $rich['rank'] ?></td>
-				<td><?php echo \PP\Helper::getAddressLink($rich['address']) ?></td>
-				<td><?php echo \PP\Helper::formatXPY($rich['balance']) ?></td>
+				<td><?php echo \lib\Helper::getAddressLink($rich['address']) ?></td>
+				<td><?php echo \lib\Helper::formatXPY($rich['balance']) ?></td>
 				<td><?php echo $rich['percent'] ?> %</td>
 			</tr>
 		<?php } ?>

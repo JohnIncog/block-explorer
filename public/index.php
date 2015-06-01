@@ -6,7 +6,7 @@ date_default_timezone_set('UTC');
 require_once dirname(__FILE__) . '/../bootstrap.php';
 require_once dirname(__FILE__) . '/../conf/config.php';
 
-use PP\Bootstrap;
+use lib\Bootstrap;
 
 $app = Bootstrap::getInstance();
 $app->setConfig($config);

@@ -1,6 +1,6 @@
 {
-    "name": "unicoin/pp1",
-    "description": "Paycoin project 1",
+    "name": "John0x00/block-explorer",
+    "description": "Paycoin Block Explorer",
     "authors": [
         {
             "name": "Unicoin",
@@ -15,7 +15,7 @@
     },
 	"autoload": {
         "psr-4": {
-            "PP\\": "lib/",
+            "lib\\": "lib/",
             "controllers\\": "controllers/"
         }
     }

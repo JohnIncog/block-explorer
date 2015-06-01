@@ -27,10 +27,10 @@ $primeStakes = $this->getData('primeStakes');
 		<?php foreach($primeStakes as $primeStake) { ?>
 			<tr>
 				<td><a href="/block/<?php echo $primeStake['hash']?>"><?php echo $primeStake['block_height'] ?></td>
-				<td><?php echo \PP\Helper::getTxHashLink($primeStake['txid']) ?></td>
-				<td><?php echo \PP\Helper::getAddressLink($primeStake['address']) ?></td>
-				<td><?php echo \PP\Helper::formatXPY($primeStake['value']) ?></td>
-				<td><?php echo \PP\Helper::formatTime($primeStake['time']) ?></td>
+				<td><?php echo \lib\Helper::getTxHashLink($primeStake['txid']) ?></td>
+				<td><?php echo \lib\Helper::getAddressLink($primeStake['address']) ?></td>
+				<td><?php echo \lib\Helper::formatXPY($primeStake['value']) ?></td>
+				<td><?php echo \lib\Helper::formatTime($primeStake['time']) ?></td>
 			</tr>
 		<?php } ?>
 	</table>

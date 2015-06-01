@@ -1,11 +1,8 @@
 <?php
 
 namespace controllers;
-use PP\PaycoinDb;
-use PP\PaycoinRPC;
-use PP\Helper;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use PP\Mysql;
+use lib\PaycoinDb;
+use lib\PaycoinRPC;
 
 class Cli extends Controller {
 
