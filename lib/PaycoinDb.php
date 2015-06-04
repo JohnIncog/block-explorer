@@ -399,10 +399,12 @@ class PaycoinDb {
 
 		$return['transactions'] = $transactions;
 		$return['address'] = $address;
-		$return['addressTag'] = array(
-			'tag' => $transactions[0]['tag'],
-			'verified' => $transactions[0]['verified']
-		);
+		if (isset($transactions[0]['tag'])) {
+			$return['addressTag'] = array(
+				'tag' => $transactions[0]['tag'],
+				'verified' => $transactions[0]['verified']
+			);
+		}
 
 		$last = current($transactions);
 		$return['rank'] = $last['rank'];
@@ -719,9 +721,10 @@ class PaycoinDb {
 
 		$this->mysql->query("CREATE TABLE new_richlist LIKE richlist");
 
-		$sql = "SELECT SUM(`value`) AS `balance`, address, MAX(`block_height`) as `block_height`, MAX(`time`) as `time` FROM addresses
+		$sql = "SELECT SUM(`value`) AS `bal`, address, MAX(`block_height`) as `block_height`, MAX(`time`) as `time` FROM addresses
 			 GROUP BY address
-			 ORDER BY balance DESC LIMIT 10000";
+			 HAVING bal > 0
+			 ORDER BY bal DESC LIMIT 100000";
 
 		$richList = $this->mysql->select($sql);
 
@@ -729,10 +732,10 @@ class PaycoinDb {
 			$insert[] = array(
 				'rank' => $rank + 1,
 				'address' => $rich['address'],
-				'balance' => $rich['balance'],
+				'balance' => $rich['bal'],
 				'block_height' => $rich['block_height'],
 				'time' => $rich['time'],
-				'percent' => $rich['balance'] / $outstanding * 100
+				'percent' => $rich['bal'] / $outstanding * 100
 			);
 		}
 
@@ -849,6 +852,18 @@ class PaycoinDb {
 			'tag' => $tag
 		);
 		return $this->mysql->insert('address_tags', $insert);
+	}
+
+	public function getRichListDistribution() {
+		$sql = "SELECT 10 AS top, SUM(balance) AS holdings FROM (SELECT balance FROM richlist WHERE `balance` > 0 ORDER BY balance DESC LIMIT 10) AS result
+					UNION
+					SELECT 100, SUM(balance) FROM (SELECT balance FROM richlist WHERE `balance` > 0 ORDER BY balance DESC LIMIT 100) AS result
+					UNION
+					SELECT 1000, SUM(balance) FROM (SELECT balance FROM richlist WHERE `balance` > 0 ORDER BY balance DESC LIMIT 1000) AS result
+					UNION
+					SELECT COUNT(*),SUM(balance) FROM richlist";
+		$distribution = $this->mysql->select($sql);
+		return  $distribution;
 	}
 
 } 

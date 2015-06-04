@@ -187,8 +187,12 @@ class Explorer extends Controller {
 		$limit = $this->getLimit(25);
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList($limit);
+
+		$distribution = $paycoin->getRichListDistribution();
+
 		$this->setData('cacheTime', 60);
 
+		$this->setData('distribution', $distribution);
 		$this->setData('richList', $richList);
 		$this->setData('pageTitle', 'Paycoin Rich List');
 		$this->render('header');
