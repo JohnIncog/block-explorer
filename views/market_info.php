@@ -35,7 +35,7 @@
 
 <script>
 	$.ajax({
-		url: "http://coinmarketcap-nexuist.rhcloud.com/api/xpy",
+		url: "https://coinmarketcap-nexuist.rhcloud.com/api/xpy",
 		type: "GET",
 		success: function(data) {
 			console.log("market info");
@@ -54,7 +54,7 @@
 	(function marketPoll() {
 		setTimeout(function() {
 			$.ajax({
-				url: "http://coinmarketcap-nexuist.rhcloud.com/api/xpy",
+				url: "https://coinmarketcap-nexuist.rhcloud.com/api/xpy",
 				type: "GET",
 				success: function(data) {
 					console.log("market info");
