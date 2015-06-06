@@ -47,7 +47,6 @@ class PaycoinRPC {
 	}
 
 	public function getBlockCount() {
-		var_dump($this->paycoind->getblockcount());
 		return $this->paycoind->getblockcount();
 	}
 

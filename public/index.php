@@ -4,8 +4,8 @@ $ips[] = '23.116.240.193';
 $ips[] = '23.116.240.122';
 $ips[] = '192.168.10.1';
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 //ini_set('memory_limit', '500M');
 date_default_timezone_set('UTC');
 require_once dirname(__FILE__) . '/../bootstrap.php';

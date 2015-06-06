@@ -34,7 +34,23 @@
 </div>
 
 <script>
+
+
+
+
 	$(function () {
+
+		var usdprice = $.jStorage.get('usd-price');
+		var btcprice = $.jStorage.get('btc-price');
+		var marketcap = $.jStorage.get('market-cap');
+
+		if (usdprice) {
+			$("#market-cap").text("$" + marketcap + " USD");
+			$("#price-usd").text("$" + usdprice + " USD");
+			$("#price-btc").text(btcprice + " BTC");
+			return false;
+		}
+
 		var url = 'https://coinmarketcap-nexuist.rhcloud.com/api/xpy';
 		$.ajax({
 			url: url,
@@ -45,6 +61,11 @@
 				var usdprice = parseFloat(data.price.usd).toFixed(2);
 				var btcprice = parseFloat(data.price.btc).toFixed(8);
 				var marketcap = addCommas(parseFloat(data.market_cap.usd).toFixed(2));
+
+				$.jStorage.set('usd-price', usdprice, {TTL: 60000});
+				$.jStorage.set('btc-price', btcprice, {TTL: 60000});
+				$.jStorage.set('market-cap', marketcap, {TTL: 60000});
+
 				$("#market-cap").text("$" + marketcap + " USD");
 				$("#price-usd").text("$" + usdprice + " USD");
 				$("#price-btc").text(btcprice + " BTC");

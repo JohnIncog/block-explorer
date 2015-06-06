@@ -32,7 +32,35 @@ class Cache {
 			return false;
 		}
 		$result = $this->cache->get($key);
-		//var_dump($key, $result);
+		return $result;
+	}
+
+	public function delete($key) {
+		if (!$this->cache) {
+			return false;
+		}
+		$result = $this->cache->delete($key);
+		return $result;
+	}
+
+
+	public function increment($key, $offset, $ttl = 0) {
+		if (!$this->cache) {
+			return false;
+		}
+		$result = $this->cache->increment($key, $offset);
+		if ($result == false) {
+			$this->cache->set($key, 1, $ttl);
+		}
+
+		return $result;
+	}
+
+	public function setTTL($key, $ttl) {
+		if (!$this->cache) {
+			return false;
+		}
+		$result = $this->cache->touch($key, $ttl);
 		return $result;
 	}
 

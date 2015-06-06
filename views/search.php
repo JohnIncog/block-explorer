@@ -2,7 +2,7 @@
 $q = $this->getData('q');
 $results = $this->getData('results');
 ?>
-<div class="my-template">
+<div class="my-template" style="min-height: 600px">
 
 	<?php $this->render('page_header'); ?>
 
@@ -23,7 +23,7 @@ $results = $this->getData('results');
 		<?php } ?>
 	<?php } ?>
 	<?php if (count($results) == 0) { ?>
-		No results found.
+		<h2>No results found.</h2>
 	<?php } ?>
 	</table>
 

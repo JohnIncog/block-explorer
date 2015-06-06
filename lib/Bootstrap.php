@@ -92,7 +92,11 @@ class Bootstrap {
 
 		if (!$uri) {
 			if (empty($_SERVER['REDIRECT_URL'])) {
-				$uri = $_SERVER['REQUEST_URI'];
+				if (stristr($_SERVER['REQUEST_URI'], '?') !== false) {
+					$uri = stristr($_SERVER['REQUEST_URI'], '?', true);
+				} else {
+					$uri = $_SERVER['REQUEST_URI'];
+				}
 			} else {
 				$uri = $_SERVER['REDIRECT_URL'];
 			}

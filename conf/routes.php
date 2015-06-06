@@ -16,6 +16,7 @@ $routeCollection->add('contact', new Routing\Route('/contact', array("class" => 
 $routeCollection->add('richlist', new Routing\Route('/richlist', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('primeStakes', new Routing\Route('/primestakes', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('latestTransactions', new Routing\Route('/latesttransactions', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Explorer")));
 
 $routeCollection->add('chart', new Routing\Route('/charts/{chart}', array("class" => "\\controllers\\Chart")));
 $routeCollection->add('getChartData', new Routing\Route('/api/charts/{chart}', array("class" => "\\controllers\\Chart")));

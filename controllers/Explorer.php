@@ -2,7 +2,9 @@
 
 namespace controllers;
 
+use lib\Exceptions\RateLimitException;
 use lib\PaycoinDb;
+use lib\PaycoinRPC;
 
 class Explorer extends Controller {
 
@@ -26,8 +28,22 @@ class Explorer extends Controller {
 
 		$q = $this->bootstrap->httpRequest->get('q');
 		$q = trim($q);
+		$this->setData('q', $q);
+
 		$paycoinDb = new PaycoinDb();
-		$results = $paycoinDb->search($q);
+
+		try {
+
+			$results = $paycoinDb->search($q);
+
+		} catch (RateLimitException $e) {
+
+			$this->setData('pageTitle', 'Search');
+			$this->render('header');
+			$this->render('ratelimit_exceeded');
+			$this->render('footer');
+			return;
+		}
 
 		if (count($results) == 1) {
 			$result = current($results);
@@ -36,7 +52,7 @@ class Explorer extends Controller {
 			return;
 		}
 
-		$this->setData('q', $q);
+
 		$this->setData('results', $results);
 
 		$this->setData('pageTitle', 'Search');
@@ -222,6 +238,14 @@ class Explorer extends Controller {
 			$limit = $max;
 		}
 		return $limit;
+	}
+
+	public function test() {
+		$paycoin = new PaycoinRPC();
+		echo '<pre>';
+		var_dump($paycoin->getBlockCount());
+		var_dump($paycoin->getInfo());
+		echo '</pre>';
 	}
 
 } 

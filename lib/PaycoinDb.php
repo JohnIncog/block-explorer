@@ -319,6 +319,16 @@ class PaycoinDb {
 
 	public function search($q) {
 
+
+		//rate limit.
+		$rateLimit = 10;
+		$rateLimitSeconds = 60;
+		$rateLimiter = new RateLimiter($_SERVER['REMOTE_ADDR'] . ':search', $rateLimitSeconds);
+
+		if (!$rateLimiter->allow($rateLimit)) {
+			throw new Exceptions\RateLimitException('Rate limit exceeded.');
+		}
+
 		$maxResults = 10;
 		$maxPerItemResults = 5;
 		$return = array();

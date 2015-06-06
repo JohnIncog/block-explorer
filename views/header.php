@@ -26,7 +26,10 @@ if (isset($this)) {
 	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
 	<script type="application/javascript" src="/js/main.js"></script>
 	<script type="application/javascript" src="/js/timeago.js"></script>
+	<script type="application/javascript" src="/js/jstorage.js"></script>
 	<script type="application/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
+
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css" rel="stylesheet">
 	<link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
