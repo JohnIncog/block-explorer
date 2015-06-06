@@ -5,9 +5,16 @@ namespace lib;
 
 class Mysql {
 
+	protected static $instance;
+
 	protected $mysql;
 
-	public function __construct() {
+	protected $trace;
+
+	protected $debug = true;
+
+	private function __construct() {
+		/** @var $config array */
 		include(__DIR__ . '/../conf/config.php');
 		$this->mysql = mysqli_connect(
 			$config['mysql']['host'],
@@ -15,10 +22,28 @@ class Mysql {
 			$config['mysql']['password'],
 			$config['mysql']['database']
 		);
+		$this->cache = Cache::getInstance();
+
 	}
 
-	public function query($sql) {
-		return $this->mysql->query($sql);
+	public static function getInstance() {
+		if (!isset(self::$instance)) {
+			self::$instance = new Mysql();
+		}
+		return self::$instance;
+	}
+
+	public function trace($trace) {
+		if ($this->debug) {
+			$this->trace .= $trace . "\n";
+		}
+	}
+	public function query($sql, $cacheTime = false) {
+
+		$this->trace($sql);
+
+		$result = $this->mysql->query($sql);
+		return $result;
 	}
 
 	public function startTransaction() {
@@ -27,8 +52,18 @@ class Mysql {
 	public function completeTransaction() {
 		$this->mysql->commit();
 	}
-	public function select($sql) {
-		$result = $this->query($sql);
+
+	public function select($sql, $cacheTime = false) {
+
+		if ($cacheTime > 0) {
+			$key = 'SQL:' . md5($sql);
+			$result = $this->cache->get($key);
+			if ($result) {
+				return $result;
+			}
+		}
+
+		$result = $this->query($sql, $cacheTime);
 		$rows = array();
 		if (!empty($this->mysql->error)) {
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
@@ -39,19 +74,35 @@ class Mysql {
 			}
 		}
 
+
+
+		if ($cacheTime > 0) {
+			$this->cache->set($key, $rows, $cacheTime);
+		}
+
+
 		return $rows;
 	}
 
-	public function selectRow($sql) {
+	public function selectRow($sql, $cacheTime = false) {
 
-		$result = $this->query($sql);
-		$this->query($sql);
+		if ($cacheTime > 0) {
+			$key = 'SQL:' . md5($sql);
+			$result = $this->cache->get($key);
+			if ($result) {
+				return $result;
+			}
+		}
+
+		$result = $this->query($sql, $cacheTime);
 		if (!empty($this->mysql->error)) {
 			echo $sql . PHP_EOL;
 			throw new \Exception('SQL Error: ' . $this->mysql->error);
 		}
 		$row = $result->fetch_assoc();
-
+		if ($cacheTime > 0) {
+			$this->cache->set($key, $row, $cacheTime);
+		}
 		return $row;
 	}
 

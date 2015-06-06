@@ -34,28 +34,32 @@
 </div>
 
 <script>
-	$.ajax({
-		url: "https://coinmarketcap-nexuist.rhcloud.com/api/xpy",
-		type: "GET",
-		success: function(data) {
-			console.log("market info");
-			var usdprice = parseFloat(data.price.usd).toFixed(2);
-			var btcprice = parseFloat(data.price.btc).toFixed(8);
-			var marketcap = addCommas(parseFloat(data.market_cap.usd).toFixed(2));
-			$("#market-cap").text("$" + marketcap + " USD");
-			$("#price-usd").text("$" + usdprice + " USD");
-			$("#price-btc").text(btcprice + " BTC");
+	$(function () {
+		var url = 'https://coinmarketcap-nexuist.rhcloud.com/api/xpy';
+		$.ajax({
+			url: url,
+			type: "GET",
+			cache: true,
+			success: function(data) {
+				console.log("market info");
+				var usdprice = parseFloat(data.price.usd).toFixed(2);
+				var btcprice = parseFloat(data.price.btc).toFixed(8);
+				var marketcap = addCommas(parseFloat(data.market_cap.usd).toFixed(2));
+				$("#market-cap").text("$" + marketcap + " USD");
+				$("#price-usd").text("$" + usdprice + " USD");
+				$("#price-btc").text(btcprice + " BTC");
 
-		},
-		dataType: "json",
-		timeout: 2000
+			},
+			dataType: "json",
+			timeout: 2000
+		});
 	});
 
 	(function marketPoll() {
 		setTimeout(function() {
 			$.ajax({
 				url: "https://coinmarketcap-nexuist.rhcloud.com/api/xpy",
-				type: "GET",
+				cache: true,
 				success: function(data) {
 					console.log("market info");
 //						console.log(data);

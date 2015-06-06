@@ -24,7 +24,7 @@ class Api extends Controller {
 		$block['transactions'] = $paycoin->getTransactionsInBlock($block['height']);
 		$block['transactionsOut'] = $paycoin->getTransactionsOut($block['height']);
 		$block['raw'] = unserialize($block['raw']);
-		$this->render($block);
+		$this->outputJsonResponse($block);
 	}
 
 
@@ -36,7 +36,7 @@ class Api extends Controller {
 		$block = $paycoin->getBlockByHash($hash);
 		$block['transaction'] = $paycoin->getTransactionsInBlock($block['height']);
 
-		$this->render($block);
+		$this->outputJsonResponse($block);
 	}
 
 
@@ -47,7 +47,7 @@ class Api extends Controller {
 		$transaction = $paycoin->getTransaction($txid);
 		$transaction['raw'] = unserialize($transaction['raw']);
 
-		$this->render($transaction);
+		$this->outputJsonResponse($transaction);
 
 	}
 
@@ -62,7 +62,7 @@ class Api extends Controller {
 		foreach ($blocks as &$block) {
 			$block['raw'] = unserialize($block['raw']);
 		}
-		$this->render($blocks);
+		$this->outputJsonResponse($blocks);
 	}
 
 	public function getLatestTransactions() {
@@ -71,7 +71,7 @@ class Api extends Controller {
 
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestTransactions($limit);
-		$this->render($transactions);
+		$this->outputJsonResponse($transactions);
 	}
 
 
@@ -84,14 +84,14 @@ class Api extends Controller {
 		$paycoinDb = new PaycoinDb();
 
 		$addressInformation = $paycoinDb->getAddressInformation($address, $limit);
-		$this->render($addressInformation);
+		$this->outputJsonResponse($addressInformation);
 	}
 
 	public function getRichlist() {
 
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList();
-		$this->render($richList);
+		$this->outputJsonResponse($richList);
 
 	}
 
@@ -101,7 +101,7 @@ class Api extends Controller {
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
-		$this->render($primeStakes);
+		$this->outputJsonResponse($primeStakes);
 	}
 
 	private function getLimit($default = 100, $max = 10000) {
@@ -115,7 +115,7 @@ class Api extends Controller {
 		return $limit;
 	}
 
-	public function render($data) {
+	public function outputJsonResponse($data) {
 
 		$cacheTime = 120;
 		$ts = gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT";
@@ -142,7 +142,7 @@ class Api extends Controller {
 			'success' => true,
 			'message' => 'Tag has been removed and tagging disabled. <a href="#" class="a-normal">Claim Address</a> to add a Tag .'
 		);
-		$this->render($response);
+		$this->outputJsonResponse($response);
 	}
 
 	public function tagAddress() {
@@ -192,7 +192,7 @@ class Api extends Controller {
 
 		}
 
-		$this->render($response);
+		$this->outputJsonResponse($response);
 	}
 
 } 

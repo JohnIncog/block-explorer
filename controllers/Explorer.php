@@ -167,11 +167,23 @@ class Explorer extends Controller {
 
 	public function contact() {
 
-		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
 
-			//$this->setData('sent', true);
-			//@todo get support address
-			$this->setData('error', 'Error sending email.  Please email XXXXXXXXX');
+		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
+			$siteConfig = $this->getConfig('site');
+			$message = $this->bootstrap->httpRequest->get('message');
+			$name = $this->bootstrap->httpRequest->get('name');
+			$email = $this->bootstrap->httpRequest->get('email');
+
+			$emailBody = "Contact Us Submission From https://ledger.paycoin.com/contact\n";
+			$emailBody .= "From: $name <{$email}> \n";
+			$emailBody .= "\n{$message}\n";
+			$emailBody .= "\nIP Address: {$_SERVER['REMOTE_ADDR']}\n";
+
+			if (mail($siteConfig['contactEmails'], 'Contact', $emailBody)) {
+				$this->setData('sent', true);
+			} else {
+				$this->setData('error', 'Error sending email.  Please email support@paycoin.com');
+			}
 		}
 
 		$this->setData('pageTitle', 'Contact');

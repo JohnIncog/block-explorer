@@ -51,7 +51,10 @@ $distribution = $this->getData('distribution');
 				$last = end($distribution);
 				?>
 				<?php foreach($distribution as &$row) {
-					$row['percent'] = round($row['holdings']/$last['holdings']*100, 2);
+					$row['percent'] = 0;
+					if ($last['holdings'] > 0) {
+						$row['percent'] = round($row['holdings']/$last['holdings']*100, 2);
+					}
 					?>
 					<tr>
 						<td><?php echo $row['top'] ?></td>
@@ -62,7 +65,7 @@ $distribution = $this->getData('distribution');
 			</table>
 
 
-			<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<!--			<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>-->
 
 		</div>
 	</div>

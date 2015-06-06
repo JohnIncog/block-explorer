@@ -7,7 +7,7 @@ class PaycoinDb {
 	public $mysql;
 
 	public function __construct() {
-		$this->mysql = new Mysql();
+		$this->mysql = Mysql::getInstance();
 	}
 
 	public function getBlockByHeight($blockHeight) {
@@ -26,14 +26,14 @@ class PaycoinDb {
 			$sortOrder = 'ASC';
 		}
 		$sql .= " ORDER by `height` {$sortOrder} LIMIT " . (int)$limit;
-		$blocks = $this->mysql->select($sql);
+		$blocks = $this->mysql->select($sql, 30);
 
 		return $blocks;
 	}
 
 	public function getBlockByHash($hash) {
 
-		$block = $this->mysql->selectRow("SELECT * FROM blocks b WHERE `hash` = " . $this->mysql->escape($hash));
+		$block = $this->mysql->selectRow("SELECT * FROM blocks b WHERE `hash` = " . $this->mysql->escape($hash), 30);
 
 		return $block;
 	}
@@ -53,7 +53,7 @@ class PaycoinDb {
 	public function getTransactionsInBlock($blockHeight) {
 
 		$sql = "SELECT * FROM transactions t WHERE `block_height` = " . $this->mysql->escape($blockHeight);
-		$blocks = $this->mysql->select($sql);
+		$blocks = $this->mysql->select($sql, 30);
 		foreach ($blocks as $k => $v) {
 			$blocks[$k]['raw'] = unserialize($v['raw']);
 		}
@@ -64,7 +64,7 @@ class PaycoinDb {
 	public function getTransactionsOut($txid) {
 
 		$sql = "SELECT  * from transactions_out WHERE `txidp` = " . $this->mysql->escape($txid);
-		$transactions = $this->mysql->select($sql);
+		$transactions = $this->mysql->select($sql, 30);
 
 		return $transactions;
 	}
@@ -72,7 +72,7 @@ class PaycoinDb {
 	public function getTransactionsIn($txid) {
 
 		$sql = "SELECT  * from transactions_in WHERE `txidp` = " . $this->mysql->escape($txid);
-		$transactions = $this->mysql->select($sql);
+		$transactions = $this->mysql->select($sql, 30);
 
 		return $transactions;
 	}
@@ -85,7 +85,7 @@ class PaycoinDb {
 	public function getTransactionIn($txid) {
 
 		$sql = "SELECT  * from transactions_in WHERE `txid` = " . $this->mysql->escape($txid);
-		$transactions = $this->mysql->select($sql);
+		$transactions = $this->mysql->select($sql, 30);
 
 		return $transactions;
 	}
@@ -95,7 +95,7 @@ class PaycoinDb {
 		$transaction = $this->mysql->selectRow("
 			SELECT t.*, b.flags, b.hash FROM transactions t
 			 JOIN blocks b on b.height = t.block_height
-			WHERE t.txid = " . $this->mysql->escape($txId));
+			WHERE t.txid = " . $this->mysql->escape($txId), 30);
 
 		return $transaction;
 	}
@@ -233,7 +233,7 @@ class PaycoinDb {
 
 	public function getLastBlockInDb() {
 
-		$r = $this->mysql->selectRow("SELECT MAX(`height`) as `height` FROM `blocks`");
+		$r = $this->mysql->selectRow("SELECT MAX(`height`) as `height` FROM `blocks`", false);
 		if ($r['height'] == NULL) {
 			$return = 0;
 		} else {
@@ -367,7 +367,7 @@ class PaycoinDb {
 	public function getAddressTag($address) {
 		$sql = "SELECT `tag`, `verified` FROM address_tags"
 			. " WHERE address = " . $this->mysql->escape($address);
-		$tagRow = $this->mysql->selectRow($sql);
+		$tagRow = $this->mysql->selectRow($sql, 60);
 		if ($tagRow == null) {
 			return null;
 		}
@@ -395,7 +395,7 @@ class PaycoinDb {
 			$sql .= " LIMIT " . (int)$limit;
 		}
 
-		$transactions = $this->mysql->select($sql);
+		$transactions = $this->mysql->select($sql, 30);
 
 		$return['transactions'] = $transactions;
 		$return['address'] = $address;
@@ -414,7 +414,7 @@ class PaycoinDb {
 		$sql = "SELECT `address`, `type`, SUM(`value`) as `sum`, COUNT(*) as `transactions` FROM addresses WHERE address = " . $this->mysql->escape($address)
 			.  "GROUP BY `address`, `type` ";
 
-		$totals = $this->mysql->select($sql);
+		$totals = $this->mysql->select($sql, 30);
 		$return['totalTransactions'] = 0;
 
 		foreach ($totals as $total) {
@@ -501,7 +501,6 @@ class PaycoinDb {
 				} else {
 					$type = 'receive';
 				}
-				var_dump($type,$value);
 			}
 			$insert = array(
 				'address' => $address,
@@ -752,7 +751,7 @@ class PaycoinDb {
 	public function getRichList($limit = 100) {
 
 		$limit = (int) $limit;
-		$richlist = $this->mysql->select("SELECT * FROM richlist LIMIT $limit");
+		$richlist = $this->mysql->select("SELECT * FROM richlist LIMIT $limit", 60);
 
 		return $richlist;
 
@@ -763,7 +762,7 @@ class PaycoinDb {
 		$limit = (int) $limit;
 
 		$primeStakes = $this->mysql->select("SELECT txidp as txid, asm FROM transactions_out tro
-			WHERE asm LIKE 'OP_PRIME%' ORDER BY tro.id DESC LIMIT $limit");
+			WHERE asm LIKE 'OP_PRIME%' ORDER BY tro.id DESC LIMIT $limit", 60);
 
 
 		$txIds = array();
@@ -777,7 +776,7 @@ class PaycoinDb {
 				FROM transactions t
 				JOIN blocks b ON b.height=t.block_height
 				JOIN transactions_out tro ON t.`txid` = tro.`txidp` AND address IS NOT NULL
-				WHERE t.txid " . $this->mysql->getInClause($txIds));
+				WHERE t.txid " . $this->mysql->getInClause($txIds), 60);
 
 		$blocks = array();
 		foreach ($rows as $row) {
@@ -799,7 +798,7 @@ class PaycoinDb {
 	public function getLatestTransactions($limit = 100) {
 		$limit = (int) $limit;
 
-		$transactions = $this->mysql->select("SELECT * FROM addresses ORDER BY time DESC LIMIT $limit");
+		$transactions = $this->mysql->select("SELECT * FROM addresses ORDER BY time DESC LIMIT $limit", 30);
 		return $transactions;
 
 	}
@@ -810,7 +809,7 @@ class PaycoinDb {
 
 		$blocks = $this->mysql->select("SELECT `timestamp`, outstanding,
 		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
-		FROM blocks GROUP BY points ORDER BY `height`   LIMIT " . (int)$limit);
+		FROM blocks GROUP BY points ORDER BY `height`   LIMIT " . (int)$limit, 60);
 		//$dataPoints[] = "[1418361000, 0] \n";
 		foreach ($blocks as $block) {
 			$dataPoint = array(
@@ -862,7 +861,7 @@ class PaycoinDb {
 					SELECT 1000, SUM(balance) FROM (SELECT balance FROM richlist WHERE `balance` > 0 ORDER BY balance DESC LIMIT 1000) AS result
 					UNION
 					SELECT COUNT(*),SUM(balance) FROM richlist";
-		$distribution = $this->mysql->select($sql);
+		$distribution = $this->mysql->select($sql, 60);
 		return  $distribution;
 	}
 

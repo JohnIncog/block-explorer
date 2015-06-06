@@ -14,6 +14,10 @@ class Controller {
 		$this->bootstrap = $bootstrap;
 	}
 
+	public function getConfig($config, $default = false) {
+		return $this->bootstrap->getConfig($config, $default);
+	}
+
 	public function setData($key, $value) {
 		$this->data[$key] = $value;
 	}

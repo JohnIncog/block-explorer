@@ -27,7 +27,7 @@ class Cli extends Controller {
 
 		$endBlockHeight = $paycoinRPC->getBlockCount();
 
-		if ($startBlockHeight == $endBlockHeight) {
+		if ($startBlockHeight != 0 && $startBlockHeight == $endBlockHeight) {
 			echo "Caught up.  Last block was $endBlockHeight" . PHP_EOL;
 			return;
 		} else {

@@ -1,10 +1,16 @@
 <?php
-$cacheTime = $this->getData('cacheTime', 0);
-if ($cacheTime > 0) {
-	$ts = gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT";
-	header("Expires: $ts");
-	header("Pragma: cache");
-	header("Cache-Control: max-age=$cacheTime");
+$pageTitle = '';
+$pageName = '';
+if (isset($this)) {
+	$cacheTime = $this->getData('cacheTime', 0);
+	if ($cacheTime > 0) {
+		$ts = gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT";
+		header("Expires: $ts");
+		header("Pragma: cache");
+		header("Cache-Control: max-age=$cacheTime");
+	}
+	$pageTitle = $this->getData('pageTitle', 'Paycoin Blockchain');
+	$pageName = $this->getData('pageName', 'Home');
 }
 ?>
 <!DOCTYPE html>
@@ -14,7 +20,7 @@ if ($cacheTime > 0) {
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title><?php echo htmlspecialchars($this->getData('pageTitle', 'Paycoin Blockchain')) ?></title>
+	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
 	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.js"></script>
 	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
@@ -45,7 +51,7 @@ if ($cacheTime > 0) {
 							array('href' => '/contact', 'name' => 'Contact'),
 							array('href' => '/api', 'name' => 'API'),
 						);
-						$pageName = $this->getData('pageName', 'Home');
+
 						foreach ($menuItems as $menuItem) {
 							echo '<li';
 							if ($menuItem['name'] == $pageName) {
