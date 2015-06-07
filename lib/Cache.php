@@ -26,6 +26,16 @@ class Cache {
 		return self::$instance;
 	}
 
+	public function getResultCode() {
+		return $this->cache->getResultCode();
+	}
+
+	public function wasResultFound() {
+		if (!$this->cache) {
+			return false;
+		}
+		return $this->cache->getResultCode() != \Memcached::RES_NOTFOUND;
+	}
 
 	public function get($key) {
 		if (!$this->cache) {

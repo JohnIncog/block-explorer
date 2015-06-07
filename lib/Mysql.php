@@ -1,7 +1,7 @@
 <?php
 
 namespace lib;
-
+use \PDO;
 
 class Mysql {
 
@@ -13,15 +13,29 @@ class Mysql {
 
 	protected $debug = true;
 
+	/** @var \PDO  */
+	protected $pdo;
+
 	private function __construct() {
 		/** @var $config array */
 		include(__DIR__ . '/../conf/config.php');
-		$this->mysql = mysqli_connect(
-			$config['mysql']['host'],
-			$config['mysql']['user'],
-			$config['mysql']['password'],
-			$config['mysql']['database']
+
+		$dsn = 'mysql:host=localhost;dbname=' . $config['mysql']['database'];
+		$username = $config['mysql']['user'];
+		$password = $config['mysql']['password'];
+		$options = array(
+			PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
+
+		$pdo = new \PDO($dsn, $username, $password, $options);
+		if (DEBUG_BAR) {
+			$this->pdo = new \DebugBar\DataCollector\PDO\TraceablePDO($pdo);
+			Bootstrap::getInstance()->debugbar->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->pdo));
+		} else {
+			$this->pdo = new \PDO($dsn, $username, $password, $options);
+		}
+
 		$this->cache = Cache::getInstance();
 
 	}
@@ -38,19 +52,19 @@ class Mysql {
 			$this->trace .= $trace . "\n";
 		}
 	}
-	public function query($sql, $cacheTime = false) {
+	public function query($sql) {
 
 		$this->trace($sql);
 
-		$result = $this->mysql->query($sql);
+		$result = $this->pdo->query($sql);
 		return $result;
 	}
 
 	public function startTransaction() {
-		$this->mysql->begin_transaction();
+		$this->pdo->beginTransaction();
 	}
 	public function completeTransaction() {
-		$this->mysql->commit();
+		$this->pdo->commit();
 	}
 
 	public function select($sql, $cacheTime = false) {
@@ -58,23 +72,21 @@ class Mysql {
 		if ($cacheTime > 0) {
 			$key = 'SQL:' . md5($sql);
 			$result = $this->cache->get($key);
-			if ($result) {
+
+			if ($this->cache->wasResultFound()) {
 				return $result;
 			}
 		}
+		try {
+			$result = $this->pdo->query($sql);
+		} catch (\PDOException $e) {
+			trigger_error($e->getMessage(), E_USER_ERROR);
+		}
 
-		$result = $this->query($sql, $cacheTime);
 		$rows = array();
-		if (!empty($this->mysql->error)) {
-			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		foreach ($result as $row) {
+			$rows[] = $row;
 		}
-		if ($result->num_rows > 0) {
-			while ($row = $result->fetch_assoc()) {
-				$rows[] = $row;
-			}
-		}
-
-
 
 		if ($cacheTime > 0) {
 			$this->cache->set($key, $rows, $cacheTime);
@@ -89,21 +101,25 @@ class Mysql {
 		if ($cacheTime > 0) {
 			$key = 'SQL:' . md5($sql);
 			$result = $this->cache->get($key);
-			if ($result) {
+
+			if ($this->cache->wasResultFound()) {
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->addMessage("Cached SQL: " . $sql);
+				}
 				return $result;
 			}
 		}
 
-		$result = $this->query($sql, $cacheTime);
-		if (!empty($this->mysql->error)) {
-			echo $sql . PHP_EOL;
-			throw new \Exception('SQL Error: ' . $this->mysql->error);
+		try {
+			$rows = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+		} catch (\PDOException $e) {
+			trigger_error($e->getMessage(), E_USER_ERROR);
 		}
-		$row = $result->fetch_assoc();
+
 		if ($cacheTime > 0) {
-			$this->cache->set($key, $row, $cacheTime);
+			$this->cache->set($key, $rows, $cacheTime);
 		}
-		return $row;
+		return $rows;
 	}
 
 	public function escape($value) {
@@ -117,7 +133,7 @@ class Mysql {
 			}
 
 		} else {
-			$escaped = "'" . mysqli_real_escape_string($this->mysql, $value) . "'";
+			$escaped = $this->pdo->quote($value);
 		}
 		return $escaped;
 	}
@@ -153,10 +169,8 @@ class Mysql {
 
 		}
 
-		$return = $this->query($sql);
-		if (!empty($this->mysql->error)) {
-			throw new \Exception('SQL Error: ' . $this->mysql->error);
-		}
+		$return = $this->pdo->exec($sql);
+
 		return $return;
 
 	}
@@ -185,19 +199,14 @@ class Mysql {
 			$sql .= "), ";
 		}
 		$sql = substr($sql, 0, -2);
-		$this->query($sql);
-		if (!empty($this->mysql->error)) {
-			echo($sql);
-			throw new \Exception('SQL Error: ' . $this->mysql->error);
-		}
-
+		$this->pdo->exec($sql);
 
 	}
 
 	public function getInClause(array $ins) {
 		$sql = ' IN (';
 		foreach ($ins as $in) {
-			$sql .= $this->escape($in) . ', ';
+			$sql .= $this->pdo->quote($in) . ', ';
 		}
 		$sql = substr($sql, 0, -2);
 		$sql .= ' )';

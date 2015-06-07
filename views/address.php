@@ -185,6 +185,7 @@ $addressInformation = $this->getData('addressInformation');
 	<div>
 		<?php
 		if ($addressInformation['totalTransactions'] > $limit) {
+			$showing = 'all';
 			if ($limit != 'all') {
 				$showing = $limit . ' of';
 			}

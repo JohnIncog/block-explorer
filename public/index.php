@@ -1,38 +1,48 @@
 <?php
+require_once dirname(__FILE__) . '/../conf/constants.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
+require_once dirname(__FILE__) . '/../conf/config.php';
+
+
 $ips[] = '76.69.234.1';
 $ips[] = '23.116.240.193';
 $ips[] = '23.116.240.122';
 $ips[] = '192.168.10.1';
-
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-//ini_set('memory_limit', '500M');
+;
 date_default_timezone_set('UTC');
-require_once dirname(__FILE__) . '/../bootstrap.php';
-require_once dirname(__FILE__) . '/../conf/config.php';
 
-if (php_sapi_name() != "cli" && !in_array($_SERVER['REMOTE_ADDR'], $ips)) {
-	include('../views/header.php');
-	echo '
-	<div class="my-template">
-	<div class="row">
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
-		<a href="/"><img class="logo" src="/img/blockchainlogo1.png" border=""></a>
-	</div>
-
-	</div>
-	<div class="col-md-3"></div>
-	<div class="col-md-6" style="vertical-align: middle;   margin-top: 28px;">
-			<h1>Upgrading</h1>
-		</div>
-<div style="min-height: 500px"></div>
-
-	</div>
-	';
-	include('../views/footer.php');
-	exit;
+if (php_sapi_name() != "cli" && in_array($_SERVER['REMOTE_ADDR'], $config['debugbar']['allowips'])) {
+	define('DEBUG_BAR', true);
+	error_reporting(E_ALL);
+	ini_set('display_errors', '1');
+	ini_set('display_errors', '1');
+} else {
+	ini_set('display_errors', '0');
+	define('DEBUG_BAR', false);
 }
+//
+//if (php_sapi_name() != "cli" && !in_array($_SERVER['REMOTE_ADDR'], $ips)) {
+//	include('../views/header.php');
+//	echo '
+//	<div class="my-template">
+//	<div class="row">
+//	<div class="col-md-3"></div>
+//	<div class="col-md-6">
+//		<a href="/"><img class="logo" src="/img/blockchainlogo1.png" border=""></a>
+//	</div>
+//
+//	</div>
+//	<div class="col-md-3"></div>
+//	<div class="col-md-6" style="vertical-align: middle;   margin-top: 28px;">
+//			<h1>Upgrading</h1>
+//		</div>
+//<div style="min-height: 500px"></div>
+//
+//	</div>
+//	';
+//	include('../views/footer.php');
+//	exit;
+//}
 
 use lib\Bootstrap;
 

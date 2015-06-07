@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Loader\PhpFileLoader;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router;
-
+use DebugBar\StandardDebugBar;
 
 
 class Bootstrap {
@@ -19,6 +19,8 @@ class Bootstrap {
 	public $httpRequest;
 	public $controller;
 	public $config;
+	public $debugbar;
+
 	public static $instance;
 
 	public static function getInstance() {
@@ -118,7 +120,13 @@ class Bootstrap {
 
 		$this->controller = new $this->route['class']($this);
 
-
+		if (DEBUG_BAR) {
+			$this->debugbar = new StandardDebugBar();
+			$this->debugbar->addCollector(new \DebugBar\DataCollector\ConfigCollector($this->config));
+			$debugbarRenderer = $this->debugbar->getJavascriptRenderer();
+			$this->debugbar["messages"]->addMessage("Debug Bar enabled");
+			$this->controller->setData('debugbarRenderer', $debugbarRenderer);
+		}
 		//set action to index is its not set
 		if (empty($this->route['action'])) {
 			$this->route['action'] = ($this->route['_route'] == '/') ? "index" : $this->route['_route'];

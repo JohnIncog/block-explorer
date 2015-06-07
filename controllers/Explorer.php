@@ -37,7 +37,9 @@ class Explorer extends Controller {
 			$results = $paycoinDb->search($q);
 
 		} catch (RateLimitException $e) {
-
+			if (DEBUG_BAR) {
+				$this->bootstrap->debugbar['exceptions']->addException($e);
+			}
 			$this->setData('pageTitle', 'Search');
 			$this->render('header');
 			$this->render('ratelimit_exceeded');

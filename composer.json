@@ -10,7 +10,8 @@
     "require": {
         "symfony/http-foundation": "2.6.7",
 		"symfony/routing": "2.6.7",
-		"symfony/config": "2.6.7"
+		"symfony/config": "2.6.7",
+        "maximebf/debugbar": "1.*"
 		
     },
 	"autoload": {

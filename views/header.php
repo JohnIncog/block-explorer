@@ -1,6 +1,7 @@
 <?php
 $pageTitle = '';
 $pageName = '';
+$debugbarRenderer = false;
 if (isset($this)) {
 	$cacheTime = $this->getData('cacheTime', 0);
 	if ($cacheTime > 0) {
@@ -11,6 +12,7 @@ if (isset($this)) {
 	}
 	$pageTitle = $this->getData('pageTitle', 'Paycoin Blockchain');
 	$pageName = $this->getData('pageName', 'Home');
+	$debugbarRenderer = $this->getData('debugbarRenderer');
 }
 ?>
 <!DOCTYPE html>
@@ -19,6 +21,7 @@ if (isset($this)) {
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" CONTENT="Paycoin Block Explorer & Currency Statistics. View detailed information on all paycoin transactions and blocks.">
 
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
@@ -34,6 +37,11 @@ if (isset($this)) {
 	<link href="/css/main.css" rel="stylesheet">
 	<link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
 	<link href='//fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+	<?php if ($debugbarRenderer) {
+		echo $debugbarRenderer->renderHead();
+	} ?>
+
 	<div class="container">
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="container container-fluid">
