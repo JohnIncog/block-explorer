@@ -7,7 +7,7 @@
 
 		<div class="alert alert-success alert-dismissible" role="alert">
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			Catching up with the block chain.  Data refreshes every 60 seconds.
+			Alpha Version.  Data refreshes every 60 seconds.
 		</div>
 
 

@@ -3,6 +3,8 @@
 namespace lib;
 
 
+use JsonSchema\Uri\UriRetriever;
+
 class PaycoinRPC {
 
 	public $paycoind;
@@ -66,6 +68,19 @@ class PaycoinRPC {
 
 		}
 		return $blocks;
+	}
+
+	public function verifySignedMessage($address, $message, $signature) {
+
+		try {
+
+			$result = $this->paycoind->verifymessage($address, $message, $signature);
+			return $result;
+
+		} catch (\Exception $e) {
+			return $e->getMessage();
+		}
+
 	}
 
 } 

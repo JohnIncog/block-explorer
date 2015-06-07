@@ -1,7 +1,3 @@
-
-
-
-
 </div><!-- /.container -->
 
 <footer class="footer navbar-bottom ">
@@ -29,11 +25,16 @@
 </script>
 
 <?php
+$debugbarRenderer = false;
+if (DEBUG_BAR) {
+	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
+}
+
 if (!empty($this)) {
 	$debugbarRenderer = $this->getData('debugbarRenderer');
-	if ($debugbarRenderer) {
-		echo $debugbarRenderer->render();
-	}
+}
+if ($debugbarRenderer) {
+	echo $debugbarRenderer->render();
 }
 ?>
 

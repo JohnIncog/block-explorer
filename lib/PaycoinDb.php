@@ -855,13 +855,20 @@ class PaycoinDb {
 		return $dataPoints;
 	}
 
-	public function addTagToAddress($address, $tag) {
+	public function addTagToAddress($address, $tag, $verified = 0) {
 		$insert = array(
 			'address' => $address,
-			'tag' => $tag
+			'tag' => $tag,
+			'verified' => $verified
 		);
-		return $this->mysql->insert('address_tags', $insert);
+		$update = array(
+			'tag' => $tag,
+			'verified' => $verified
+		);
+		return $this->mysql->insert('address_tags', $insert, false, $update);
 	}
+
+
 
 	public function getRichListDistribution() {
 		$sql = "SELECT 10 AS top, SUM(balance) AS holdings FROM (SELECT balance FROM richlist WHERE `balance` > 0 ORDER BY balance DESC LIMIT 10) AS result

@@ -1,12 +1,21 @@
+html {
+	min-height: 100%;
+}
+
 body {
+	height: 100%;
+	margin: 0;
 	padding-top: 50px;
 	font-family: 'Montserrat', sans-serif;
-	background-image:
-		radial-gradient(
-			#087094,
-			#042d3c
-		);
+	height: 100%;
+	margin: 0;
+	background: #087094 radial-gradient(#087094, #042d3c) no-repeat fixed;
 	color: white;
+}
+
+footer {
+	margin-top: 50px;
+	height:25px;
 }
 a {
 	color: #ffffff;
@@ -95,9 +104,8 @@ nav {
 	color: blue;
 }
 .my-template {
-	padding: 40px 0;
+	padding-top: 40px;
 	text-align: center;
-
 }
 .latestTransactions {
 	text-align: left;
@@ -105,6 +113,11 @@ nav {
 .infoTable {
 	text-align: left;
 	text-size: 16px;
+}
+.contentTable {
+	font-family: 'Montserrat', sans-serif;
+	text-align: left;
+	text-size: 14px;
 }
 .blockTable {
 	text-align: left;
@@ -165,10 +178,7 @@ th[data-sort]{
 .to-top {
 	color: cornflowerblue;
 }
-footer {
-	padding: 40px 0;
 
-}
 h1 {
 	font-family: 'Montserrat', sans-serif;
 	font-variant: small-caps;

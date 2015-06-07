@@ -15,7 +15,6 @@ if (php_sapi_name() != "cli" && in_array($_SERVER['REMOTE_ADDR'], $config['debug
 	define('DEBUG_BAR', true);
 	error_reporting(E_ALL);
 	ini_set('display_errors', '1');
-	ini_set('display_errors', '1');
 } else {
 	ini_set('display_errors', '0');
 	define('DEBUG_BAR', false);

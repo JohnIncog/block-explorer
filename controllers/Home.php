@@ -2,6 +2,8 @@
 
 namespace controllers;
 
+use lib\Bootstrap;
+
 class Home extends Controller {
 
 	public function index() {
@@ -20,6 +22,9 @@ class Home extends Controller {
 //				echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
 //				echo "Aborting...<br />\n";
 				error_log("Fatal error: $errstr on line $errline in file $errfile");
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->error("Fatal error: $errstr on line $errline in file $errfile");
+				}
 				include('../views/header.php');
 				include('../views/error.php');
 				include('../views/footer.php');
@@ -27,20 +32,32 @@ class Home extends Controller {
 				exit(1);
 				break;
 
-//			case E_USER_WARNING:
-//				echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
-//				break;
-//
-//			case E_USER_NOTICE:
-//				echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
-//				break;
-//
-//			default:
-//				echo "Unknown error type: [$errno] $errstr<br />\n";
-//				break;
+			case E_USER_WARNING:
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->warning("Warning: $errstr on line $errline in file $errfile");
+				}
+				break;
+
+			case E_USER_NOTICE:
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->notice("Notice: $errstr on line $errline in file $errfile");
+				}
+				break;
+
+			case E_USER_DEPRECATED:
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->warning("Depricated: $errstr on line $errline in file $errfile");
+				}
+				break;
+
+			default:
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->addMessage("Unknown Error: $errstr on line $errline in file $errfile");
+				}
+				break;
 		}
 
-		return false;
+		//return false;
 		/* Don't execute PHP internal error handler */
 		return true;
 	}

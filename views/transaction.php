@@ -12,6 +12,8 @@ foreach ($transactionsOut as $t) {
 	$totalOut += $t['value'];
 }
 $created = $totalOut - $totalIn;
+$blockHeight = $this->getData('blockHeight');
+$confirmations = $blockHeight - $transaction['block_height'] + 1;
 ?>
 
 
@@ -30,7 +32,9 @@ $created = $totalOut - $totalIn;
 		</tr>
 		<tr>
 			<td>Block Height</td>
-			<td><a href="/block/<?php echo $transaction['hash']; ?>"><?php echo $transaction['block_height']; ?></a></td>
+			<td><a href="/block/<?php echo $transaction['hash']; ?>"><?php echo $transaction['block_height']; ?></a>
+			<?php if ($confirmations) { echo "({$confirmations} confirmations)"; }?>
+			</td>
 		</tr>
 		<tr>
 			<td>Block Date/Time</td>

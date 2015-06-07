@@ -2,6 +2,9 @@
 $pageTitle = '';
 $pageName = '';
 $debugbarRenderer = false;
+if (DEBUG_BAR) {
+	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
+}
 if (isset($this)) {
 	$cacheTime = $this->getData('cacheTime', 0);
 	if ($cacheTime > 0) {
@@ -61,6 +64,7 @@ if (isset($this)) {
 							array('href' => '/about', 'name' => 'About'),
 							array('href' => '/contact', 'name' => 'Contact'),
 							array('href' => '/api', 'name' => 'API'),
+							array('href' => '/tagging', 'name' => 'Address Tagging'),
 						);
 
 						foreach ($menuItems as $menuItem) {
@@ -78,4 +82,5 @@ if (isset($this)) {
 		</nav>
 	</div>
 
-<div class="container">
+
+	<div class="container" style="min-height: 400px">

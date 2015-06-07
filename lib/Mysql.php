@@ -163,7 +163,7 @@ class Mysql {
 		if ($update) {
 			$sql .= ' ON DUPLICATE KEY UPDATE ';
 			foreach ($update as $field => $value) {
-				$sql .= "{$field} = {$value}, ";
+				$sql .= "{$field} = " . $this->escape($value) .", ";
 			}
 			$sql = substr($sql, 0, -2);
 

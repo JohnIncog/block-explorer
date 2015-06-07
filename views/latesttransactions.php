@@ -1,5 +1,6 @@
 <?php
 $transactions = $this->getData('transactions');
+$limit = $this->getData('limit');
 ?>
 <div class="my-template">
 
@@ -12,6 +13,20 @@ $transactions = $this->getData('transactions');
 		<li role="presentation" class="active"><a href="/latesttransactions">Latest Transactions</a></li>
 		<li role="presentation"><a href="/richlist">Rich List</a></li>
 		<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
+		<li class="pull-right">
+			<form method="post">
+				<div class="form-group col-sm-8" style="margin-bottom: 0px">
+					<select name="limit" class="form-control">
+						<option value="25">Last 25</option>
+						<option value="100" <?php if ($limit == 100) { echo 'selected'; } ?> >Last 100</option>
+						<option value="1000" <?php if ($limit == 1000) { echo 'selected'; } ?> >Last 1000</option>
+					</select>
+				</div>
+				<div class="col-sm-2 form-group " style="margin-bottom: 0px">
+					<input type="submit" value="Go" class="btn btn-default">
+				</div>
+			</form>
+		</li>
 	</ul>
 	<table class="table infoTable table-invert table-hover">
 		<thead>

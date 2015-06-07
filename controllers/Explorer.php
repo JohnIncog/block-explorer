@@ -142,6 +142,8 @@ class Explorer extends Controller {
 		$txid = $this->bootstrap->route['txid'];
 		$paycoin = new PaycoinDb();
 
+		$this->setBlockHeight();
+
 		$transaction = $paycoin->getTransaction($txid);
 		$transactionsIn = $paycoin->getTransactionsIn($txid);
 		$transactionsOut = $paycoin->getTransactionsOut($txid);
@@ -239,15 +241,56 @@ class Explorer extends Controller {
 		if ($limit > $max) {
 			$limit = $max;
 		}
+		$this->setData('limit', $limit);
 		return $limit;
 	}
 
-	public function test() {
-		$paycoin = new PaycoinRPC();
-		echo '<pre>';
-		var_dump($paycoin->getBlockCount());
-		var_dump($paycoin->getInfo());
-		echo '</pre>';
+	private function setBlockHeight() {
+		$paycoin = new PaycoinDb();
+		$blockHeight = $paycoin->getLastBlockInDb();
+		$this->setData('blockHeight', $blockHeight);
 	}
 
+	public function tagging() {
+
+		$message = 'Paycoin Blockchain';
+		$this->setData('messageToSign', $message);
+
+		$this->setData('pageTitle', 'Tag a Paycoin address');
+		$this->setData('success', false);
+		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
+			$address = $this->bootstrap->httpRequest->request->getAlnum('address');
+			$tag = $this->bootstrap->httpRequest->request->getAlnum('tag');
+			$signature = $this->bootstrap->httpRequest->request->get('signature');
+			$message = 'Paycoin Blockchain';
+			$this->setData('messageToSign', $message);
+			$this->setData('address', $address);
+			$this->setData('tag', $tag);
+
+			$paycoinRpc = new PaycoinRPC;
+			$isVerified = $paycoinRpc->verifySignedMessage($address, $signature, $message);
+			if ($isVerified === true) {
+
+				$this->setData('success', true);
+				$paycoinDb = new PaycoinDb();
+				$paycoinDb->addTagToAddress($address, $tag, 1);
+
+			} elseif ($isVerified === false) {
+				$this->setData('error', 'Failed to Verify Message');
+			} elseif ($isVerified !== true) {
+				$this->setData('error', $isVerified);
+			} else {
+				$this->setData('error', 'Unknown error');
+			}
+
+
+		}
+
+		$this->setData('pageName', 'Address Tagging');
+
+		$this->render('header');
+		$this->render('tagging');
+		$this->render('footer');
+
+	}
 } 
