@@ -293,4 +293,17 @@ class Explorer extends Controller {
 		$this->render('footer');
 
 	}
+
+	public function faq() {
+
+		$this->setData('pageTitle', 'FAQ - Paycoin Blockchain');
+
+		$this->setData('pageName', 'FAQ');
+
+		$this->render('header');
+		$this->render('faq');
+		$this->render('footer');
+
+
+	}
 } 

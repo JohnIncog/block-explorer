@@ -6,8 +6,13 @@
 ### Address Tagging
  * Allow user to tag an address with a name.
  * If an address is tagged by multiple users, tag will be removed
+ * Verify with a singed message.
+
 
 #### To Do
+
+### Address Tagging
+* Add url to verified tags
 
 ##### Address Monitor
  * Flag an address to be monitored and receive alerts when it makes transactions
@@ -19,9 +24,6 @@
 ##### Admin
  * list users, edit, remove
 
-##### Claim Address Page
- * Verify a singed message.
- * then can tag it as verified and url will show
 
 ##### Graphs
  * Inflation

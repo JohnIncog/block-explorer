@@ -2,7 +2,7 @@
 $pageTitle = '';
 $pageName = '';
 $debugbarRenderer = false;
-if (DEBUG_BAR) {
+if (DEBUG_BAR ) {
 	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
 }
 if (isset($this)) {
@@ -15,7 +15,9 @@ if (isset($this)) {
 	}
 	$pageTitle = $this->getData('pageTitle', 'Paycoin Blockchain');
 	$pageName = $this->getData('pageName', 'Home');
-	$debugbarRenderer = $this->getData('debugbarRenderer');
+	if (DEBUG_BAR) {
+		$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -29,15 +31,15 @@ if (isset($this)) {
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
 	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.js"></script>
-	<script type="application/javascript" src="/js/stupidtable.min.js"></script>
-	<script type="application/javascript" src="/js/main.js"></script>
-	<script type="application/javascript" src="/js/timeago.js"></script>
-	<script type="application/javascript" src="/js/jstorage.js"></script>
+	<script type="application/javascript" src="/js/stupidtable.min.js?cb=<?php echo APP_VERSION ?>"></script>
+	<script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>"></script>
+	<script type="application/javascript" src="/js/timeago.js?cb=<?php echo APP_VERSION ?>"></script>
+	<script type="application/javascript" src="/js/jstorage.js?cb=<?php echo APP_VERSION ?>"></script>
 	<script type="application/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
 
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/css/main.css" rel="stylesheet">
+	<link href="/css/main.css?cb=<?php echo APP_VERSION ?>" rel="stylesheet">
 	<link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
 	<link href='//fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
@@ -61,10 +63,11 @@ if (isset($this)) {
 						<?php
 						$menuItems = array(
 							array('href' => '/', 'name' => 'Home'),
-							array('href' => '/about', 'name' => 'About'),
-							array('href' => '/contact', 'name' => 'Contact'),
+//							array('href' => '/about', 'name' => 'About'),
 							array('href' => '/api', 'name' => 'API'),
 							array('href' => '/tagging', 'name' => 'Address Tagging'),
+							array('href' => '/faq', 'name' => 'FAQ'),
+							array('href' => '/contact', 'name' => 'Contact'),
 						);
 
 						foreach ($menuItems as $menuItem) {

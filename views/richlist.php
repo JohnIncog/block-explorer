@@ -14,6 +14,7 @@ $limit = $this->getData('limit');
 			<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
 			<li role="presentation" class="active"><a href="/richlist">Rich List</a></li>
 			<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
+			<li role="presentation"><a href="/about">About</a></li>
 			<li class="pull-right">
 				<form method="post">
 					<div class="form-group col-sm-8" style="margin-bottom: 0px">

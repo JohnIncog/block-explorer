@@ -18,6 +18,7 @@ $routeCollection->add('primeStakes', new Routing\Route('/primestakes', array("cl
 $routeCollection->add('latestTransactions', new Routing\Route('/latesttransactions', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('tagging', new Routing\Route('/tagging', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('faq', new Routing\Route('/faq', array("class" => "\\controllers\\Explorer")));
 
 $routeCollection->add('chart', new Routing\Route('/charts/{chart}', array("class" => "\\controllers\\Chart")));
 $routeCollection->add('getChartData', new Routing\Route('/api/charts/{chart}', array("class" => "\\controllers\\Chart")));

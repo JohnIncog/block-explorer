@@ -2,10 +2,13 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h2 >Public API</h2>
+	<h2 class="text-left">Public API</h2>
 
-
-	<h4 >Coming Soon.</h4>
+	<div class="panel panel-default text-left">
+		<div class="panel-body">
+			<h4 >Coming Soon.</h4>
+		</div>
+	</div>
 <!--<pre class="text-left">-->
 <!--/api/latestblocks-->
 <!--/api/latesttransactions-->

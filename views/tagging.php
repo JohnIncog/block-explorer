@@ -11,9 +11,8 @@ $tag = $this->getData('tag');
 
 	<h2 class="text-left">Address Tagging</h2>
 
-	<table class="table table-inverted contentTable">
-		<tr>
-			<td>
+	<div class="panel panel-default text-left">
+		<div class="panel-body">
 
 				<p class="text-left">Address tagging allows for a tag to be applied to any address.  When an address is tagged
 					you will be able to see a <span class="label label-primary tagged-tag">label</span> beside the address when in appears on the site.</p>
@@ -38,18 +37,18 @@ $tag = $this->getData('tag');
 					To verify an address complete the form below.  If you want to apply a community label or dispute
 					an existing label, you can do so on the address page.
 				</p>
-			</td>
-		</tr>
-	</table>
+
+			</div>
+		</div>
 
 
 	<h3 class="text-left" id="tag">Tag an Address</h3>
 
-	<table class="table table-inverted contentTable">
-		<tr>
-			<td>
+	<div class="panel panel-default text-left">
+		<div class="panel-body">
 
-				<?php if ($success) { ?>
+
+		<?php if ($success) { ?>
 					<div class="alert alert-success" role="alert">
 						Tag '<?php echo htmlspecialchars($tag) ?>' has been applied to the address
 					</div>
@@ -98,10 +97,14 @@ $tag = $this->getData('tag');
 					</div>
 					<div class="form-group">
 						<label for="inputSignature" class="col-sm-2 control-label">Signature</label>
+
 						<div class="col-sm-6">
 							<input type="text" name="signature" class="form-control" id="inputSignature" placeholder="Signature">
 						</div>
-						<div class="col-sm-4"></div>
+						<div class="col-sm-1">
+							<a href="/faq#signmessage" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
+						</div>
+						<div class="col-sm-3"></div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
@@ -109,9 +112,11 @@ $tag = $this->getData('tag');
 						</div>
 					</div>
 				</form>
-			</td>
-		</tr>
-	</table>
+
+
+		</div>
+	</div>
+
 
 
 </div>

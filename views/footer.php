@@ -30,9 +30,6 @@ if (DEBUG_BAR) {
 	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
 }
 
-if (!empty($this)) {
-	$debugbarRenderer = $this->getData('debugbarRenderer');
-}
 if ($debugbarRenderer) {
 	echo $debugbarRenderer->render();
 }

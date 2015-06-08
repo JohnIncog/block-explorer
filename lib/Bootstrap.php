@@ -35,6 +35,9 @@ class Bootstrap {
 
 		$this->httpRequest = Request::createFromGlobals();
 		spl_autoload_register(array($this, "autoload"));
+		if (DEBUG_BAR) {
+			$this->debugbar = new StandardDebugBar();
+		}
 		return $this;
 	}
 
@@ -68,8 +71,14 @@ class Bootstrap {
 			$this->route($uri);
 		} catch (ResourceNotFoundException $e) {
 			// 404
+			if (DEBUG_BAR) {
+				Bootstrap::getInstance()->debugbar['exceptions']->addException($e);
+			}
 			$this->routeNotFound();
 		} catch (Exception $e) {
+			if (DEBUG_BAR) {
+				Bootstrap::getInstance()->debugbar['exceptions']->addException($e);
+			}
 			trigger_error('Error: ' . $e);
 		}
 
@@ -83,7 +92,9 @@ class Bootstrap {
 	}
 
 	public function routeNotFound() {
-
+		if (DEBUG_BAR) {
+			Bootstrap::getInstance()->debugbar['messages']->error("404: Page not found");
+		}
 		header('HTTP/1.0 404 Not Found');
 		$controller = new Home($this);
 		$controller->pageNotFound();
@@ -121,7 +132,6 @@ class Bootstrap {
 		$this->controller = new $this->route['class']($this);
 
 		if (DEBUG_BAR) {
-			$this->debugbar = new StandardDebugBar();
 			$this->debugbar->addCollector(new \DebugBar\DataCollector\ConfigCollector($this->config));
 			$debugbarRenderer = $this->debugbar->getJavascriptRenderer();
 			$this->debugbar["messages"]->addMessage("Debug Bar enabled");

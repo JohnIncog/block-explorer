@@ -2,8 +2,18 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h2 class="text-left">About</h2>
+	<?php $this->render('market_info'); ?>
 
+	<ul class="nav nav-tabs">
+		<li role="presentation" ><a href="/">Latest Blocks</a></li>
+		<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
+		<li role="presentation"><a href="/richlist">Rich List</a></li>
+		<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
+		<li role="presentation" class="active"><a href="/about">About</a></li>
+		<li class="pull-right">
+
+		</li>
+	</ul>
 	<table class="table table-inverted infoTable">
 		<thead>
 

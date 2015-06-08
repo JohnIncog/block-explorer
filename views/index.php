@@ -3,12 +3,12 @@
 
 		<?php $this->render('page_header'); ?>
 
-		<?php $this->render('market_info'); ?>
-
 		<div class="alert alert-success alert-dismissible" role="alert">
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			Alpha Version.  Data refreshes every 60 seconds.
 		</div>
+
+		<?php $this->render('market_info'); ?>
 
 
 		<ul class="nav nav-tabs">
@@ -16,6 +16,7 @@
 			<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
 			<li role="presentation"><a href="/richlist">Rich List</a></li>
 			<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
+			<li role="presentation"><a href="/about">About</a></li>
 		</ul>
 
 			<table id="latestTransactions" class="table-hover table latestTransactions table-invert" align="center">

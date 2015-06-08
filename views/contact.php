@@ -2,9 +2,15 @@
 
 	<?php $this->render('page_header'); ?>
 
-	<h2 >Contact</h2>
+	<h2 class="text-left">Contact</h2>
+	<div class="panel panel-default text-left">
+		<div class="panel-body">
 
-	<?php if ($this->getData('sent') === true) { ?>
+			<p>
+				Please feel free to contact us with any question, suggestions or bug finds.
+			</p>
+
+		<?php if ($this->getData('sent') === true) { ?>
 
 		<div class="alert alert-success" role="alert">
 			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -61,4 +67,6 @@
 
 	<?php } ?>
 
+			</div>
+	</div>
 </div>
