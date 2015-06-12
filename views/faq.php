@@ -28,17 +28,5 @@
 
 </div>
 <style>
-	.qanda {
-		margin-bottom: 10px;
-		margin-bottom: 20px;
-	}
-	.question {
-		font-size: 16px;
-	}
-	.answer {
 
-	}
-	.qanda img {
-		margin: 20px 20px;
-	}
 </style>

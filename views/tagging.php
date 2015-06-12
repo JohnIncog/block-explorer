@@ -134,16 +134,5 @@ $url = $this->getData('url');
 		</div>
 	</div>
 
-	<script >
-		$( document ).ready( function() {
-			$('#urlhelp').popover();
-			$('#urlhelp').click( function () {
-				return false;
-			});
-
-		});
-
-	</script>
-
 
 </div>

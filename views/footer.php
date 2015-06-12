@@ -11,9 +11,15 @@
 	</div>
 </footer>
 
-<script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>" ></script>
+<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="application/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js" async></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="application/javascript" src="/js/jstorage.min.js?cb=<?php echo APP_VERSION ?>" ></script>
+<script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>" ></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.min.js" async></script>
+<?php
+echo $this->getJSAssets();
+?>
 
 <script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -27,14 +33,12 @@
 </script>
 
 <?php
-$debugbarRenderer = false;
+
 if (DEBUG_BAR) {
 	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
-}
-
-if ($debugbarRenderer) {
 	echo $debugbarRenderer->render();
 }
+
 ?>
 
 </body>

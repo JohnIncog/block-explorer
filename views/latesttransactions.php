@@ -42,7 +42,8 @@ $addressTagMap = $this->getData('addressTagMap');
 		</thead>
 		<?php foreach($transactions as $transaction) { ?>
 			<tr>
-				<td><?php echo \lib\Helper::formatTime($transaction['time'], true) ?></td>
+				<td><time class="timeago" datetime="<?php echo date('c', $transaction['time']); ?>"
+						><?php echo date('c', $transaction['time']); ?></time>
 				<td><?php echo \lib\Helper::getTxHashLink($transaction['txid']) ?></td>
 				<td class="text-right">
 					<?php
@@ -59,34 +60,3 @@ $addressTagMap = $this->getData('addressTagMap');
 	</table>
 
 </div>
-
-<script>
-
-	$.ajax({
-		url: "/api/latestblocks?limit=1",
-		context: document.body
-	}).done(function(data) {
-
-		blockHeight = data.data[0].height;
-		$("#outstanding").text(addCommas((data.data[0]['outstanding']*1).toString()) + ' XPY');
-
-	});
-
-	(function poll() {
-		setTimeout(function() {
-			$.ajax({
-				url: "/api/latestblocks",
-				type: "GET",
-				data: { height: blockHeight },
-				success: function(data) {
-					blockHeight = data.data[0].height; // Store Blockheight
-					$("#outstanding").text(addCommas((data.data[0]['outstanding']*1).toString()) + ' XPY');
-
-				},
-				dataType: "json",
-				complete: poll,
-				timeout: 2000
-			})
-		}, 55000);
-	})();
-</script>

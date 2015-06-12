@@ -17,6 +17,12 @@ class Explorer extends Controller {
 
 	public function index() {
 
+		$siteConfig = $this->getConfig('site');
+		$this->setData('pageTitle', $siteConfig['name']);
+
+		$this->addJs('/js/timeago.min.js');
+		$this->addJs('/js/index.js');
+		$this->addJs('/js/market_info.js');
 		$this->setData('cacheTime', 60);
 
 		$this->render('header');
@@ -69,6 +75,12 @@ class Explorer extends Controller {
 
 	public function address() {
 
+
+		$this->addJs('/js/address.js');
+		$this->addJs('/js/jquery.qrcode-0.12.0.min.js');
+		$this->addJs('/js/jquery.qrcode-0.12.0.min.js');
+		$this->addJs('/js/stupidtable.min.js');
+
 		$address = $this->bootstrap->route['address'];
 
 		$limit = $this->getLimit(100);
@@ -90,6 +102,9 @@ class Explorer extends Controller {
 
 	public function primeStakes() {
 
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
 		$limit = $this->getLimit(25);
 
 		$paycoinDb = new PaycoinDb();
@@ -108,6 +123,11 @@ class Explorer extends Controller {
 	}
 
 	public function latestTransactions() {
+
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+		$this->addJs('/js/latesttransactions.js');
+		$this->addJs('/js/timeago.min.js');
 
 		$limit = $this->getLimit(25);
 		$paycoinDb = new PaycoinDb();
@@ -128,6 +148,8 @@ class Explorer extends Controller {
 	}
 
 	public function block() {
+
+		$this->addJs('/js/block.js');
 
 		$hash = $this->bootstrap->route['hash'];
 		$paycoin = new PaycoinDb();
@@ -153,6 +175,7 @@ class Explorer extends Controller {
 
 	public function transaction() {
 
+		$this->addJs('/js/transaction.js');
 		$txid = $this->bootstrap->route['txid'];
 		$paycoin = new PaycoinDb();
 
@@ -178,6 +201,10 @@ class Explorer extends Controller {
 
 
 	public function about() {
+
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
 
 		$this->setData('pageTitle', 'About');
 		$this->setData('pageName', 'About');
@@ -230,6 +257,11 @@ class Explorer extends Controller {
 
 	public function richlist() {
 
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+		$this->addJs('/highcharts/js/highcharts.js');
+		$this->addJs('/highcharts/js/modules/exporting.js');
+
 		$limit = $this->getLimit(25);
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList($limit);
@@ -271,6 +303,7 @@ class Explorer extends Controller {
 	}
 
 	public function tagging() {
+		$this->addJs('/js/tagging.js');
 
 		$message = 'Paycoin Blockchain';
 		$this->setData('messageToSign', $message);
@@ -342,7 +375,8 @@ class Explorer extends Controller {
 
 	public function faq() {
 
-		$this->setData('pageTitle', 'FAQ - Paycoin Blockchain');
+		$siteConfig = $this->getConfig('site');
+		$this->setData('pageTitle', 'FAQ - ' . $siteConfig['name']);
 
 		$this->setData('pageName', 'FAQ');
 

@@ -174,21 +174,6 @@ $confirmations = $blockHeight - $transaction['block_height'] + 1;
 
 </div>
 
-
-
-
-
 <script>
-
 	var hash = <?php echo json_encode($this->getData('hash')); ?>;
-
-	$("#transactions a").click( function() {
-		$("#blockTransactions").show();
-		$("#blockRaw").hide();
-	});
-	$("#raw a").click( function() {
-		$("#blockTransactions").hide();
-		$("#blockRaw").show();
-	});
-
 </script>

@@ -1,5 +1,5 @@
 <?php
-$pageTitle = '';
+$pageTitle = 'Paycoin Ledger';
 $pageName = '';
 $debugbarRenderer = false;
 if (DEBUG_BAR ) {
@@ -13,7 +13,7 @@ if (isset($this)) {
 		header("Pragma: cache");
 		header("Cache-Control: max-age=$cacheTime");
 	}
-	$pageTitle = $this->getData('pageTitle', 'Paycoin Blockchain');
+	$pageTitle = $this->getData('pageTitle', 'Paycoin Ledger');
 	$pageName = $this->getData('pageName', 'Home');
 	if (DEBUG_BAR) {
 		$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
@@ -30,12 +30,9 @@ if (isset($this)) {
 
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
-	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script type="application/javascript" src="/js/jstorage.min.js?cb=<?php echo APP_VERSION ?>" ></script>
-	<script type="application/javascript" src="/js/timeago.min.js?cb=<?php echo APP_VERSION ?>" ></script>
-	<script type="application/javascript" src="/js/stupidtable.min.js?cb=<?php echo APP_VERSION ?>" ></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js" async></script>
-
+	<?php
+	echo $this->getHeaderAssets();
+	?>
 
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css?cb=<?php echo APP_VERSION ?>" rel="stylesheet">

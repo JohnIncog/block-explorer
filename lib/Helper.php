@@ -120,7 +120,7 @@ class Helper {
 		$js = "
 		<script>var date = new Date('" . $iso . "');
 		document.write(date.toString().replace(/GMT.*/g,''));";
-		if ($timeAgo == true) {
+		if (false && $timeAgo == true) {
 			$js .= "document.write( '(' + jQuery.timeago(date.toString().replace(/GMT.*/g,'')) + ')' );";
 		}
 		$js .= "</script>";

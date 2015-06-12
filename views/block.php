@@ -192,46 +192,6 @@ if ($block != null) {
 
 
 <script>
-
 	var hash = <?php echo json_encode($this->getData('hash')); ?>;
-
-	$("#transactions a").click( function() {
-		$("#blockTransactions").show();
-		$("#blockRaw").hide();
-	});
-	$("#raw a").click( function() {
-		$("#blockTransactions").hide();
-		$("#blockRaw").show();
-	});
-
-
-	//	$.ajax({
-//		url: "/api/blockhash/" + hash,
-//		context: document.body
-//	}).done(function(data) {
-//			console.log(data)
-
-//			$.each(data, function(index, value) {
-//
-//				var flags = value['flags'];
-//				var pos = flags.search('proof-of-stake');
-//				var extractedBy = 'Proof of Work';
-//				if (pos == 1) {
-//					extractedBy = 'Proof of Stake';
-//				}
-//
-//				$('#latestTransactions').append( "<tr id=\"tr_" + value['hash'] +"\"></tr>" );
-//				$('#tr_' + value['hash']).append( "<td>" + value['height'] +"</td>" )
-//					.append( "<td>" + value['time'] +"</td>" )
-//					.append( "<td>" + value['transactions'] +"</td>" )
-//					.append( "<td>" + value['valueout'] +" XPY</td>" )
-//					.append( "<td>" + value['difficulty'] +"</td>" )
-//					.append( "<td>" + extractedBy +"</td>" );
-//
-//			});
-
-
-//
-//		});
 </script>
 
