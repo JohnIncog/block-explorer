@@ -5,7 +5,7 @@ $q = $this->getData('q', '');
 <form id="searchform" method="get" action="/search/">
 <div class="row">
 	<div class="col-md-6">
-		<a href="/"><img class="logo" src="/img/blockchainlogo1.png" border=""></a>
+		<a href="/"><img class="logo" src="/img/blockchainlogo1_opt.png" border=""></a>
 	</div>
 	<div class="col-md-6 search-box" >
 		<div class="input-group">

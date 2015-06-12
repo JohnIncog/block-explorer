@@ -2,6 +2,7 @@
 $richList = $this->getData('richList');
 $distribution = $this->getData('distribution');
 $limit = $this->getData('limit');
+$addressTagMap = $this->getData('addressTagMap');
 ?>
 <div class="my-template">
 
@@ -49,7 +50,7 @@ $limit = $this->getData('limit');
 			<?php foreach($richList as $rich) { ?>
 				<tr>
 					<td class="text-right"><?php echo $rich['rank'] ?></td>
-					<td><?php echo \lib\Helper::getAddressLink($rich['address']) ?></td>
+					<td><?php echo \lib\Helper::getAddressLink($rich['address'], $addressTagMap) ?></td>
 					<td><?php echo \lib\Helper::formatXPY($rich['balance']) ?></td>
 					<td><?php echo $rich['percent'] ?> %</td>
 				</tr>

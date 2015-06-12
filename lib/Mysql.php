@@ -68,12 +68,14 @@ class Mysql {
 	}
 
 	public function select($sql, $cacheTime = false) {
-
 		if ($cacheTime > 0) {
 			$key = 'SQL:' . md5($sql);
 			$result = $this->cache->get($key);
 
 			if ($this->cache->wasResultFound()) {
+				if (DEBUG_BAR) {
+					Bootstrap::getInstance()->debugbar['messages']->addMessage("Cached SQL: " . $sql);
+				}
 				return $result;
 			}
 		}
@@ -168,8 +170,13 @@ class Mysql {
 			$sql = substr($sql, 0, -2);
 
 		}
-
-		$return = $this->pdo->exec($sql);
+		try {
+			$return = $this->pdo->exec($sql);
+		} catch (\PDOException $e) {
+			if ($e->getCode() == 23000) { //duplicate
+				$return = false;
+			}
+		}
 
 		return $return;
 

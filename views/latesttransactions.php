@@ -1,6 +1,7 @@
 <?php
 $transactions = $this->getData('transactions');
 $limit = $this->getData('limit');
+$addressTagMap = $this->getData('addressTagMap');
 ?>
 <div class="my-template">
 
@@ -52,7 +53,7 @@ $limit = $this->getData('limit');
 					}
 					echo \lib\Helper::formatXPY($transaction['value']) ?></span>
 				</td>
-				<td ><?php echo \lib\Helper::getAddressLink($transaction['address']) ?></td>
+				<td ><?php echo \lib\Helper::getAddressLink($transaction['address'], $addressTagMap) ?></td>
 			</tr>
 		<?php } ?>
 	</table>

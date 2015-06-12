@@ -5,6 +5,7 @@ namespace controllers;
 use lib\Exceptions\RateLimitException;
 use lib\PaycoinDb;
 use lib\PaycoinRPC;
+use lib\User;
 
 class Explorer extends Controller {
 
@@ -48,10 +49,13 @@ class Explorer extends Controller {
 		}
 
 		if (count($results) == 1) {
+
 			$result = current($results);
-			$url = current(array_values($result));
-			header('Location: ' . $url);
-			return;
+			if (count($result) == 1) {
+				$url = current(array_values($result));
+				header('Location: ' . $url);
+				return;
+			}
 		}
 
 
@@ -90,6 +94,10 @@ class Explorer extends Controller {
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
+		foreach ($primeStakes as $primeStake) {
+			$addresses[] = $primeStake['address'];
+		}
+		$this->setData('addressTagMap', $paycoinDb->getAddressTagMap($addresses));
 		$this->setData('primeStakes', $primeStakes);
 
 		$this->setData('pageTitle', 'Prime Stakes');
@@ -104,6 +112,12 @@ class Explorer extends Controller {
 		$limit = $this->getLimit(25);
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestTransactions($limit);
+
+		foreach ($transactions as $transaction) {
+			$addresses[] = $transaction['address'];
+		}
+		$this->setData('addressTagMap', $paycoinDb->getAddressTagMap($addresses));
+
 		$this->setData('transactions', $transactions);
 
 		$this->setData('pageTitle', 'Latest Transactions');
@@ -220,6 +234,11 @@ class Explorer extends Controller {
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList($limit);
 
+		foreach ($richList as $rich) {
+			$addresses[] = $rich['address'];
+		}
+		$this->setData('addressTagMap', $paycoin->getAddressTagMap($addresses));
+
 		$distribution = $paycoin->getRichListDistribution();
 
 		$this->setData('cacheTime', 60);
@@ -259,28 +278,55 @@ class Explorer extends Controller {
 		$this->setData('pageTitle', 'Tag a Paycoin address');
 		$this->setData('success', false);
 		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
+
 			$address = $this->bootstrap->httpRequest->request->getAlnum('address');
 			$tag = $this->bootstrap->httpRequest->request->getAlnum('tag');
 			$signature = $this->bootstrap->httpRequest->request->get('signature');
+			$url = $this->bootstrap->httpRequest->request->get('url');
+
 			$message = 'Paycoin Blockchain';
 			$this->setData('messageToSign', $message);
 			$this->setData('address', $address);
 			$this->setData('tag', $tag);
+			$this->setData('url', $url);
 
 			$paycoinRpc = new PaycoinRPC;
-			$isVerified = $paycoinRpc->verifySignedMessage($address, $signature, $message);
-			if ($isVerified === true) {
+			$error = false;
+			if (!empty($url)) {
+				$pu = parse_url($url);
+				if (empty($pu['scheme']) || empty($pu['host'])) {
+					$error = 'Invalid URL';
+				}
+			}
+			if (empty($address)) {
+				$error = 'Invalid Address';
+			}
+			if (empty($signature)) {
+				$error = 'Invalid Signature';
+			}
+			if (empty($tag)) {
+				$error = 'Invalid Tag';
+			}
 
-				$this->setData('success', true);
-				$paycoinDb = new PaycoinDb();
-				$paycoinDb->addTagToAddress($address, $tag, 1);
 
-			} elseif ($isVerified === false) {
-				$this->setData('error', 'Failed to Verify Message');
-			} elseif ($isVerified !== true) {
-				$this->setData('error', $isVerified);
+			if (empty($error)) {
+
+				$isVerified = $paycoinRpc->verifySignedMessage($address, $signature, $message);
+				if ($isVerified === true) {
+
+					$this->setData('success', true);
+					$paycoinDb = new PaycoinDb();
+					$paycoinDb->addTagToAddress($address, $tag, $url, 1);
+
+				} elseif ($isVerified === false) {
+					$this->setData('error', 'Failed to Verify Message');
+				} elseif ($isVerified !== true) {
+					$this->setData('error', $isVerified);
+				} else {
+					$this->setData('error', 'Unknown error');
+				}
 			} else {
-				$this->setData('error', 'Unknown error');
+				$this->setData('error', $error);
 			}
 
 
@@ -305,5 +351,13 @@ class Explorer extends Controller {
 		$this->render('footer');
 
 
+	}
+
+
+
+	public function test() {
+		$user = new User();
+		//var_dump($user->addUser('john', 'john@paycoin.com', 'test'));
+		var_dump($user->login('john', 'test'));
 	}
 } 

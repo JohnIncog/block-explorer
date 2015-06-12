@@ -4,6 +4,7 @@ $success = $this->getData('success');
 $error = $this->getData('error');
 $address = $this->getData('address');
 $tag = $this->getData('tag');
+$url = $this->getData('url');
 ?>
 <div class="my-template" style="min-height: 600px">
 
@@ -80,6 +81,22 @@ $tag = $this->getData('tag');
 						</div>
 						<div class="col-sm-4"></div>
 					</div>
+
+					<div class="form-group">
+						<label for="inputTag" class="col-sm-2 control-label">URL <small>(Optional)</small></label>
+						<div class="col-sm-6">
+							<input type="text" name="url" class="form-control" id="inputTag" placeholder="URL"
+								<?php if (!empty($url)) { echo 'value="'. htmlspecialchars($url) . '"'; } ?> >
+						</div>
+						<div class="col-sm-1">
+
+							<a href="#" id="urlhelp" data-container="body" data-toggle="popover" data-placement="right"
+							   data-content="Add A URL To your tag.  Tags with URLs become a link to URL.">
+								<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help</a>
+						</div>
+						<div class="col-sm-3"></div>
+					</div>
+
 					<div class="form-group">
 						<span class="col-sm-2"></span>
 						<div class="col-sm-6">
@@ -117,6 +134,16 @@ $tag = $this->getData('tag');
 		</div>
 	</div>
 
+	<script >
+		$( document ).ready( function() {
+			$('#urlhelp').popover();
+			$('#urlhelp').click( function () {
+				return false;
+			});
+
+		});
+
+	</script>
 
 
 </div>

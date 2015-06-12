@@ -1,6 +1,8 @@
 <?php
 $primeStakes = $this->getData('primeStakes');
 $limit = $this->getData('limit');
+$addressTagMap = $this->getData('addressTagMap');
+
 ?>
 <div class="my-template">
 
@@ -44,7 +46,7 @@ $limit = $this->getData('limit');
 			<tr>
 				<td><a href="/block/<?php echo $primeStake['hash']?>"><?php echo $primeStake['block_height'] ?></td>
 				<td><?php echo \lib\Helper::getTxHashLink($primeStake['txid']) ?></td>
-				<td><?php echo \lib\Helper::getAddressLink($primeStake['address']) ?></td>
+				<td><?php echo \lib\Helper::getAddressLink($primeStake['address'], $addressTagMap) ?></td>
 				<td><?php echo \lib\Helper::formatXPY($primeStake['value']) ?></td>
 				<td><?php echo \lib\Helper::formatTime($primeStake['time']) ?></td>
 			</tr>

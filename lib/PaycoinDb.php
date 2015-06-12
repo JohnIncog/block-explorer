@@ -340,6 +340,19 @@ class PaycoinDb {
 		//@todo sql for address.
 
 		//check if block height
+		if (is_string($q)) {
+
+			$tags = $this->mysql->select("SELECT `address`, `tag`, `verified` FROM address_tags WHERE `tag` LIKE "
+				. $this->mysql->escape($q . '%'));
+			if ($tags != false) {
+				foreach ($tags as $i => $tag) {
+					$return['Tag'][ $tag['verified'] . ':' . $tag['tag'] . ':' . $i] = '/address/' . urlencode($tag['address']);
+				}
+			}
+			//var_dump($return); exit;
+		}
+
+		//check if block height
 		if (is_numeric($q) && substr($q, 0, 1) != 0) {
 
 			$block = $this->mysql->selectRow("SELECT `hash`, `height` FROM blocks WHERE `height` = "
@@ -375,7 +388,7 @@ class PaycoinDb {
 
 	}
 	public function getAddressTag($address) {
-		$sql = "SELECT `tag`, `verified` FROM address_tags"
+		$sql = "SELECT `tag`, `url`, `verified` FROM address_tags"
 			. " WHERE address = " . $this->mysql->escape($address);
 		$tagRow = $this->mysql->selectRow($sql, 60);
 		if ($tagRow == null) {
@@ -396,7 +409,7 @@ class PaycoinDb {
 
 	public function getAddressInformation($address, $limit = 100000) {
 
-		$sql = "SELECT a.*, rl.rank, adt.`tag`, adt.`verified` FROM addresses a "
+		$sql = "SELECT a.*, rl.rank, adt.`tag`, adt.`url`, adt.`verified` FROM addresses a "
 			. " LEFT JOIN richlist rl on rl.address= a.address"
 			. " LEFT JOIN address_tags adt ON adt.address = a.address"
 			. " WHERE a.address = " . $this->mysql->escape($address)
@@ -412,6 +425,7 @@ class PaycoinDb {
 		if (isset($transactions[0]['tag'])) {
 			$return['addressTag'] = array(
 				'tag' => $transactions[0]['tag'],
+				'url' => $transactions[0]['url'],
 				'verified' => $transactions[0]['verified']
 			);
 		}
@@ -855,16 +869,22 @@ class PaycoinDb {
 		return $dataPoints;
 	}
 
-	public function addTagToAddress($address, $tag, $verified = 0) {
+	public function addTagToAddress($address, $tag, $url = null, $verified = 0) {
 		$insert = array(
 			'address' => $address,
 			'tag' => $tag,
-			'verified' => $verified
+			'time_created' => time(),
+			'verified' => $verified,
 		);
 		$update = array(
 			'tag' => $tag,
-			'verified' => $verified
+			'time_updated' => time(),
+			'verified' => $verified,
 		);
+		if ($url != null) {
+			$insert['url'] = $url;
+			$update['url'] = $url;
+		}
 		return $this->mysql->insert('address_tags', $insert, false, $update);
 	}
 
@@ -880,6 +900,16 @@ class PaycoinDb {
 					SELECT COUNT(*),SUM(balance) FROM richlist";
 		$distribution = $this->mysql->select($sql, 60);
 		return  $distribution;
+	}
+
+	public function getAddressTagMap($addresses) {
+		$sql = "SELECT * FROM address_tags WHERE address " . $this->mysql->getInClause($addresses);
+		$map = $this->mysql->select($sql, 60);
+
+		$map = array_column($map, null, 'address');
+
+		return $map;
+
 	}
 
 } 

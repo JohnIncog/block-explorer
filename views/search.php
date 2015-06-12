@@ -14,12 +14,31 @@ $results = $this->getData('results');
 			if ($k == 'Transaction') {
 				$name = 'Transaction';
 			}
+			if ($k == 'Tag') {
+
+				list($verified, $tag, $i) = explode(':', $name);
+				if ($verified == 1) {
+					$name = 'Verified Tag<span class="label label-success tagged-tag">' . $tag . '</span>';
+				} elseif ($verified == 3) {
+					$name = 'Disputed Tag<span class="label label-danger tagged-tag" style="text-decoration: line-through">' . $tag . '</span>';
+				} else {
+					$name = 'Community Tag<span class="label label-primary tagged-tag">' . $tag . '</span>';
+				}
+			}
 			$hash = strrchr($link, '/');
 			$hash = substr($hash, 1)
 		?>
 		<tr>
 			<td><?php echo $name; ?></td>
-			<td><a href="<?php echo $link; ?>"><?php echo $hash; ?></td>
+			<td >
+				<?php if ($k == 'Tag') { ?>
+
+					<a href="<?php echo $link; ?>"><?php echo $verified . $hash; ?></a>
+
+				<?php } else { ?>
+					<a href="<?php echo $link; ?>"><?php echo $hash; ?></a>
+				<?php } ?>
+			</td>
 		</tr>
 		<?php } ?>
 	<?php } ?>

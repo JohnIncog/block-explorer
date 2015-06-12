@@ -1,6 +1,8 @@
 <?php
 namespace lib;
 
+use JsonSchema\Uri\UriRetriever;
+
 class Helper {
 
 	public static function formatXPY($xpy) {
@@ -29,46 +31,55 @@ class Helper {
 	 */
 	public static $addressTags = array();
 
-	public static function getAddressLink($address, $tag = null) {
+	public static function getAddressLink($address, $addressTagMap = null) {
 
 
 		$link = '<a href="' . self::getUrl('address', array('address' => $address))
 			. '" class="">' . htmlspecialchars($address) . '</a>';
 
-//		if (true || rand(1,5) == 1) {
-//
-//			//test tags
-//			$randomTags = array(
-//				'Cryptsy', 'Bitrex', 'FastXPY', 'Zencloud', 'xpy.io'
-//			);
-//			$tag = $randomTags[rand(0, count($randomTags)-1)];
-//		}
-
-		//local caching..
-		if ($tag == null) {
-			if (isset(self::$addressTags[$address])) {
-				$tag = self::$addressTags[$address];
-			} else {
-				$paycoinDb = new PaycoinDb();
-				$tag = $paycoinDb->getAddressTag($address);
-				if ($tag == null) {
-					self::$addressTags[$address] = false;
+		$tag = null;
+		if (!empty($addressTagMap[$address])) {
+			$tag = $addressTagMap[$address];
+		}
+		if ($addressTagMap === null) {
+			//local caching..
+			if ($tag == null) {
+				if (isset(self::$addressTags[$address])) {
+					$tag = self::$addressTags[$address];
 				} else {
-					self::$addressTags[$address] = $tag;
+					$paycoinDb = new PaycoinDb();
+					$tag = $paycoinDb->getAddressTag($address);
+					if ($tag == null) {
+						self::$addressTags[$address] = false;
+					} else {
+						self::$addressTags[$address] = $tag;
+					}
+
 				}
 
 			}
-
 		}
-		if (!empty($tag)) {
+
+		if (!empty($tag) && $tag['verified'] != 3) {
 			$class = 'label-primary';
 			if ($tag['verified'] == 1) {
 				$class = 'label-success';
 			}
+
 			$link = '<a href="' . self::getUrl('address', array('address' => $address))
-				. '"><span class="tagged-address pull-left">' . htmlspecialchars($address) . '</span>'
-				. '<h4 class="pull-left" style="margin-top: 0; margin-bottom: 0;"><span class="label ' . $class . ' tagged-tag">' . htmlspecialchars($tag['tag']) . '</span></h4>'
-				. '</a>';
+				. '"><span class="tagged-address pull-left">' . htmlspecialchars($address) . '</span>';
+			if (!empty($tag['url']) && $tag['verified'] == 1) {
+				$link .= '</a>';
+				$link .= '<h4 class="pull-left" style="margin-top: 0; margin-bottom: 0;">';
+				$link .= "<a target=\"_blank\" href=\"{$tag['url']}\" title=\"{$tag['url']}\" class='label " . $class . " tagged-tag'>"
+					. htmlspecialchars($tag['tag']). '&nbsp;&nbsp;<span class="glyphicon glyphicon-new-window" aria-hidden="true">
+					</span></a></h4>';
+
+			} else {
+				$link .= '<h4 class="pull-left" style="margin-top: 0; margin-bottom: 0;">
+				<span class="label ' . $class . ' tagged-tag">' . htmlspecialchars($tag['tag']) . '</span></h4>'
+					. '</a>';
+			}
 
 		}
 		return $link;

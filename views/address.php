@@ -56,7 +56,20 @@ $addressInformation = $this->getData('addressInformation');
 						<?php } elseif ($addressInformation['addressTag']['verified'] == 1) { ?>
 							<div class="col-md-7">
 								<h4 style="margin-left: 5px; margin-top: 0; margin-bottom: 0;">
-									<span class="label label-success tagged-tag"><?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?></span>
+									<?php if (empty($addressInformation['addressTag']['url'])) { ?>
+										<span class="label label-success tagged-tag">
+										<?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?>
+
+									<?php } else { ?>
+											&nbsp;&nbsp;
+											<a class="label label-success tagged-tag" target="_blank" href="<?php echo htmlspecialchars($addressInformation['addressTag']['url']) ?>"
+													   title="<?php echo htmlspecialchars($addressInformation['addressTag']['url']) ?>">
+											<?php echo htmlspecialchars($addressInformation['addressTag']['tag']) ?>
+												&nbsp;&nbsp;
+											<span class="glyphicon glyphicon-new-window" aria-hidden="true"></span><a>
+
+										<?php } ?>
+									</span>
 								</h4>
 							</div>
 						<?php } ?>
@@ -212,7 +225,9 @@ $addressInformation = $this->getData('addressInformation');
 
 <script>
 
-
+	jQuery('#claim-address').click( function() {
+		window.location = '/tagging';
+	});
 
 	jQuery('#remove-tag').click( function() {
 

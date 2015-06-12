@@ -11,7 +11,9 @@
 	</div>
 </footer>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>" ></script>
+<script type="application/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js" async></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.min.js" async></script>
 
 <script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

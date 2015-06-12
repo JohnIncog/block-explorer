@@ -19,7 +19,7 @@ if (php_sapi_name() != "cli" && in_array($_SERVER['REMOTE_ADDR'], $config['debug
 	ini_set('display_errors', '1');
 } else {
 	ini_set('display_errors', '1');
-	define('DEBUG_BAR', false);
+	define('DEBUG_BAR', true); 
 }
 //
 //if (php_sapi_name() != "cli" && !in_array($_SERVER['REMOTE_ADDR'], $ips)) {

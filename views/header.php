@@ -30,13 +30,12 @@ if (isset($this)) {
 
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
-	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.js"></script>
-	<script type="application/javascript" src="/js/stupidtable.min.js?cb=<?php echo APP_VERSION ?>"></script>
-	<script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>"></script>
-	<script type="application/javascript" src="/js/timeago.js?cb=<?php echo APP_VERSION ?>"></script>
-	<script type="application/javascript" src="/js/jstorage.js?cb=<?php echo APP_VERSION ?>"></script>
-	<script type="application/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
+	<script type="application/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script type="application/javascript" src="/js/jstorage.min.js?cb=<?php echo APP_VERSION ?>" ></script>
+	<script type="application/javascript" src="/js/timeago.min.js?cb=<?php echo APP_VERSION ?>" ></script>
+	<script type="application/javascript" src="/js/stupidtable.min.js?cb=<?php echo APP_VERSION ?>" ></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js" async></script>
+
 
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/main.css?cb=<?php echo APP_VERSION ?>" rel="stylesheet">
