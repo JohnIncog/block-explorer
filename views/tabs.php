@@ -25,6 +25,7 @@ $tabs = array(
 			Charts <span class="caret"></span>
 		</a>
 		<ul class="dropdown-menu" role="menu">
+			<li <?php if ($activePulldown == 'Outstanding') { echo ' class="active"'; } ?>><a href="/charts/outstanding">Outstanding Coins</a></li>
 			<li <?php if ($activePulldown == 'Transactions Per Block') { echo ' class="active"'; } ?>><a href="/charts/block/transactions">Transaction Per Block</a></li>
 			<li <?php if ($activePulldown == 'Value Per Block') { echo ' class="active"'; } ?>><a href="/charts/block/value">Value Per Block</a></li>
 		</ul>

@@ -5,7 +5,9 @@ $chart = $this->getData('chart', 'outstanding');
 
 	<?php $this->render('page_header'); ?>
 
-	<h1><?php echo ucfirst($chart); ?></h1>
+	<?php $this->render('market_info'); ?>
+
+	<?php $this->render('tabs'); ?>
 
 	<script>
 
@@ -49,10 +51,13 @@ $chart = $this->getData('chart', 'outstanding');
 						selected: 1
 					},
 
-//            title: {
-//                text: chart,
-//            },
-
+					title: {
+						text: chart
+					},
+					subtitle: {
+						text: 'Click and drag in the plot area to zoom in',
+						x: -20
+					},
 					series: [
 						{
 							name: 'XPY',

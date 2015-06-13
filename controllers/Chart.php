@@ -152,6 +152,14 @@ class Chart extends Controller {
 
 	public function chart() {
 
+		$this->setData('pageTitle', 'Charts - Outstanding');
+
+		$this->setData('activeTab', 'Charts');
+		$this->setData('activePulldown', 'Outstanding');
+
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
 		$this->addJs('/js/charts/theme.js');
 		$this->addJs('/highstock/js/highstock.js');
 		$this->addJs('/highstock/js/modules/exporting.js');
