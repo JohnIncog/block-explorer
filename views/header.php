@@ -31,7 +31,9 @@ if (isset($this)) {
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 
 	<?php
-	echo $this->getHeaderAssets();
+	if (isset($this)) {
+		echo $this->getHeaderAssets();
+	}
 	?>
 
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">

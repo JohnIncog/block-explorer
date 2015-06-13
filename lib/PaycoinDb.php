@@ -17,8 +17,10 @@ class PaycoinDb {
 		return $block;
 	}
 
-	public function getLatestBlocks($limit, $height = 0) {
-
+	public function getLatestBlocks($limit, $height = 0, $cache = 30) {
+		if ($limit > 1000) {
+			$cache = false;
+		}
 		$sql = "SELECT * FROM blocks b ";
 		$sortOrder = 'DESC';
 		if ($height > 0) {
@@ -26,7 +28,7 @@ class PaycoinDb {
 			$sortOrder = 'ASC';
 		}
 		$sql .= " ORDER by `height` {$sortOrder} LIMIT " . (int)$limit;
-		$blocks = $this->mysql->select($sql, 30);
+		$blocks = $this->mysql->select($sql, $cache);
 
 		return $blocks;
 	}
@@ -819,10 +821,27 @@ class PaycoinDb {
 
 	}
 
-	public function getLatestTransactions($limit = 100) {
+	public function getLatestAddressTransactions($limit = 100) {
 		$limit = (int) $limit;
 
 		$transactions = $this->mysql->select("SELECT * FROM addresses ORDER BY time DESC LIMIT $limit", 30);
+		return $transactions;
+
+	}
+
+	public function getLatestTransactions($limit = 100) {
+		$limit = (int) $limit;
+
+		$transactions = $this->mysql->select("SELECT * FROM transactions ORDER BY id DESC  LIMIT $limit", 30);
+		return $transactions;
+
+	}
+
+	public function getLatestBlockTransactions($limit = 100) {
+		$limit = (int) $limit;
+
+		$transactions = $this->mysql->select("SELECT  SUM(b.mint) - SUM(t.txFee) AS txFee, t.block_height FROM transactions t JOIN blocks b ON b.height = t.`block_height`
+			GROUP BY t.block_height ORDER BY t.id DESC  LIMIT $limit", 300);
 		return $transactions;
 
 	}
@@ -833,7 +852,7 @@ class PaycoinDb {
 
 		$blocks = $this->mysql->select("SELECT `timestamp`, outstanding,
 		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
-		FROM blocks GROUP BY points ORDER BY `height`   LIMIT " . (int)$limit, 60);
+		FROM blocks GROUP BY points ORDER BY `timestamp` ASC  LIMIT " . (int)$limit, 3500);
 		//$dataPoints[] = "[1418361000, 0] \n";
 		foreach ($blocks as $block) {
 			$dataPoint = array(
@@ -847,12 +866,33 @@ class PaycoinDb {
 		return $dataPoints;
 	}
 
+
+	public function getTransactionsPerBlockDataPoints($limit) {
+
+		$limit = (int) $limit;
+
+		$blocks = $this->mysql->select("SELECT `timestamp`, transactions
+		FROM blocks
+		ORDER BY `timestamp`  LIMIT " . (int)$limit);
+		//$dataPoints[] = "[1418361000, 0] \n";
+		foreach ($blocks as $block) {
+			$dataPoint = array(
+				'time' => $block['timestamp'] *= 1000, // convert from Unix timestamp to JavaScript time,
+				'transactions' => $block['transactions']
+			);
+			$dataPoints[] = "[{$dataPoint['time']}, {$dataPoint['transactions']}] \n";
+		}
+
+
+		return $dataPoints;
+	}
+
 	public function getDifficultyDataPoints($limit) {
 
 		$limit = (int) $limit;
 
 		$blocks = $this->mysql->select("SELECT `timestamp`, difficulty,
-		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
+		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %i') AS points
 		FROM blocks
 		-- GROUP BY points
 		ORDER BY `time`  LIMIT " . (int)$limit);

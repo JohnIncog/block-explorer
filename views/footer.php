@@ -18,7 +18,9 @@
 <script type="application/javascript" src="/js/main.js?cb=<?php echo APP_VERSION ?>" ></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.min.js" async></script>
 <?php
-echo $this->getJSAssets();
+if (isset($this)) {
+	echo $this->getJSAssets();
+}
 ?>
 
 <script>

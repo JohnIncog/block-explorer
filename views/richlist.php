@@ -10,27 +10,8 @@ $addressTagMap = $this->getData('addressTagMap');
 
 	<?php $this->render('market_info'); ?>
 
-		<ul class="nav nav-tabs">
-			<li role="presentation" ><a href="/">Latest Blocks</a></li>
-			<li role="presentation"><a href="/latesttransactions">Latest Transactions</a></li>
-			<li role="presentation" class="active"><a href="/richlist">Rich List</a></li>
-			<li role="presentation"><a href="/primestakes">Prime Stakes</a></li>
-			<li role="presentation"><a href="/about">About</a></li>
-			<li class="pull-right">
-				<form method="post">
-					<div class="form-group col-sm-8" style="margin-bottom: 0px">
-						<select name="limit" class="form-control">
-							<option value="25">Top 25</option>
-							<option value="100" <?php if ($limit == 100) { echo 'selected'; } ?> >Top 100</option>
-							<option value="100" <?php if ($limit == 1000) { echo 'selected'; } ?> >Top 1000</option>
-						</select>
-					</div>
-					<div class="col-sm-2 form-group" style="margin-bottom: 0px">
-						<input type="submit" value="Go" class="btn btn-default">
-					</div>
-				</form>
-			</li>
-		</ul>
+	<?php $this->render('tabs'); ?>
+
 
 
 

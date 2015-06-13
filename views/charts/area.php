@@ -6,10 +6,15 @@ $chart = $this->getData('chart', 'outstanding');
 	<?php $this->render('page_header'); ?>
 
 	<h1><?php echo ucfirst($chart); ?></h1>
-	<script>
-		$(function () {
 
-			$.getJSON('/api/charts/<?php echo $chart; ?>?callback=?', function (data) {
+	<script>
+
+
+		window.onload = function () {
+
+			var chart = <?php echo json_encode($chart); ?>;
+			var chartdata = '/api/charts/'+chart+'?callback=?';
+			$.getJSON(chartdata, function (data) {
 				// Create the chart
 				$('#container').highcharts('StockChart', {
 					chart: {
@@ -44,9 +49,9 @@ $chart = $this->getData('chart', 'outstanding');
 						selected: 1
 					},
 
-					title: {
-						text: '<?php echo ucfirst($chart); ?>	'
-					},
+//            title: {
+//                text: chart,
+//            },
 
 					series: [
 						{
@@ -70,23 +75,22 @@ $chart = $this->getData('chart', 'outstanding');
 								]
 							}
 
-
 						}
 					]
+
 				});
+
 			});
 
-		});
 
+
+		};
 	</script>
-	</head>
-	<body>
-	<script src="/highstock/js/highstock.js"></script>
-	<script src="/highstock/js/modules/exporting.js"></script>
 
-	<li><a href="?type=line-chart">line</a></li>
-	<li><a href="?type=area">area</a></li>
-	<li><a href="?type=spline">spline</a></li>
+
+<!--	<li><a href="?type=line-chart">line</a></li>-->
+<!--	<li><a href="?type=area">area</a></li>-->
+<!--	<li><a href="?type=spline">spline</a></li>-->
 
 	<div id="container" style="height: 400px; min-width: 310px">
 		<div style="padding: 30px"></div>

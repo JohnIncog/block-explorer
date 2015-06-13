@@ -17,6 +17,8 @@ class Explorer extends Controller {
 
 	public function index() {
 
+		$this->setData('activeTab', 'Latest Blocks');
+
 		$siteConfig = $this->getConfig('site');
 		$this->setData('pageTitle', $siteConfig['name']);
 
@@ -102,6 +104,9 @@ class Explorer extends Controller {
 
 	public function primeStakes() {
 
+		$this->setData('activeTab', 'Latest Transactions');
+		$this->setData('enableLimitSelector', true);
+
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');
 
@@ -124,6 +129,9 @@ class Explorer extends Controller {
 
 	public function latestTransactions() {
 
+		$this->setData('activeTab', 'Latest Transactions');
+		$this->setData('enableLimitSelector', true);
+
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');
 		$this->addJs('/js/latesttransactions.js');
@@ -131,7 +139,7 @@ class Explorer extends Controller {
 
 		$limit = $this->getLimit(25);
 		$paycoinDb = new PaycoinDb();
-		$transactions = $paycoinDb->getLatestTransactions($limit);
+		$transactions = $paycoinDb->getLatestAddressTransactions($limit);
 
 		foreach ($transactions as $transaction) {
 			$addresses[] = $transaction['address'];
@@ -202,6 +210,8 @@ class Explorer extends Controller {
 
 	public function about() {
 
+		$this->setData('activeTab', 'About');
+
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');
 
@@ -256,6 +266,9 @@ class Explorer extends Controller {
 	}
 
 	public function richlist() {
+
+		$this->setData('activeTab', 'Rich List');
+		$this->setData('enableLimitSelector', true);
 
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');
