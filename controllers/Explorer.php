@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 
 use lib\Exceptions\RateLimitException;
@@ -7,6 +10,10 @@ use lib\PaycoinDb;
 use lib\PaycoinRPC;
 use lib\User;
 
+/**
+ * Class Explorer
+ * @package controllers
+ */
 class Explorer extends Controller {
 
 	public function __construct($bootstrap) {
@@ -104,7 +111,7 @@ class Explorer extends Controller {
 
 	public function primeStakes() {
 
-		$this->setData('activeTab', 'Latest Transactions');
+		$this->setData('activeTab', 'Prime Stakes');
 		$this->setData('enableLimitSelector', true);
 
 		$this->addJs('/js/market_info.js');
@@ -272,7 +279,10 @@ class Explorer extends Controller {
 
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');
+		$this->addJs('/js/richlist.js');
+		$this->addJs('/js/charts/theme.js');
 		$this->addJs('/highcharts/js/highcharts.js');
+		$this->addJs('/highcharts/js/highcharts-3d.js');
 		$this->addJs('/highcharts/js/modules/exporting.js');
 
 		$limit = $this->getLimit(25);

@@ -1,10 +1,15 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
 
-use JsonSchema\Uri\UriRetriever;
-
+/**
+ * Class PaycoinRPC
+ * @package lib
+ */
 class PaycoinRPC {
 
 	public $paycoind;

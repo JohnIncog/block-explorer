@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 
 

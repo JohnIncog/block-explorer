@@ -1,8 +1,14 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
-
+/**
+ * Class User
+ * @package lib
+ */
 class User {
 
 	public function login($username, $password) {

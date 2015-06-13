@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
 use controllers\Home;
@@ -12,7 +15,10 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router;
 use DebugBar\StandardDebugBar;
 
-
+/**
+ * Class Bootstrap
+ * @package lib
+ */
 class Bootstrap {
 
 	public $route;

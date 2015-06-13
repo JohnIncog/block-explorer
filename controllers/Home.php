@@ -1,9 +1,16 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 
 use lib\Bootstrap;
 
+/**
+ * Class Home
+ * @package controllers
+ */
 class Home extends Controller {
 
 	public function index() {

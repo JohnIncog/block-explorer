@@ -1,8 +1,15 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 use lib\PaycoinDb;
 
+/**
+ * Class Api
+ * @package controllers
+ */
 class Api extends Controller {
 
 	public function __construct($bootstrap) {

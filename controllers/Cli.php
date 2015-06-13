@@ -1,9 +1,16 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 use lib\PaycoinDb;
 use lib\PaycoinRPC;
 
+/**
+ * Class Cli
+ * @package controllers
+ */
 class Cli extends Controller {
 
 	const LOCK_FILE = "/tmp/clibuildDatabase.lock";

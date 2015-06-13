@@ -52,7 +52,13 @@ $chart = $this->getData('chart', 'outstanding');
 					},
 
 					title: {
-						text: chart
+						text: chart,
+						style: {
+							color: '#E0E0E3',
+							textTransform: 'uppercase',
+							fontSize: '25px',
+							fontFamily: '"Montserrat", sans-serif'
+						}
 					},
 					subtitle: {
 						text: 'Click and drag in the plot area to zoom in',

@@ -1,7 +1,14 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
+/**
+ * Class PaycoinDb
+ * @package lib
+ */
 class PaycoinDb {
 
 	public $mysql;
@@ -873,7 +880,7 @@ class PaycoinDb {
 
 		$blocks = $this->mysql->select("SELECT `timestamp`, transactions
 		FROM blocks
-		ORDER BY `timestamp`  LIMIT " . (int)$limit);
+		ORDER BY `timestamp`  LIMIT " . (int)$limit, 600);
 		//$dataPoints[] = "[1418361000, 0] \n";
 		foreach ($blocks as $block) {
 			$dataPoint = array(

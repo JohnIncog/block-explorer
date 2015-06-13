@@ -1,8 +1,15 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 use \PDO;
 
+/**
+ * Class Mysql
+ * @package lib
+ */
 class Mysql {
 
 	protected static $instance;

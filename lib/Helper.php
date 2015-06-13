@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
-use JsonSchema\Uri\UriRetriever;
-
+/**
+ * Class Helper
+ * @package lib
+ */
 class Helper {
 
 	public static function formatXPY($xpy) {

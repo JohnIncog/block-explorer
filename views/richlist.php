@@ -65,8 +65,45 @@ $addressTagMap = $this->getData('addressTagMap');
 				<?php }?>
 			</table>
 
+			<script>
+				var options = {
+					chart: {
+						type: 'pie',
+						options3d: {
+							enabled: true,
+							alpha: 45
+						}
+					},
+					title: {
+						text: 'Distribution',
+						style: {
+							color: 'white'
+						}
+					},
+					tooltip: {
+						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					},
+					plotOptions: {
+						pie: {
+							innerSize: 100,
+							depth: 45
+						}
+					},
+					series: [{
+						name: 'Distribution',
+						data: [
+							['Top 10', <?php echo $distribution[0]['holdings']/$distribution[3]['holdings']*100 ?>],
+							['Top 100', <?php echo ($distribution[1]['holdings']-$distribution[0]['holdings'])/$distribution[3]['holdings']*100 ?>],
+							['Top 1000',  <?php echo ($distribution[3]['holdings']-$distribution[1]['holdings'])/$distribution[3]['holdings']*100 ?>],
+							['Other', <?php echo ($distribution[3]['holdings']-$distribution[2]['holdings'])/$distribution[3]['holdings']*100 ?>]
 
-<!--			<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>-->
+						]
+					}]
+				};
+			</script>
+
+
+			<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
 
 		</div>
 	</div>

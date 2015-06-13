@@ -1,7 +1,14 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace lib;
 
+/**
+ * Class Cache
+ * @package lib
+ */
 class Cache {
 
 	protected static $instance;

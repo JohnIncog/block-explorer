@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * @author John <john@paycoin.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
 namespace controllers;
 
 use lib\PaycoinDb;
-use Symfony\Component\Console\Helper\InputAwareHelper;
 
+/**
+ * Class Chart
+ * @package controllers
+ */
 class Chart extends Controller {
 
 	public function index() {
@@ -46,8 +52,8 @@ class Chart extends Controller {
 			array('value' => '2500', 'name' => 'Last 2500 Blocks'),
 		);
 		$limitSelector = '<li class="pull-right"><form method="post">
-		<div class="form-group col-sm-10" style="margin-bottom: 0px">
-		<select name="limit" class="form-control">';
+			<div class="form-group col-sm-10" style="margin-bottom: 0px">
+			<select name="limit" class="form-control">';
 		foreach ($options as $option) {
 			$limitSelector .='<option value="' . $option['value'] . '" ';
 			if ($this->getData('limit') == $option['value']) {
@@ -132,7 +138,7 @@ class Chart extends Controller {
 
 
 		$paycoinDb = new PaycoinDb();
-		$blocks = $paycoinDb->getLatestBlocks($limit);
+		$blocks = $paycoinDb->getLatestBlocks($limit, 0, 600);
 
 		$blocks = array_reverse($blocks);
 		$blocks = array_column($blocks, null, 'height');
@@ -178,7 +184,6 @@ class Chart extends Controller {
 
 		$this->addJs('/js/charts/' . $chartType . '.js');
 
-		$this->setData('pageTitle', 'Charts');
 		$this->setData('chart', $chart);
 		$this->render('header');
 		$this->render('charts/' . $chartType);
