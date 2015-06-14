@@ -6,13 +6,15 @@
 ### Address Tagging
  * Allow user to tag an address with a name.
  * If an address is tagged by multiple users, tag will be removed
- * Verify with a singed message.
+ * Verify with a singed message and add a url to the address.
+
+##### Graphs
+ * Inflation
+ * Rich list
+ * Outstanding
 
 
 #### To Do
-
-### Address Tagging
-* Add url to verified tags
 
 ##### Address Monitor
  * Flag an address to be monitored and receive alerts when it makes transactions
@@ -25,17 +27,9 @@
  * list users, edit, remove
 
 
-##### Graphs
- * Inflation
- * Rich list
- * Difficulty
- * Value out
- * Number of transactions
- * Time between blocks?
-
 ## Install
 
-Requirements: PHP, Mysql, paycoind
+Requirements: PHP, Mysql, paycoind, memcached
 
 #### Mysql
 
