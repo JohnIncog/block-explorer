@@ -63,7 +63,7 @@ $( document ).ready(function() {
                 console.log("market info");
 //					console.log(data);
 
-                var usdprice = parseFloat(data.price.USD).toFixed(2);
+                var usdprice = parseFloat(data.price.USD).toFixed(3);
                 var btcprice = parseFloat(data.price.BTC).toFixed(8);
                 var marketcap = addCommas(parseFloat(data.market.market_cap_usd).toFixed(2));
 
@@ -90,7 +90,7 @@ $( document ).ready(function() {
                     console.log("market info");
                     //						console.log(data);
 
-                    var usdprice = parseFloat(data.price.USD).toFixed(2);
+                    var usdprice = parseFloat(data.price.USD).toFixed(3);
                     var btcprice = parseFloat(data.price.BTC).toFixed(8);
                     var marketcap = addCommas(parseFloat(data.market.market_cap_usd).toFixed(2));
 

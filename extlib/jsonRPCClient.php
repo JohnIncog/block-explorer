@@ -27,6 +27,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @author sergio <jsonrpcphp@inservibile.org>
  */
+
+/**
+ * Class jsonRPCClient
+ * @method getinfo
+ * @method help
+ * @method getblockhash
+ * @method getblock
+ * @method decoderawtransaction
+ * @method getrawtransaction
+ * @method getblockcount
+ * @method verifymessage
+ */
 class jsonRPCClient {
 	
 	/**
@@ -161,4 +173,3 @@ class jsonRPCClient {
 		}
 	}
 }
-?>

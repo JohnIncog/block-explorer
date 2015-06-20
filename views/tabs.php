@@ -1,6 +1,7 @@
 <?php
 $activeTab = $this->getData('activeTab', '');
 $activePulldown = $this->getData('activePulldown', '');
+$limit = $this->getData('limit');
 $tabs = array(
 	array('href' => '/', 'name' => 'Latest Blocks'),
 	array('href' => '/latesttransactions', 'name' => 'Latest Transactions'),
@@ -39,7 +40,7 @@ $tabs = array(
 				<select name="limit" class="form-control">
 					<option value="25">Top 25</option>
 					<option value="100" <?php if ($limit == 100) { echo 'selected'; } ?> >Top 100</option>
-					<option value="100" <?php if ($limit == 1000) { echo 'selected'; } ?> >Top 1000</option>
+					<option value="1000" <?php if ($limit == 1000) { echo 'selected'; } ?> >Top 1000</option>
 				</select>
 			</div>
 			<div class="col-sm-2 form-group" style="margin-bottom: 0px">

@@ -12,9 +12,13 @@ namespace lib;
  */
 class PaycoinRPC {
 
+	/**
+	 * @var \jsonRPCClient
+	 */
 	public $paycoind;
 
 	public function __construct() {
+		/** @var $config array */
 		include(__DIR__ . '/../conf/config.php');
 		$rpcUrl = 'http://' . $config['paycoind']['rpcuser'] . ':' . $config['paycoind']['rpcpassword'] .
 			'@' . $config['paycoind']['rpchost'] . ':' . $config['paycoind']['rpcport'] . '/';

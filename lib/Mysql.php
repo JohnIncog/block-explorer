@@ -4,6 +4,8 @@
  * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 namespace lib;
+use DebugBar\DataCollector\PDO\PDOCollector;
+use DebugBar\DataCollector\PDO\TraceablePDO;
 use \PDO;
 
 /**
@@ -37,8 +39,8 @@ class Mysql {
 
 		$pdo = new \PDO($dsn, $username, $password, $options);
 		if (DEBUG_BAR) {
-			$this->pdo = new \DebugBar\DataCollector\PDO\TraceablePDO($pdo);
-			Bootstrap::getInstance()->debugbar->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($this->pdo));
+			$this->pdo = new TraceablePDO($pdo);
+			Bootstrap::getInstance()->debugbar->addCollector(new PDOCollector($this->pdo));
 		} else {
 			$this->pdo = new \PDO($dsn, $username, $password, $options);
 		}
@@ -87,9 +89,10 @@ class Mysql {
 			}
 		}
 		try {
-			$result = $this->pdo->query($sql);
+			$result = $this->pdo->query($sql, \PDO::FETCH_ASSOC);
 		} catch (\PDOException $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
+			$result = array();
 		}
 
 		$rows = array();
@@ -147,7 +150,7 @@ class Mysql {
 		return $escaped;
 	}
 
-	public function insert($table, array $insert, $ignore = false, $update = false) {
+	public function insert($table, array $insert, $ignore = false, array $update = array()) {
 
 
 		$sql = "INSERT ";
@@ -168,8 +171,8 @@ class Mysql {
 		}
 		$sql = substr($sql, 0, -2);
 		$sql .= ")";
-
-		if ($update) {
+		$return = false;
+		if (count($update) > 0) {
 			$sql .= ' ON DUPLICATE KEY UPDATE ';
 			foreach ($update as $field => $value) {
 				$sql .= "{$field} = " . $this->escape($value) .", ";

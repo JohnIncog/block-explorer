@@ -11,6 +11,7 @@ namespace lib;
  */
 class PaycoinDb {
 
+	const BC_SCALE = 8;
 	public $mysql;
 
 	public function __construct() {
@@ -125,11 +126,11 @@ class PaycoinDb {
 			$vOut = $this->processVout($decodedTransaction);
 			$this->processTX($decodedTransaction);
 
-			$totalValue = bcadd($vOut['valueTotal'], $totalValue, 8);
-			$totalValueIn = bcadd($vIn['valueTotal'], $totalValueIn, 8);
+			$totalValue = bcadd($vOut['valueTotal'], $totalValue, self::BC_SCALE);
+			$totalValueIn = bcadd($vIn['valueTotal'], $totalValueIn, self::BC_SCALE);
 
-			$txFee = bcsub($totalValue, $totalValueIn, 8);
-			$txFee = bcsub($txFee, $block['mint'], 8);
+			$txFee = bcsub($totalValue, $totalValueIn, self::BC_SCALE);
+			$txFee = bcsub($txFee, $block['mint'], self::BC_SCALE);
 
 			$transactionInsert = array(
 				'txid' => $decodedTransaction['txid'],
@@ -161,7 +162,7 @@ class PaycoinDb {
 			if (isset($vin['txid'])) {
 				$insert['address'] = $this->getVout($vin['txid'], $vin['vout'], "addresses");
 				$insert['value'] =  $this->getVout($vin['txid'], $vin['vout'], "value");
-				$valueTotal = bcadd($insert['value'], $valueTotal, 8);
+				$valueTotal = bcadd($insert['value'], $valueTotal, self::BC_SCALE);
 			}
 			foreach ($vin as $key => $value) {
 				if ($key == 'scriptSig') {
@@ -204,7 +205,7 @@ class PaycoinDb {
 			$insert['time'] = $transaction['time'];
 			foreach ($vout as $key => $value) {
 				if ($key == "value") {
-					$valueTotal = bcadd($value, $valueTotal, 8);
+					$valueTotal = bcadd($value, $valueTotal, self::BC_SCALE);
 				}
 				if ($key == "scriptPubKey") {
 					foreach ($value as $ke => $val) {
@@ -253,7 +254,16 @@ class PaycoinDb {
 	}
 
 	public function buildDb($startBlockHeight, $endBlockHeight) {
-
+		/**
+		 * http://192.168.10.10/block/009a2d16f34b49318e2e78f12a7b64816cd064d7b68abc862b7377f6576919ab
+		 * Created	0.848203 XPY = wrong.. txfee not removed
+		 *
+		 * *possible* Outstanding is not calculating correctly...
+		 * 1-138400 = ok
+		 * 138400-139000 =
+		 ** 138401 is where it starts....
+		 **  at block 140000 a problem.. 15,619,171.776635 XPY byt should be 15,619,171.7766351 XPY
+		 */
 		$outstanding = 0;
 		if ($startBlockHeight > 1) {
 			$previousBlock = $this->getBlockByHeight($startBlockHeight-1);
@@ -302,11 +312,11 @@ class PaycoinDb {
 			$blockInsert['valuein'] = $transactionsReturn['totalValueIn'];
 
 
-			$outstanding = bcadd($block['mint'], $outstanding, 8);
+			$outstanding = bcadd($block['mint'], $outstanding, self::BC_SCALE);
 
 			if (count($block['tx']) > 1) {
-				$txFees = bcsub($blockInsert['valueout'], bcadd($blockInsert['valuein'], $blockInsert['mint'], 8), 8);
-				$outstanding = bcadd($outstanding, $txFees, 8);
+				$txFees = bcsub($blockInsert['valueout'], bcadd($blockInsert['valuein'], $blockInsert['mint'], self::BC_SCALE), self::BC_SCALE);
+				$outstanding = bcadd($outstanding, $txFees, self::BC_SCALE);
 				$blockInsert['txFees'] = $txFees;
 			}
 
@@ -498,9 +508,7 @@ class PaycoinDb {
 	}
 
 	/**
-	 *
-	 * Add/Update address balance tracking.
-	 *
+	 * @param array $transaction
 	 */
 	public function addTransactionToAddress(array $transaction) {
 
@@ -861,6 +869,7 @@ class PaycoinDb {
 		DATE_FORMAT(FROM_UNIXTIME(TIMESTAMP), '%m %d %y %h %m') AS points
 		FROM blocks GROUP BY points ORDER BY `timestamp` ASC  LIMIT " . (int)$limit, 3500);
 		//$dataPoints[] = "[1418361000, 0] \n";
+		$dataPoints = array();
 		foreach ($blocks as $block) {
 			$dataPoint = array(
 				'time' => $block['timestamp'] *= 1000, // convert from Unix timestamp to JavaScript time,

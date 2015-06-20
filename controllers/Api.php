@@ -5,6 +5,7 @@
  */
 namespace controllers;
 use lib\PaycoinDb;
+use lib\PaycoinRPC;
 
 /**
  * Class Api
@@ -20,6 +21,18 @@ class Api extends Controller {
 	public function index() {
 
 		echo 'index';
+
+	}
+
+	public function info() {
+
+		$paycoin = new PaycoinRPC();
+		$rpcInfo = $paycoin->getInfo();
+		$info = array(
+			'blocks' => $rpcInfo['blocks'],
+			'moneysupply' => $rpcInfo['moneysupply'],
+		);
+		$this->outputJsonResponse($info);
 
 	}
 
@@ -133,7 +146,7 @@ class Api extends Controller {
 
 		echo json_encode(
 			array(
-				'version' => '0.1',
+				'version' => APP_VERSION,
 				'data' => $data
 			)
 		);

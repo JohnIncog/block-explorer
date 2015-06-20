@@ -93,7 +93,7 @@ class Helper {
 
 	public static function getTxHashLink($transaction) {
 		$link = '<div ><code><a class="hash" href="' . self::getUrl('transaction', array('transaction' => $transaction))
-			. '" class="">' . $transaction . '</a></code></div>';
+			. '" >' . $transaction . '</a></code></div>';
 		return $link;
 	}
 

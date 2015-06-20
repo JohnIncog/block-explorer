@@ -36,6 +36,7 @@ $routeCollection->add('getLatestBlocks', new Routing\Route('/api/latestblocks', 
 $routeCollection->add('getLatestTransactions', new Routing\Route('/api/latesttransactions', array("class" => "\\controllers\\Api")));
 $routeCollection->add('tagAddress', new Routing\Route('/api/tagaddress', array("class" => "\\controllers\\Api")));
 $routeCollection->add('disputeAddressTag', new Routing\Route('/api/disputeaddresstag', array("class" => "\\controllers\\Api")));
+$routeCollection->add('info', new Routing\Route('/api/info', array("class" => "\\controllers\\Api")));
 
 $routeCollection->add('buildDatabase', new Routing\Route('/cli/buildDatabase', array("class" => "\\controllers\\Cli")));
 $routeCollection->add('buildWalletDatabase', new Routing\Route('/cli/buildWalletDatabase', array("class" => "\\controllers\\Cli")));

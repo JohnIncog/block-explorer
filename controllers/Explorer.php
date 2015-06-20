@@ -289,10 +289,15 @@ class Explorer extends Controller {
 		$paycoin = new PaycoinDb();
 		$richList = $paycoin->getRichList($limit);
 
+		$addresses = array();
+		$addressTagMap = array();
 		foreach ($richList as $rich) {
 			$addresses[] = $rich['address'];
 		}
-		$this->setData('addressTagMap', $paycoin->getAddressTagMap($addresses));
+		if (count($addresses) > 0) {
+			$addressTagMap = $paycoin->getAddressTagMap($addresses);
+		}
+		$this->setData('addressTagMap', $addressTagMap);
 
 		$distribution = $paycoin->getRichListDistribution();
 

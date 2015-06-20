@@ -6,6 +6,7 @@
 namespace lib;
 
 use controllers\Home;
+use DebugBar\DataCollector\ConfigCollector;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +24,14 @@ class Bootstrap {
 
 	public $route;
 	public $httpRequest;
+	/**
+	 * @var \controllers\Controller
+	 */
 	public $controller;
 	public $config;
+	/** @var StandardDebugBar */
 	public $debugbar;
+	public $bootstrap;
 
 	public static $instance;
 
@@ -138,7 +144,7 @@ class Bootstrap {
 		$this->controller = new $this->route['class']($this);
 
 		if (DEBUG_BAR) {
-			$this->debugbar->addCollector(new \DebugBar\DataCollector\ConfigCollector($this->config));
+			$this->debugbar->addCollector(new ConfigCollector($this->config));
 			$debugbarRenderer = $this->debugbar->getJavascriptRenderer();
 			$this->debugbar["messages"]->addMessage("Debug Bar enabled");
 			$this->controller->setData('debugbarRenderer', $debugbarRenderer);
@@ -164,7 +170,7 @@ class Bootstrap {
 			include($extLibFilename);
 			return true;
 		}
-
+		return false;
 	}
 
 	public function preRoute() {}
