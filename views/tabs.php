@@ -6,6 +6,7 @@ $tabs = array(
 	array('href' => '/', 'name' => 'Latest Blocks'),
 	array('href' => '/latesttransactions', 'name' => 'Latest Transactions'),
 	array('href' => '/richlist', 'name' => 'Rich List'),
+	array('href' => '/primebids', 'name' => 'Prime Bids'),
 	array('href' => '/primestakes', 'name' => 'Prime Stakes'),
 	array('href' => '/about', 'name' => 'About'),
 );

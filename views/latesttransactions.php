@@ -23,7 +23,7 @@ $addressTagMap = $this->getData('addressTagMap');
 		<?php foreach($transactions as $transaction) { ?>
 			<tr>
 				<td><time class="timeago" datetime="<?php echo date('c', $transaction['time']); ?>"
-						><?php echo date('c', $transaction['time']); ?></time>
+						><?php echo date('c', $transaction['time']); ?></time></td>
 				<td><?php echo \lib\Helper::getTxHashLink($transaction['txid']) ?></td>
 				<td class="text-right">
 					<?php

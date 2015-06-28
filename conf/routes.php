@@ -19,6 +19,7 @@ $routeCollection->add('latestTransactions', new Routing\Route('/latesttransactio
 $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('tagging', new Routing\Route('/tagging', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('faq', new Routing\Route('/faq', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('primeBids', new Routing\Route('/primebids', array("class" => "\\controllers\\Explorer")));
 
 $routeCollection->add('chart', new Routing\Route('/charts/{chart}', array("class" => "\\controllers\\Chart")));
 $routeCollection->add('transactionsPerBlock', new Routing\Route('/charts/block/transactions', array("class" => "\\controllers\\Chart")));

@@ -32,7 +32,7 @@ class Chart extends Controller {
 	public function valuePerBlock() {
 
 		$this->setData('activeTab', 'Charts');
-		$this->setData('activePulldown', 'Transactions Per Block');
+		$this->setData('activePulldown', 'Value Per Block');
 
 		$this->addJs('/js/market_info.js');
 		$this->addJs('/js/update_outstanding.js');

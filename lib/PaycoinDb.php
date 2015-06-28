@@ -11,7 +11,7 @@ namespace lib;
  */
 class PaycoinDb {
 
-	const BC_SCALE = 8;
+	const BC_SCALE = 6;
 	public $mysql;
 
 	public function __construct() {
@@ -798,6 +798,35 @@ class PaycoinDb {
 
 	}
 
+	public function getPossibleBidders() {
+
+		$bidders = $this->mysql->selectRow("SELECT COUNT(*) as bidders FROM richlist WHERE balance > " . PRIME_BID_AMOUNT);
+		return $bidders['bidders'];
+
+	}
+
+	public function getPrimeBids($limit = 50) {
+
+		$primeBid = PRIME_BID_AMOUNT;
+		$limit = (int) $limit;
+		$bids = $this->mysql->select("SELECT * FROM address_tags tags JOIN richlist r ON r.address = tags.address
+			WHERE verified = 1 AND tag LIKE 'prime bid%' ORDER BY balance DESC LIMIT $limit ", 60);
+
+		$rank = 1;
+		foreach ($bids as &$bid) {
+			$bid['bidrank'] = $rank;
+			$bid['balance'] = $this->getAddressBalance($bid['address']);
+			$bid['bid'] = $bid['balance'] - $primeBid;
+			$rank++;
+		}
+
+
+
+		return $bids;
+
+	}
+
+
 	public function primeStakes($limit) {
 
 		$limit = (int) $limit;
@@ -959,6 +988,9 @@ class PaycoinDb {
 	}
 
 	public function getAddressTagMap($addresses) {
+		if (count($addresses) == 0) {
+			return array();
+		}
 		$sql = "SELECT * FROM address_tags WHERE address " . $this->mysql->getInClause($addresses);
 		$map = $this->mysql->select($sql, 60);
 

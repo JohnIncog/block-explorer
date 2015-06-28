@@ -27,7 +27,7 @@ class Explorer extends Controller {
 		$this->setData('activeTab', 'Latest Blocks');
 
 		$siteConfig = $this->getConfig('site');
-		$this->setData('pageTitle', $siteConfig['name']);
+		$this->setData('pageTitle', $siteConfig['name'] . ' - Paycoin Block Explorer');
 
 		$this->addJs('/js/timeago.min.js');
 		$this->addJs('/js/index.js');
@@ -121,6 +121,7 @@ class Explorer extends Controller {
 
 		$paycoinDb = new PaycoinDb();
 		$primeStakes = $paycoinDb->primeStakes($limit);
+		$addresses = array();
 		foreach ($primeStakes as $primeStake) {
 			$addresses[] = $primeStake['address'];
 		}
@@ -148,6 +149,7 @@ class Explorer extends Controller {
 		$paycoinDb = new PaycoinDb();
 		$transactions = $paycoinDb->getLatestAddressTransactions($limit);
 
+		$addresses = array();
 		foreach ($transactions as $transaction) {
 			$addresses[] = $transaction['address'];
 		}
@@ -312,6 +314,58 @@ class Explorer extends Controller {
 
 	}
 
+	public function primeBids() {
+
+		$limit = $this->getLimit(25);
+		$paycoin = new PaycoinDb();
+
+		$startDate = '2015-07-01';
+		$this->setData('startDate', strtotime($startDate));
+
+		$roundDays = 7;
+
+
+		$diff = date_diff(new \DateTime($startDate), new \DateTime('now'));
+		$currentRound = 'Starts in ' . ceil($diff->days) . ' Days';
+		$primeBids = array();
+		if (time() > strtotime($startDate)) {
+			$currentRound = ceil($diff->days / $roundDays) . ' of 25';
+			$primeBids = $paycoin->getPrimeBids($limit);
+		}
+
+		$this->setData('currentRound', $currentRound);
+
+		$this->setData('activeTab', 'Prime Bids');
+		$this->setData('enableLimitSelector', true);
+
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
+
+		$addresses = array();
+		$addressTagMap = array();
+		if (count($primeBids) > 0) {
+			foreach ($primeBids as $primeBid) {
+				$addresses[] = $primeBid['address'];
+			}
+		}
+		if (count($addresses) > 0) {
+			$addressTagMap = $paycoin->getAddressTagMap($addresses);
+		}
+		$this->setData('addressTagMap', $addressTagMap);
+
+
+		$this->setData('cacheTime', 60);
+
+		$this->setData('primeBids', $primeBids);
+		$this->setData('primeBidders', $paycoin->getPossibleBidders());
+		$this->setData('pageTitle', 'Paycoin Prime Controller Bids');
+		$this->render('header');
+		$this->render('primebids');
+		$this->render('footer');
+
+	}
+
 	private function getLimit($default = 100, $max = 10000) {
 		$limit = $this->bootstrap->httpRequest->get('limit');
 		if (!$limit) {
@@ -341,7 +395,7 @@ class Explorer extends Controller {
 		if ($this->bootstrap->httpRequest->getRealMethod() == 'POST') {
 
 			$address = $this->bootstrap->httpRequest->request->getAlnum('address');
-			$tag = $this->bootstrap->httpRequest->request->getAlnum('tag');
+			$tag = $this->bootstrap->httpRequest->get('tag');
 			$signature = $this->bootstrap->httpRequest->request->get('signature');
 			$url = $this->bootstrap->httpRequest->request->get('url');
 

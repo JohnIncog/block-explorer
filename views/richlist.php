@@ -27,7 +27,11 @@ $addressTagMap = $this->getData('addressTagMap');
 				<th>Percent of coins</th>
 			</tr>
 			</thead>
-
+			<?php if (count($richList) == 0) {  ?>
+				<tr>
+					<td colspan="100%" class="text-center">No results found.  Rich list is rebuilt every 15 minutes.</td>
+				</tr>
+			<?php } ?>
 			<?php foreach($richList as $rich) { ?>
 				<tr>
 					<td class="text-right"><?php echo $rich['rank'] ?></td>
@@ -50,57 +54,64 @@ $addressTagMap = $this->getData('addressTagMap');
 				</thead>
 				<?php
 				$last = end($distribution);
-				?>
-				<?php foreach($distribution as &$row) {
-					$row['percent'] = 0;
-					if ($last['holdings'] > 0) {
-						$row['percent'] = round($row['holdings']/$last['holdings']*100, 2);
-					}
-					?>
+
+				if ($last['top'] == 0)  { ?>
 					<tr>
-						<td><?php echo $row['top'] ?></td>
-						<td><?php echo \lib\Helper::formatXPY($row['holdings']) ?></td>
-						<td><?php echo $row['percent'] ?> %</td>
+						<td colspan="100%" class="text-center">No results found.  Rich list is rebuilt every 15 minutes.</td>
 					</tr>
-				<?php }?>
+				<?php } else {
+					foreach ($distribution as &$row) {
+						$row['percent'] = 0;
+						if ($last['holdings'] > 0) {
+							$row['percent'] = round($row['holdings'] / $last['holdings'] * 100, 2);
+						}
+						?>
+						<tr>
+							<td><?php echo $row['top'] ?></td>
+							<td><?php echo \lib\Helper::formatXPY($row['holdings']) ?></td>
+							<td><?php echo $row['percent'] ?> %</td>
+						</tr>
+					<?php } ?>
+					<script>
+						var options = {
+							chart: {
+								type: 'pie',
+								options3d: {
+									enabled: true,
+									alpha: 45
+								}
+							},
+							title: {
+								text: 'Distribution',
+								style: {
+									color: 'white'
+								}
+							},
+							tooltip: {
+								pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+							},
+							plotOptions: {
+								pie: {
+									innerSize: 100,
+									depth: 45
+								}
+							},
+							series: [{
+								name: 'Distribution',
+								data: [
+									['Top 10', <?php echo $distribution[0]['holdings']/$distribution[3]['holdings']*100 ?>],
+									['Top 100', <?php echo ($distribution[1]['holdings']-$distribution[0]['holdings'])/$distribution[3]['holdings']*100 ?>],
+									['Top 1000',  <?php echo ($distribution[3]['holdings']-$distribution[1]['holdings'])/$distribution[3]['holdings']*100 ?>],
+									['Other', <?php echo ($distribution[3]['holdings']-$distribution[2]['holdings'])/$distribution[3]['holdings']*100 ?>]
+
+								]
+							}]
+						};
+					</script>
+				<?php } ?>
 			</table>
 
-			<script>
-				var options = {
-					chart: {
-						type: 'pie',
-						options3d: {
-							enabled: true,
-							alpha: 45
-						}
-					},
-					title: {
-						text: 'Distribution',
-						style: {
-							color: 'white'
-						}
-					},
-					tooltip: {
-						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-					},
-					plotOptions: {
-						pie: {
-							innerSize: 100,
-							depth: 45
-						}
-					},
-					series: [{
-						name: 'Distribution',
-						data: [
-							['Top 10', <?php echo $distribution[0]['holdings']/$distribution[3]['holdings']*100 ?>],
-							['Top 100', <?php echo ($distribution[1]['holdings']-$distribution[0]['holdings'])/$distribution[3]['holdings']*100 ?>],
-							['Top 1000',  <?php echo ($distribution[3]['holdings']-$distribution[1]['holdings'])/$distribution[3]['holdings']*100 ?>],
-							['Other', <?php echo ($distribution[3]['holdings']-$distribution[2]['holdings'])/$distribution[3]['holdings']*100 ?>]
 
-						]
-					}]
-				};
-			</script>
 
 
 			<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>

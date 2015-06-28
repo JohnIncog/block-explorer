@@ -13,7 +13,7 @@ use lib\PaycoinRPC;
  */
 class Cli extends Controller {
 
-	const LOCK_FILE = "/tmp/clibuildDatabase.lock";
+	const LOCK_FILE = "/tmp/clibuildDatabase2.lock";
 
 	public function buildDatabase() {
 
