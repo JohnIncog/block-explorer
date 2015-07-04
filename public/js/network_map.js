@@ -814,16 +814,10 @@ $( document ).ready(function() {
         title : {
             text : 'Paycoin Network Map',
             style: {
-                color: '#FFF',
-                fontWeight: 'bold'
-            }
-        },
-
-        subtitle : {
-            text : 'Source map: <a href="http://code.highcharts.com/mapdata/custom/world-highres.js">World, highres</a>',
-             style: {
-                color: '#FFF',
-                fontWeight: 'bold'
+                color: '#E0E0E3',
+                fontFamily: '"Montserrat", sans-serif',
+                textTransform: 'uppercase',
+                fontSize: '25px',
             }
         },
             mapNavigation: {
