@@ -27,14 +27,13 @@ $( document ).ready(function() {
             },
             
             colorAxis: {
-                min: 1,
-                type: 'logarithmic',
-                minColor: '#EEEEFF',
-                maxColor: '#000022',
+                min: 0,
+                minColor: '#086B8E',
+                maxColor: '#01151C',
                 stops: [
-                    [0, '#EFEFFF'],
-                    [0.67, '#4444FF'],
-                    [1, '#000022']
+                    [0, '#086B8E'],
+                    [0.67, '#044055'],
+                    [1, '#01151C']
                 ]
             },
 
