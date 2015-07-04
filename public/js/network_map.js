@@ -28,7 +28,7 @@ $( document ).ready(function() {
             
             colorAxis: {
                 min: 1,
-                minColor: '#086B8E',
+                minColor: '#3988a4',
                 maxColor: '#065571',
             },
 
