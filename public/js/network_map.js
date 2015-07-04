@@ -244,7 +244,7 @@ $( document ).ready(function() {
         },
         {
             "hc-key": "gb",
-            "value": 60
+            "value": 1
         },
         {
             "hc-key": "mw",
@@ -624,7 +624,7 @@ $( document ).ready(function() {
         },
         {
             "hc-key": "us",
-            "value": 155
+            "value": 1
         },
         {
             "hc-key": "tw",
