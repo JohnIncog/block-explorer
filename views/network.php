@@ -1,7 +1,7 @@
 <?php
 $network = $this->getData('network');
 $limit = $this->getData('limit');
-var_dump($network['totalConnections'])
+//var_dump($network['totalConnections'])
 ?>
 
 

@@ -14,21 +14,24 @@ use lib\PaycoinRPC;
 class Cli extends Controller {
 
 	const LOCK_FILE = "/tmp/clibuildDatabase2.lock";
+	const NETWORK_LOCK_FILE = "/tmp/getNetworkInfo.lock";
 
 	public function getNetworkInfo() {
 
+
+		if (!$this->tryLock(self::NETWORK_LOCK_FILE)) {
+			die("Already running.\n");
+		}
+
 		$paycoinDb = new PaycoinDb();
 		$paycoinDb->updateNetworkInfo();
-
-
-
 
 	}
 
 	public function buildDatabase() {
 
 
-		if (!$this->tryLock()) {
+		if (!$this->tryLock(self::LOCK_FILE)) {
 			die("Already running.\n");
 		}
 		register_shutdown_function('unlink', self::LOCK_FILE);
@@ -75,17 +78,18 @@ class Cli extends Controller {
 
 	}
 
-	private function tryLock() {
+	private function tryLock($lockFile) {
 
-		if (@symlink("/proc/" . getmypid(), self::LOCK_FILE) !== FALSE) # the @ in front of 'symlink' is to suppress the NOTICE you get if the LOCK_FILE exists
+
+		if (@symlink("/proc/" . getmypid(), $lockFile) !== FALSE) # the @ in front of 'symlink' is to suppress the NOTICE you get if the LOCK_FILE exists
 			return true;
 
 		# link already exists
 		# check if it's stale
-		if (is_link(self::LOCK_FILE) && !is_dir(self::LOCK_FILE)) {
-			unlink(self::LOCK_FILE);
+		if (is_link($lockFile) && !is_dir($lockFile)) {
+			unlink($lockFile);
 			# try to lock again
-			return $this->tryLock();
+			return $this->tryLock($lockFile);
 		}
 
 		return false;

@@ -1003,14 +1003,33 @@ class PaycoinDb {
 	public function updateNetworkInfo() {
 
 		$paycoin = new PaycoinRPC('dnsseed');
+		$ipInfoDb = new IpInfoDb();
+
 
 		$peers = $paycoin->getPeerInfo();
 		foreach ($peers as $peer) {
+
 			$insert = $peer;
 			$update = $peer;
-			$this->mysql->insert('network', $insert, $update);
+
+			list($ip, $post) = explode(':', $peer['addr']);
+			$geoInfo = $ipInfoDb->getGeoInfo($ip);
+			sleep(.5);
+			$insert['country_code'] = $geoInfo['countryCode'];
+			$insert['country_name'] = $geoInfo['countryName'];
+			$insert['state'] = $geoInfo['state'];
+			$insert['city'] = $geoInfo['city'];
+
+			$update['country_code'] = $geoInfo['countryCode'];
+			$update['country_name'] = $geoInfo['countryName'];
+			$update['state'] = $geoInfo['state'];
+			$update['city'] = $geoInfo['city'];
+
+			$this->mysql->insert('network', $insert, false, $update);
+
 
 		}
+
 
 	}
 
@@ -1038,6 +1057,17 @@ class PaycoinDb {
 			'totalConnections' => $totalConnections,
 			'subVersions' => $subVersions
 		);
+
+	}
+
+	public function getNetworkMapData() {
+		$since = time() - (24 * 10 * 60 * 60);
+
+		$sql = "SELECT COUNT(*) as connections, LOWER(country_code) AS country FROM network
+			WHERE lastsend > $since OR lastrecv > $since GROUP BY country_code order by connections desc";
+
+		$data = $this->mysql->select($sql, 60);
+		return array_column($data, 'connections', 'country');
 
 	}
 

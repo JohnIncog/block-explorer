@@ -180,12 +180,11 @@ class Explorer extends Controller {
 
 		$this->addJs('/highmaps/js/highmaps.js');
 		$this->addJs('/highmaps/js/modules/exporting.js');
-		$this->addJs('/js/charts/theme.js');
-		
+
 		$this->addJs('//code.highcharts.com/mapdata/custom/world-highres.js');
 
 		$paycoin = new PaycoinDb();
-		$network = $paycoin->getNetwork();
+		$network = $paycoin->getNetworkMapData();
 
 		$this->setData('network', $network);
 		$this->setData('pageTitle', 'Network Map');
