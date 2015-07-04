@@ -36,7 +36,7 @@ $( document ).ready(function() {
                 data : cdata,
                 mapData: Highcharts.maps['custom/world-highres'],
                 joinBy: 'hc-key',
-                nullColor: '#e6f0f3',
+                nullColor: '#cde1e8',
                 name: 'Random data',
                 states: {
                     hover: {
