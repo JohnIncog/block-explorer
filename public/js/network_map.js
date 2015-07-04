@@ -28,7 +28,7 @@ $( document ).ready(function() {
             
             colorAxis: {
                 min: 1,
-                minColor: '#3988a4',
+                minColor: '#6aa6bb',
                 maxColor: '#065571',
             },
 
@@ -40,7 +40,7 @@ $( document ).ready(function() {
                 name: 'Random data',
                 states: {
                     hover: {
-                        color: '#076C8D'
+                        color: '#b4d2dd'
                     }
                 },
                 dataLabels: {
