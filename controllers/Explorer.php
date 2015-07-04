@@ -138,6 +138,7 @@ class Explorer extends Controller {
 	public function network() {
 
 		$this->setData('activeTab', 'Network');
+		$this->setData('activePulldown', 'Versions');
 		$this->setData('enableLimitSelector', true);
 
 
@@ -171,6 +172,8 @@ class Explorer extends Controller {
 	public function networkMap() {
 
 		$this->setData('activeTab', 'Network');
+		$this->setData('activePulldown', 'Network Map');
+
 		$this->setData('enableLimitSelector', true);
 
 
@@ -184,9 +187,12 @@ class Explorer extends Controller {
 		$this->addJs('//code.highcharts.com/mapdata/custom/world-highres.js');
 
 		$paycoin = new PaycoinDb();
-		$network = $paycoin->getNetworkMapData();
+		$networkData = $paycoin->getNetworkMapData();
+		$limit = $this->getLimit(25);
+		$network = $paycoin->getNetworkByCity($limit);
 
 		$this->setData('network', $network);
+		$this->setData('networkData', $networkData);
 		$this->setData('pageTitle', 'Network Map');
 		$this->setData('cacheTime', 60);
 

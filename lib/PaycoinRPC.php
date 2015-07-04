@@ -24,8 +24,8 @@ class PaycoinRPC {
 			$rpcUrl = 'http://' . $config['paycoind']['rpcuser'] . ':' . $config['paycoind']['rpcpassword'] .
 				'@' . $config['paycoind']['rpchost'] . ':' . $config['paycoind']['rpcport'] . '/';
 		} else {
-			$rpcUrl = 'http://' . $config['dnsseed']['rpcuser'] . ':' . $config['dnsseed']['rpcpassword'] .
-				'@' . $config['dnsseed']['rpchost'] . ':' . $config['dnsseed']['rpcport'] . '/';
+			$rpcUrl = 'http://' . $config['networknodes'][$server]['rpcuser'] . ':' . $config['networknodes'][$server]['rpcpassword'] .
+				'@' . $config['networknodes'][$server]['rpchost'] . ':' . $config['networknodes'][$server]['rpcport'] . '/';
 		}
 		$this->paycoind = new \jsonRPCClient($rpcUrl);
 	}

@@ -9,6 +9,11 @@ $limit = $this->getData('limit');
 
 	<?php $this->render('page_header'); ?>
 
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		Network data is gathered from one of the DNS Seed servers and is updated every 15 minutes.  Currently trying to add more nodes.
+	</div>
+
 	<?php $this->render('market_info'); ?>
 
 	<?php $this->render('tabs'); ?>

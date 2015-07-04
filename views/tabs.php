@@ -8,8 +8,8 @@ $tabs = array(
 	array('href' => '/richlist', 'name' => 'Rich List'),
 	array('href' => '/primebids', 'name' => 'Prime Bids'),
 	array('href' => '/primestakes', 'name' => 'Prime Stakes'),
-	array('href' => '/network', 'name' => 'Network'),
-	array('href' => '/about', 'name' => 'About'),
+	//array('href' => '/network', 'name' => 'Network'),
+	//array('href' => '/about', 'name' => 'About'),
 );
 ?>
 <ul class="nav nav-tabs">
@@ -22,6 +22,15 @@ $tabs = array(
 		echo '><a href="' . $tab['href'] . '">' . $tab['name'] . '</a></li>';
 	}
 	?>
+	<li role="presentation" class="dropdown <?php if ($activeTab == 'Network') { echo ' active'; } ?>">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="/network" role="button" aria-expanded="false">
+			Network <span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu" role="menu">
+			<li <?php if ($activePulldown == 'Versions') { echo ' class="active"'; } ?>><a href="/network">Versions</a></li>
+			<li <?php if ($activePulldown == 'Network Map') { echo ' class="active"'; } ?>><a href="/network/map">Network Map</a></li>
+		</ul>
+	</li>
 
 	<li role="presentation" class="dropdown <?php if ($activeTab == 'Charts') { echo ' active'; } ?>">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
@@ -34,6 +43,24 @@ $tabs = array(
 		</ul>
 	</li>
 
+	<?php
+	$tabs = array(
+//		array('href' => '/', 'name' => 'Blocks'),
+//		array('href' => '/latesttransactions', 'name' => 'Transactions'),
+//		array('href' => '/richlist', 'name' => 'Rich List'),
+//		array('href' => '/primebids', 'name' => 'Prime Bids'),
+//		array('href' => '/primestakes', 'name' => 'Prime Stakes'),
+//		//array('href' => '/network', 'name' => 'Network'),
+		array('href' => '/about', 'name' => 'About'),
+	);
+	foreach ($tabs as $tab) {
+		echo '<li role="presentation" ';
+		if ($tab['name'] == $activeTab) {
+			echo 'class="active" ';
+		}
+		echo '><a href="' . $tab['href'] . '">' . $tab['name'] . '</a></li>';
+	}
+	?>
 	<?php if ($this->getData('enableLimitSelector') === true ) { ?>
 
 	<li class="pull-right">

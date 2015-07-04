@@ -1003,10 +1003,15 @@ class PaycoinDb {
 	public function updateNetworkInfo() {
 
 		$paycoin = new PaycoinRPC('dnsseed');
-		$ipInfoDb = new IpInfoDb();
-
-
 		$peers = $paycoin->getPeerInfo();
+		if (count($peers) > 0) {
+			$this->updatePeers($peers);
+		}
+
+	}
+
+	private function updatePeers($peers) {
+		$ipInfoDb = new IpInfoDb();
 		foreach ($peers as $peer) {
 
 			$insert = $peer;
@@ -1027,15 +1032,11 @@ class PaycoinDb {
 
 			$this->mysql->insert('network', $insert, false, $update);
 
-
 		}
-
-
 	}
 
 	public function getNetwork() {
-
-		$since = time() - (24 * 60 * 60);
+		$since = mktime(0, 0, 0) - (24 * 60 * 60);
 
 		$sql = "SELECT COUNT(*) as connections, network.*  FROM network
 			WHERE lastsend > $since OR lastrecv > $since GROUP BY subver order by connections desc";
@@ -1060,8 +1061,21 @@ class PaycoinDb {
 
 	}
 
+	public function getNetworkByCity($limit) {
+		$since = mktime(0, 0, 0) - (24 * 10 * 60 * 60);
+
+		$sql = "SELECT COUNT(*) as connections, network.*  FROM network
+			WHERE lastsend > $since OR lastrecv > $since GROUP BY country_code, city, state order by connections desc limit $limit";
+
+		$network = $this->mysql->select($sql, 60);
+
+		return $network;
+
+	}
+
+
 	public function getNetworkMapData() {
-		$since = time() - (24 * 10 * 60 * 60);
+		$since = mktime(0, 0, 0) - (24 * 10 * 60 * 60);
 
 		$sql = "SELECT COUNT(*) as connections, LOWER(country_code) AS country FROM network
 			WHERE lastsend > $since OR lastrecv > $since GROUP BY country_code order by connections desc";
