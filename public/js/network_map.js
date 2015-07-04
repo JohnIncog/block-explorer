@@ -807,14 +807,25 @@ $( document ).ready(function() {
         // Initiate the chart
         $('#container2').highcharts('Map', {
 
-            title : {
-                text : 'Highmaps basic demo'
-            },
+            chart: {
+            backgroundColor: '#043D51',
+        },
 
-            subtitle : {
-                text : 'Source map: <a href="http://code.highcharts.com/mapdata/custom/world-highres.js">World, highres</a>'
-            },
+        title : {
+            text : 'Paycoin Network Map',
+            style: {
+                color: '#FFF',
+                fontWeight: 'bold'
+            }
+        },
 
+        subtitle : {
+            text : 'Source map: <a href="http://code.highcharts.com/mapdata/custom/world-highres.js">World, highres</a>',
+             style: {
+                color: '#FFF',
+                fontWeight: 'bold'
+            }
+        },
             mapNavigation: {
                 enabled: true,
                 buttonOptions: {
@@ -833,7 +844,7 @@ $( document ).ready(function() {
                 name: 'Random data',
                 states: {
                     hover: {
-                        color: '#BADA55'
+                        color: '#076C8D'
                     }
                 },
                 dataLabels: {
