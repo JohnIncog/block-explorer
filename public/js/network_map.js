@@ -29,7 +29,7 @@ $( document ).ready(function() {
             colorAxis: {
                 min: 1,
                 minColor: '#086B8E',
-                maxColor: '#043547',
+                maxColor: '#065571',
             },
 
             series : [{
