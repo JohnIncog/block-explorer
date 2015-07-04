@@ -27,21 +27,16 @@ $( document ).ready(function() {
             },
             
             colorAxis: {
-                min: 0,
+                min: 1,
                 minColor: '#086B8E',
-                maxColor: '#01151C',
-                stops: [
-                    [0, '#086B8E'],
-                    [0.67, '#044055'],
-                    [1, '#01151C']
-                ]
+                maxColor: '#043547',
             },
 
             series : [{
                 data : cdata,
                 mapData: Highcharts.maps['custom/world-highres'],
                 joinBy: 'hc-key',
-                nullColor: '#086B8E',
+                nullColor: '#6aa6bb',
                 name: 'Random data',
                 states: {
                     hover: {
