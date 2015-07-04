@@ -17,16 +17,25 @@ class PaycoinRPC {
 	 */
 	public $paycoind;
 
-	public function __construct() {
+	public function __construct($server = null) {
 		/** @var $config array */
 		include(__DIR__ . '/../conf/config.php');
-		$rpcUrl = 'http://' . $config['paycoind']['rpcuser'] . ':' . $config['paycoind']['rpcpassword'] .
-			'@' . $config['paycoind']['rpchost'] . ':' . $config['paycoind']['rpcport'] . '/';
+		if ($server == null) {
+			$rpcUrl = 'http://' . $config['paycoind']['rpcuser'] . ':' . $config['paycoind']['rpcpassword'] .
+				'@' . $config['paycoind']['rpchost'] . ':' . $config['paycoind']['rpcport'] . '/';
+		} else {
+			$rpcUrl = 'http://' . $config['dnsseed']['rpcuser'] . ':' . $config['dnsseed']['rpcpassword'] .
+				'@' . $config['dnsseed']['rpchost'] . ':' . $config['dnsseed']['rpcport'] . '/';
+		}
 		$this->paycoind = new \jsonRPCClient($rpcUrl);
 	}
 
 	public function getInfo() {
 		return $this->paycoind->getinfo();
+	}
+
+	public function getPeerInfo() {
+		return $this->paycoind->getpeerinfo();
 	}
 
 	public function help() {

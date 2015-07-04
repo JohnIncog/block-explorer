@@ -24,7 +24,7 @@ class Explorer extends Controller {
 
 	public function index() {
 
-		$this->setData('activeTab', 'Latest Blocks');
+		$this->setData('activeTab', 'Blocks');
 
 		$siteConfig = $this->getConfig('site');
 		$this->setData('pageTitle', $siteConfig['name'] . ' - Paycoin Block Explorer');
@@ -135,9 +135,71 @@ class Explorer extends Controller {
 		$this->render('footer');
 	}
 
+	public function network() {
+
+		$this->setData('activeTab', 'Network');
+		$this->setData('enableLimitSelector', true);
+
+
+		$this->addJs('/js/network.js');
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
+		$this->addJs('/highcharts/js/highcharts.js');
+
+		$this->addJs('/js/charts/theme.js');
+
+		$this->addJs('/highcharts/js/highcharts-3d.js');
+		$this->addJs('/highcharts/js/modules/exporting.js');
+
+
+
+		$limit = $this->getLimit(25);
+
+		$paycoin = new PaycoinDb();
+		$network = $paycoin->getNetwork();
+
+		$this->setData('network', $network);
+		$this->setData('pageTitle', 'Network');
+		$this->setData('cacheTime', 60);
+
+		$this->render('header');
+		$this->render('network');
+		$this->render('footer');
+	}
+
+	public function networkMap() {
+
+		$this->setData('activeTab', 'Network');
+		$this->setData('enableLimitSelector', true);
+
+
+		$this->addJs('/js/network_map.js');
+		$this->addJs('/js/market_info.js');
+		$this->addJs('/js/update_outstanding.js');
+
+		$this->addJs('/highmaps/js/highmaps.js');
+		$this->addJs('/highmaps/js/modules/exporting.js');
+		$this->addJs('/js/charts/theme.js');
+		
+		$this->addJs('//code.highcharts.com/mapdata/custom/world-highres.js');
+
+		$paycoin = new PaycoinDb();
+		$network = $paycoin->getNetwork();
+
+		$this->setData('network', $network);
+		$this->setData('pageTitle', 'Network Map');
+		$this->setData('cacheTime', 60);
+
+		$this->render('header');
+		$this->render('network_map');
+		$this->render('footer');
+	}
+
+
 	public function latestTransactions() {
 
-		$this->setData('activeTab', 'Latest Transactions');
+		$this->setData('activeTab', 'Transactions');
 		$this->setData('enableLimitSelector', true);
 
 		$this->addJs('/js/market_info.js');
@@ -158,6 +220,7 @@ class Explorer extends Controller {
 		$this->setData('transactions', $transactions);
 
 		$this->setData('pageTitle', 'Latest Transactions');
+
 		$this->setData('cacheTime', 60);
 		$this->render('header');
 		$this->render('latesttransactions');
@@ -329,7 +392,7 @@ class Explorer extends Controller {
 		$currentRound = 'Starts in ' . ceil($diff->days) . ' Days';
 		$primeBids = array();
 		if (time() > strtotime($startDate)) {
-			$currentRound = ceil($diff->days / $roundDays) . ' of 25';
+			$currentRound = ceil($diff->days / $roundDays) + 1 . ' of 25';
 			$primeBids = $paycoin->getPrimeBids($limit);
 		}
 

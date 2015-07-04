@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Paycoin Ledger';
 $pageName = '';
+$pageDescription = 'Paycoin Block Explorer & Currency Statistics. View detailed information on all paycoin transactions and blocks.';
 $debugbarRenderer = false;
 if (DEBUG_BAR ) {
 	$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
@@ -15,6 +16,7 @@ if (isset($this)) {
 	}
 	$pageTitle = $this->getData('pageTitle', 'Paycoin Ledger');
 	$pageName = $this->getData('pageName', 'Home');
+	$pageDescription = $this->getData('pageName', $pageDescription);
 	if (DEBUG_BAR) {
 		$debugbarRenderer = \lib\Bootstrap::getInstance()->debugbar->getJavascriptRenderer();
 	}
@@ -26,7 +28,7 @@ if (isset($this)) {
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" CONTENT="Paycoin Block Explorer & Currency Statistics. View detailed information on all paycoin transactions and blocks.">
+	<meta name="description" CONTENT="<?php echo htmlspecialchars($pageDescription); ?>">
 
 	<title><?php echo htmlspecialchars($pageTitle)  ?></title>
 

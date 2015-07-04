@@ -4,8 +4,6 @@ ini_set('display_errors', '1');
 require_once dirname(__FILE__) . '/../conf/constants.php';
 require_once dirname(__FILE__) . '/../bootstrap.php';
 require_once dirname(__FILE__) . '/../conf/config.php';
-
-
 $ips[] = '76.69.234.1';
 $ips[] = '23.116.240.193';
 $ips[] = '23.116.240.122';

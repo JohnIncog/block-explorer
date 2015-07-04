@@ -3,11 +3,12 @@ $activeTab = $this->getData('activeTab', '');
 $activePulldown = $this->getData('activePulldown', '');
 $limit = $this->getData('limit');
 $tabs = array(
-	array('href' => '/', 'name' => 'Latest Blocks'),
-	array('href' => '/latesttransactions', 'name' => 'Latest Transactions'),
+	array('href' => '/', 'name' => 'Blocks'),
+	array('href' => '/latesttransactions', 'name' => 'Transactions'),
 	array('href' => '/richlist', 'name' => 'Rich List'),
 	array('href' => '/primebids', 'name' => 'Prime Bids'),
 	array('href' => '/primestakes', 'name' => 'Prime Stakes'),
+	array('href' => '/network', 'name' => 'Network'),
 	array('href' => '/about', 'name' => 'About'),
 );
 ?>

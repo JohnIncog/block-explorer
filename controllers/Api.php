@@ -215,4 +215,21 @@ class Api extends Controller {
 		$this->outputJsonResponse($response);
 	}
 
+	public function nodes() {
+		$subver = $this->bootstrap->httpRequest->request->get('subversion');
+		//$subver = urldecode($subver);
+		$subver = $_GET['subversion'];
+		$paycoinDb = new PaycoinDb();
+		$nodes = $paycoinDb->getNodes($subver);
+		$nodes = array_column($nodes, 'addr');
+		foreach ($nodes as &$node) {
+			$node = str_replace(':8998', '', $node);
+
+		}
+
+
+		$response['nodes'] = $nodes;
+		$this->outputJsonResponse($response);
+	}
+
 } 

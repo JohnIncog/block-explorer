@@ -15,6 +15,16 @@ class Cli extends Controller {
 
 	const LOCK_FILE = "/tmp/clibuildDatabase2.lock";
 
+	public function getNetworkInfo() {
+
+		$paycoinDb = new PaycoinDb();
+		$paycoinDb->updateNetworkInfo();
+
+
+
+
+	}
+
 	public function buildDatabase() {
 
 

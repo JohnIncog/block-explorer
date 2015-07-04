@@ -12,7 +12,12 @@ body {
 	background: #087094 radial-gradient(#087094, #042d3c) no-repeat fixed;
 	color: white;
 }
-
+.modal-body {
+	color: #000000;
+}
+.modal-header {
+	color: #000000;
+}
 footer {
 	margin-top: 50px;
 	height:25px;

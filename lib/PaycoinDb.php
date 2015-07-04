@@ -810,7 +810,7 @@ class PaycoinDb {
 		$primeBid = PRIME_BID_AMOUNT;
 		$limit = (int) $limit;
 		$bids = $this->mysql->select("SELECT * FROM address_tags tags JOIN richlist r ON r.address = tags.address
-			WHERE verified = 1 AND tag LIKE 'prime bid%' ORDER BY balance DESC LIMIT $limit ", 60);
+			WHERE verified = 1 AND tag LIKE 'primebid%' and balance > $primeBid ORDER BY balance DESC LIMIT $limit ", 60);
 
 		$rank = 1;
 		foreach ($bids as &$bid) {
@@ -997,6 +997,55 @@ class PaycoinDb {
 		$map = array_column($map, null, 'address');
 
 		return $map;
+
+	}
+
+	public function updateNetworkInfo() {
+
+		$paycoin = new PaycoinRPC('dnsseed');
+
+		$peers = $paycoin->getPeerInfo();
+		foreach ($peers as $peer) {
+			$insert = $peer;
+			$update = $peer;
+			$this->mysql->insert('network', $insert, $update);
+
+		}
+
+	}
+
+	public function getNetwork() {
+
+		$since = time() - (24 * 60 * 60);
+
+		$sql = "SELECT COUNT(*) as connections, network.*  FROM network
+			WHERE lastsend > $since OR lastrecv > $since GROUP BY subver order by connections desc";
+
+
+		$subVersions = $this->mysql->select($sql, 60);
+		$totalConnections = 0;
+		foreach ($subVersions as &$row) {
+			$totalConnections += $row['connections'];
+		}
+		foreach ($subVersions as &$row) {
+			$row['share'] = round($row['connections']/$totalConnections * 100, 1);
+		}
+
+		$graphData = array_column($subVersions, 'share', 'subver');
+
+		return array(
+			'graphData' => $graphData,
+			'totalConnections' => $totalConnections,
+			'subVersions' => $subVersions
+		);
+
+	}
+
+	public function getNodes($subver) {
+		$sql = "SELECT addr FROM network
+			WHERE subver = " . $this->mysql->escape($subver) . ' AND inbound = 0';
+
+		return $this->mysql->select($sql, 60);
 
 	}
 

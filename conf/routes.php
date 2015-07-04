@@ -20,6 +20,8 @@ $routeCollection->add('test', new Routing\Route('/test', array("class" => "\\con
 $routeCollection->add('tagging', new Routing\Route('/tagging', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('faq', new Routing\Route('/faq', array("class" => "\\controllers\\Explorer")));
 $routeCollection->add('primeBids', new Routing\Route('/primebids', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('network', new Routing\Route('/network', array("class" => "\\controllers\\Explorer")));
+$routeCollection->add('networkMap', new Routing\Route('/network/map', array("class" => "\\controllers\\Explorer")));
 
 $routeCollection->add('chart', new Routing\Route('/charts/{chart}', array("class" => "\\controllers\\Chart")));
 $routeCollection->add('transactionsPerBlock', new Routing\Route('/charts/block/transactions', array("class" => "\\controllers\\Chart")));
@@ -38,10 +40,12 @@ $routeCollection->add('getLatestTransactions', new Routing\Route('/api/latesttra
 $routeCollection->add('tagAddress', new Routing\Route('/api/tagaddress', array("class" => "\\controllers\\Api")));
 $routeCollection->add('disputeAddressTag', new Routing\Route('/api/disputeaddresstag', array("class" => "\\controllers\\Api")));
 $routeCollection->add('info', new Routing\Route('/api/info', array("class" => "\\controllers\\Api")));
+$routeCollection->add('nodes', new Routing\Route('/api/nodes', array("class" => "\\controllers\\Api")));
 
 $routeCollection->add('buildDatabase', new Routing\Route('/cli/buildDatabase', array("class" => "\\controllers\\Cli")));
 $routeCollection->add('buildWalletDatabase', new Routing\Route('/cli/buildWalletDatabase', array("class" => "\\controllers\\Cli")));
 $routeCollection->add('buildRichList', new Routing\Route('/cli/buildRichList', array("class" => "\\controllers\\Cli")));
+$routeCollection->add('getNetworkInfo', new Routing\Route('/cli/getNetworkInfo', array("class" => "\\controllers\\Cli")));
 
 //$routeCollection->add('video', new Routing\Route('/{slug}/video{videoId}/', array("class" => "Page_Video")));
 

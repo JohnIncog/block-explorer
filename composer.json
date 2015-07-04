@@ -8,9 +8,10 @@
         }
     ],
     "require": {
-        "symfony/http-foundation": "2.6.7",
-		"symfony/routing": "2.6.7",
-		"symfony/config": "2.6.7",
+        "symfony/yaml": "2.*",
+        "symfony/http-foundation": "2.*",
+		"symfony/routing": "2.*",
+		"symfony/config": "2.*",
         "maximebf/debugbar": "1.*"
 		
     },
