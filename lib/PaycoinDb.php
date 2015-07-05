@@ -1008,17 +1008,20 @@ class PaycoinDb {
 			$this->updatePeers($peers);
 		}
 
+//		$paycoin = new PaycoinRPC('jwrb');
+//		$peers = $paycoin->getPeerInfo();
+//		var_dump($peers);
 	}
 
 	private function updatePeers($peers) {
-		$ipInfoDb = new IpInfoDb();
+		$maxMind = new MaxMind();
 		foreach ($peers as $peer) {
 
 			$insert = $peer;
 			$update = $peer;
 
 			list($ip, $post) = explode(':', $peer['addr']);
-			$geoInfo = $ipInfoDb->getGeoInfo($ip);
+			$geoInfo = $maxMind->getGeoInfo($ip);
 			sleep(.5);
 			$insert['country_code'] = $geoInfo['countryCode'];
 			$insert['country_name'] = $geoInfo['countryName'];
@@ -1086,8 +1089,9 @@ class PaycoinDb {
 	}
 
 	public function getNodes($subver) {
-		$sql = "SELECT addr FROM network
-			WHERE subver = " . $this->mysql->escape($subver) . ' AND inbound = 0';
+		$since = mktime(0, 0, 0) - (24 * 10 * 60 * 60);
+		$sql = "SELECT SUBSTRING_INDEX(addr, ':', 1) AS addr FROM network
+			WHERE subver = " . $this->mysql->escape($subver) . " AND lastsend > $since OR lastrecv > $since GROUP BY addr";
 
 		return $this->mysql->select($sql, 60);
 

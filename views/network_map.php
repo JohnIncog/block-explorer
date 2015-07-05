@@ -17,7 +17,9 @@ $json = substr($json, 0, -2);
 
 	<div class="alert alert-success alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		Network data is gathered from one of the DNS Seed servers and is updated every 15 minutes.  Currently trying to add more nodes.
+		<p>Network data is gathered from one of the DNS Seed servers and is updated every 15 minutes.</p>
+		<p>If you have an active node with a static IP and
+		would like to provide data, Please <a style="color: blue" href="/contact">contact us</a>.</p>
 	</div>
 
 	<?php $this->render('market_info'); ?>
