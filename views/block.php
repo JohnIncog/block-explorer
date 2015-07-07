@@ -6,10 +6,7 @@ if ($block != null) {
 	$transactions = $this->getData('transactions');
 	$created = $block['mint'];
 	$destroyed = (int)$block['txFees'];
-	if ($created > 0 && $destroyed < 0) {
-		$created = bcadd($created, $destroyed, 8);
-		unset($destroyed);
-	}
+	$created += $block['txFees'];
 
 } else {
 	?>

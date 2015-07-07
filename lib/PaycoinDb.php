@@ -254,16 +254,7 @@ class PaycoinDb {
 	}
 
 	public function buildDb($startBlockHeight, $endBlockHeight) {
-		/**
-		 * http://192.168.10.10/block/009a2d16f34b49318e2e78f12a7b64816cd064d7b68abc862b7377f6576919ab
-		 * Created	0.848203 XPY = wrong.. txfee not removed
-		 *
-		 * *possible* Outstanding is not calculating correctly...
-		 * 1-138400 = ok
-		 * 138400-139000 =
-		 ** 138401 is where it starts....
-		 **  at block 140000 a problem.. 15,619,171.776635 XPY byt should be 15,619,171.7766351 XPY
-		 */
+
 		$outstanding = 0;
 		if ($startBlockHeight > 1) {
 			$previousBlock = $this->getBlockByHeight($startBlockHeight-1);
@@ -327,9 +318,19 @@ class PaycoinDb {
 
 			$blockInsert['outstanding'] = $outstanding;
 
-
 			$this->mysql->insert('blocks', $blockInsert);
 			$this->mysql->completeTransaction();
+
+			/* Verify balances
+			if (rand(1, 10000) === 1) {
+				$row = $this->mysql->selectRow("SELECT SUM(bal) AS total FROM (SELECT SUM(`value`) AS `bal` FROM addresses GROUP BY address) AS a");
+				$totalCoins = $row['total'];
+				if ($outstanding != $totalCoins) {
+					var_dump('ooh noes..', $outstanding, $totalCoins, $block['height']);
+					exit;
+				}
+			}
+			*/
 
 		}
 
@@ -426,7 +427,7 @@ class PaycoinDb {
 
 	}
 
-	public function getAddressInformation($address, $limit = 100000) {
+	public function getAddressInformation($address, $limit = 100000, $type = 'all') {
 
 		$sql = "SELECT a.*, rl.rank, adt.`tag`, adt.`url`, adt.`verified` FROM addresses a "
 			. " LEFT JOIN richlist rl on rl.address= a.address"
@@ -613,6 +614,7 @@ class PaycoinDb {
 		$addressValueMap = array();
 		$value = 0;
 
+
 		foreach ($transactionsOut as $transactionOut) {
 			if (empty($transactionOut['address'])) {
 				continue;
@@ -621,12 +623,16 @@ class PaycoinDb {
 				$addressValueMap[$transactionOut['address']] = 0;
 			}
 			if ($transactionOut['value'] > 0) {
-				$value += $transactionOut['value'];
+				$value = $transactionOut['value'] + $addressValueMap[$transactionOut['address']];
 				$addressValueMap[$transactionOut['address']] = $value;
 			}
 
 		}
-
+//		if ($transaction['block_height'] == 2) {
+//			var_dump($transactionsOut, $addressValueMap);
+//
+//			exit;
+//		}
 		$this->updateAddresses($transaction, $addressValueMap, 'creation');
 
 	}
@@ -1008,9 +1014,9 @@ class PaycoinDb {
 			$this->updatePeers($peers);
 		}
 
-//		$paycoin = new PaycoinRPC('jwrb');
-//		$peers = $paycoin->getPeerInfo();
-//		var_dump($peers);
+		$paycoin = new PaycoinRPC('YoshiRpi1');
+		$peers = $paycoin->getPeerInfo();
+		var_dump($peers);
 	}
 
 	private function updatePeers($peers) {
