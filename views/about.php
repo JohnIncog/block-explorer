@@ -27,7 +27,7 @@
 			</tr>
 			<tr>
 				<td><strong>Forums</strong></td>
-				<td><a href="https://talk.paycoin.com/">https://talk.paycoin.com/</a></td>
+				<td><a href="https://paycointalk.org/">https://paycointalk.org/</a></td>
 			</tr>
 			<tr>
 				<td><strong>Twitter</strong></td>
